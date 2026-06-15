@@ -1,15 +1,11 @@
-"""
-Email service for sending OTP verification codes via SMTP.
-Uses a detached subprocess with CREATE_NEW_PROCESS_GROUP to avoid
-Windows socket inheritance issues inside long-lived uvicorn processes.
-Falls back gracefully to console-only mode if SMTP credentials are not configured.
-"""
-
 import subprocess
 import sys
 import os
 import logging
+import urllib.request
+import json
 from pathlib import Path
+from app.core.config import get_settings
 
 logger = logging.getLogger("formzero.email")
 
@@ -34,15 +30,48 @@ def send_otp_email(
     from_email: str | None = None,
 ) -> bool:
     """
-    Send an OTP verification email by spawning a fully detached subprocess.
-    Returns True if the email was sent successfully, False otherwise.
+    Send an OTP verification email. 
+    First attempts to proxy the request to the Next.js API route on Vercel (bypassing Render's port blocks).
+    Falls back to spawning a local SMTP subprocess.
     """
     if not smtp_host or not smtp_user or not smtp_password:
         logger.warning("SMTP not configured — OTP will only be shown in console/dev mode.")
         return False
 
     sender = from_email or smtp_user
+    settings = get_settings()
 
+    # 1. Try sending via Vercel proxy API (To bypass Render SMTP port blocks)
+    if settings.frontend_url:
+        url = f"{settings.frontend_url.rstrip('/')}/api/send-email"
+        payload = {
+            "to_email": to_email,
+            "otp_code": otp_code,
+            "smtp_host": smtp_host,
+            "smtp_port": smtp_port,
+            "smtp_user": smtp_user,
+            "smtp_password": smtp_password,
+            "from_email": from_email
+        }
+        try:
+            logger.info("Attempting to send OTP email via Vercel proxy: %s", url)
+            req = urllib.request.Request(
+                url,
+                data=json.dumps(payload).encode("utf-8"),
+                headers={"Content-Type": "application/json"},
+                method="POST"
+            )
+            with urllib.request.urlopen(req, timeout=15) as response:
+                res_data = json.loads(response.read().decode())
+                if response.status == 200 and res_data.get("status") == "success":
+                    logger.info("OTP email sent successfully via Vercel proxy to %s", to_email)
+                    return True
+                else:
+                    logger.warning("Vercel proxy returned error response: %s", res_data)
+        except Exception as exc:
+            logger.warning("Failed to send email via Vercel proxy (%s). Falling back to direct SMTP...", exc)
+
+    # 2. Local Fallback: Direct SMTP sending via subprocess
     try:
         # On Windows, CREATE_NEW_PROCESS_GROUP detaches the child from
         # the parent's console and network handle table. Build a clean
@@ -79,16 +108,16 @@ def send_otp_email(
         )
 
         if result.returncode == 0 and "OK" in result.stdout:
-            logger.info("OTP email sent successfully to %s", to_email)
+            logger.info("OTP email sent successfully to %s via direct SMTP", to_email)
             return True
         else:
             error_msg = result.stderr.strip() or result.stdout.strip()
-            logger.error("Failed to send OTP email to %s: %s", to_email, error_msg)
+            logger.error("Failed to send OTP email directly to %s: %s", to_email, error_msg)
             return False
 
     except subprocess.TimeoutExpired:
         logger.error("OTP email subprocess timed out for %s", to_email)
         return False
     except Exception as exc:
-        logger.error("Failed to send OTP email to %s: %s", to_email, exc)
+        logger.error("Failed to send OTP email directly to %s: %s", to_email, exc)
         return False

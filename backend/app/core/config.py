@@ -16,6 +16,8 @@ class Settings(BaseSettings):
     gemini_model: str = "gemini-2.5-pro"
     embedding_model: str = "text-embedding-004"
 
+    frontend_url: str = Field(default="https://formzero-tan.vercel.app", alias="FRONTEND_URL")
+
     supabase_url: str | None = Field(default=None, alias="SUPABASE_URL")
     supabase_anon_key: str | None = Field(default=None, alias="SUPABASE_ANON_KEY")
 
