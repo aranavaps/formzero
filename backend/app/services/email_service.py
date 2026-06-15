@@ -10,6 +10,7 @@ import sys
 import os
 import logging
 from pathlib import Path
+from app.core.config import get_settings
 
 logger = logging.getLogger("formzero.email")
 
@@ -34,9 +35,87 @@ def send_otp_email(
     from_email: str | None = None,
 ) -> bool:
     """
-    Send an OTP verification email by spawning a fully detached subprocess.
+    Send an OTP verification email by using Resend API (if configured) or spawning a fully detached SMTP subprocess.
     Returns True if the email was sent successfully, False otherwise.
     """
+    settings = get_settings()
+
+    # 1. Use Resend HTTPS API if configured (Highly recommended for production/Render to bypass SMTP port blocking)
+    if settings.resend_api_key:
+        logger.info("Resend API key configured — Sending OTP email via Resend API")
+        try:
+            import urllib.request
+            import json
+
+            url = "https://api.resend.com/emails"
+            headers = {
+                "Authorization": f"Bearer {settings.resend_api_key}",
+                "Content-Type": "application/json"
+            }
+            # Use onboarding domain if no verified domain is configured
+            from_sender = from_email or "FormZero <onboarding@resend.dev>"
+
+            html_body = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <meta charset="utf-8" />
+              <style>
+                body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f6f8; margin: 0; padding: 0; }}
+                .container {{ max-width: 480px; margin: 40px auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }}
+                .header {{ background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 32px 24px; text-align: center; }}
+                .header h1 {{ color: #e0c097; font-size: 22px; margin: 0; letter-spacing: 1px; }}
+                .body {{ padding: 32px 24px; text-align: center; }}
+                .body p {{ color: #555; font-size: 15px; line-height: 1.6; margin: 0 0 24px 0; }}
+                .otp-box {{ display: inline-block; background: #f0f4ff; border: 2px dashed #4a6cf7; border-radius: 12px; padding: 16px 32px; margin: 8px 0 24px 0; }}
+                .otp-code {{ font-family: 'Courier New', monospace; font-size: 36px; font-weight: 700; color: #1a1a2e; letter-spacing: 8px; }}
+                .footer {{ background: #f9fafb; padding: 16px 24px; text-align: center; border-top: 1px solid #eee; }}
+                .footer p {{ color: #999; font-size: 12px; margin: 0; }}
+              </style>
+            </head>
+            <body>
+              <div class="container">
+                <div class="header">
+                  <h1>FormZero</h1>
+                </div>
+                <div class="body">
+                  <p>Your email verification code is:</p>
+                  <div class="otp-box">
+                    <span class="otp-code">{otp_code}</span>
+                  </div>
+                  <p>This code expires in <strong>10 minutes</strong>.<br/>If you didn't request this, you can safely ignore this email.</p>
+                </div>
+                <div class="footer">
+                  <p>&copy; 2026 FormZero. All rights reserved.</p>
+                </div>
+              </div>
+            </body>
+            </html>
+            """
+            
+            payload = {
+                "from": from_sender,
+                "to": [to_email],
+                "subject": "FormZero — Your Email Verification Code",
+                "html": html_body
+            }
+            
+            req = urllib.request.Request(
+                url,
+                data=json.dumps(payload).encode("utf-8"),
+                headers=headers,
+                method="POST"
+            )
+            with urllib.request.urlopen(req, timeout=15) as response:
+                if response.status in (200, 201):
+                    logger.info("OTP email sent successfully to %s via Resend API", to_email)
+                    return True
+                else:
+                    logger.error("Resend API returned status %s", response.status)
+        except Exception as exc:
+            logger.error("Failed to send OTP email via Resend: %s. Falling back to SMTP...", exc)
+
+    # 2. Fall back to SMTP subprocess
     if not smtp_host or not smtp_user or not smtp_password:
         logger.warning("SMTP not configured — OTP will only be shown in console/dev mode.")
         return False
