@@ -481,6 +481,7 @@ export default function Home() {
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const transcriptRef = useRef("");
   const [isConfirmingAutoFill, setIsConfirmingAutoFill] = useState(false);
+  const [isConfirmingChatIntake, setIsConfirmingChatIntake] = useState(false);
   const [tempAutoFillFacts, setTempAutoFillFacts] = useState<Record<string, string> | null>(null);
   const [tempAutoFillQuery, setTempAutoFillQuery] = useState("");
   const [completedRoadmapSteps, setCompletedRoadmapSteps] = useState<Record<string, boolean>>({});
@@ -1477,6 +1478,58 @@ export default function Home() {
     }
   }
 
+  function handleConfirmChatIntake(correct: boolean) {
+    if (!tempAutoFillFacts) return;
+
+    if (correct) {
+      setChatMessages((prev) => [
+        ...prev,
+        { role: "user", content: lang === "es" ? "Sí, es correcto" : "Yes, it is correct", timestamp: new Date().toLocaleTimeString() }
+      ]);
+      setIsConfirmingChatIntake(false);
+      
+      setTimeout(() => {
+        setChatMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: lang === "es"
+              ? "¡Perfecto! Permítame buscar sus beneficios ahora..."
+              : "Perfect! Let me find your benefits now!",
+            timestamp: new Date().toLocaleTimeString(),
+          }
+        ]);
+        
+        setTimeout(() => {
+          runRAGScan(tempAutoFillQuery, tempAutoFillFacts);
+        }, 1000);
+      }, 500);
+    } else {
+      setChatMessages((prev) => [
+        ...prev,
+        { role: "user", content: lang === "es" ? "No, volver a empezar" : "No, start over", timestamp: new Date().toLocaleTimeString() }
+      ]);
+      setIsConfirmingChatIntake(false);
+      
+      setTimeout(() => {
+        setChatMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: lang === "es"
+              ? "Entendido. Vamos a empezar de nuevo para corregir los datos."
+              : "Got it. Let's start over to correct the details.",
+            timestamp: new Date().toLocaleTimeString(),
+          }
+        ]);
+        
+        setTimeout(() => {
+          startIntake();
+        }, 800);
+      }, 500);
+    }
+  }
+
   function processFreeFormInput(query: string) {
     const parsedFacts = parseFreeFormProfile(query);
     const adv = checkAdversarial(query, lang, parsedFacts);
@@ -2196,9 +2249,11 @@ export default function Home() {
         setIsTyping(false);
       }, 1000);
     } else {
-      // Complete profile
+      // Complete profile & Ask for confirmation
       setIsTyping(true);
       setTimeout(() => {
+        const query = `I am a household of ${updatedFacts.household_size} in ${updatedFacts.state} with monthly income of $${updatedFacts.monthly_income}. Student: ${updatedFacts.is_student}, Children: ${updatedFacts.has_children}, Pregnant: ${updatedFacts.has_pregnant}, Elderly/Disabled: ${updatedFacts.has_elderly_or_disabled}, Immigration: ${updatedFacts.immigration_status}.`;
+        
         const contradictions = checkForContradictions(updatedFacts, `income is ${updatedFacts.monthly_income}, household size is ${updatedFacts.household_size}, student: ${updatedFacts.is_student}, children: ${updatedFacts.has_children}`, lang);
         setContradictionAlerts(contradictions);
 
@@ -2207,22 +2262,43 @@ export default function Home() {
           extraInconsistencyText = "\n\n" + contradictions.join("\n\n") + "\n";
         }
 
+        const summaryText = lang === "es"
+          ? `He recopilado sus datos:\n\n` +
+            `• Estado: ${updatedFacts.state || "CA"}\n` +
+            `• Personas en el hogar: ${updatedFacts.household_size || "1"}\n` +
+            `• Ingresos mensuales: $${updatedFacts.monthly_income || "0"}\n` +
+            `• Hijos menores de 18: ${updatedFacts.has_children === "true" ? "Sí" : "No"}\n` +
+            `• Embarazo en el hogar: ${updatedFacts.has_pregnant === "true" ? "Sí" : "No"}\n` +
+            `• Adultos mayores / Discapacidad: ${updatedFacts.has_elderly_or_disabled === "true" ? "Sí" : "No"}\n` +
+            `• Estudiante: ${updatedFacts.is_student === "true" ? "Sí" : "No"}\n` +
+            `• Estado migratorio: ${updatedFacts.immigration_status === "citizen" ? "Ciudadano" : updatedFacts.immigration_status === "permanent_resident" ? "Residente permanente" : "Prefiero no decirlo"}` +
+            `${extraInconsistencyText}\n\n` +
+            `¿Es correcta esta información?`
+          : `I've compiled your details:\n\n` +
+            `• State: ${updatedFacts.state || "CA"}\n` +
+            `• Household Size: ${updatedFacts.household_size || "1"}\n` +
+            `• Monthly Income: $${updatedFacts.monthly_income || "0"}\n` +
+            `• Children Under 18: ${updatedFacts.has_children === "true" ? "Yes" : "No"}\n` +
+            `• Pregnant in Household: ${updatedFacts.has_pregnant === "true" ? "Yes" : "No"}\n` +
+            `• Elderly (65+) / Disabled: ${updatedFacts.has_elderly_or_disabled === "true" ? "Yes" : "No"}\n` +
+            `• Student: ${updatedFacts.is_student === "true" ? "Yes" : "No"}\n` +
+            `• Immigration Status: ${updatedFacts.immigration_status === "citizen" ? "Citizen" : updatedFacts.immigration_status === "permanent_resident" ? "Resident" : "Prefer not to say"}` +
+            `${extraInconsistencyText}\n\n` +
+            `Is this information correct?`;
+
         setChatMessages((prev) => [
           ...prev,
           {
             role: "assistant",
-            content:
-              lang === "es"
-                ? `¡Perfecto! Tengo todo lo que necesito. ${extraInconsistencyText}\n¡Permítame buscar sus beneficios ahora!`
-                : `Perfect! I have everything I need. ${extraInconsistencyText}\nLet me find your benefits now!`,
+            content: summaryText,
             timestamp: new Date().toLocaleTimeString(),
           },
         ]);
+        
+        setTempAutoFillFacts(updatedFacts);
+        setTempAutoFillQuery(query);
+        setIsConfirmingChatIntake(true);
         setIsTyping(false);
-        setTimeout(() => {
-          const query = `I am a household of ${updatedFacts.household_size} in ${updatedFacts.state} with monthly income of $${updatedFacts.monthly_income}. Student: ${updatedFacts.is_student}, Children: ${updatedFacts.has_children}, Pregnant: ${updatedFacts.has_pregnant}, Elderly/Disabled: ${updatedFacts.has_elderly_or_disabled}, Immigration: ${updatedFacts.immigration_status}.`;
-          runRAGScan(query, updatedFacts);
-        }, 2000);
       }, 1000);
     }
   }
@@ -3450,6 +3526,23 @@ export default function Home() {
                     {lang === "es" ? "No, reintentar" : "No, redo recording"}
                   </button>
                 </div>
+              ) : isConfirmingChatIntake ? (
+                <div className="flex flex-wrap gap-2 justify-center mb-4">
+                  <button
+                    onClick={() => handleConfirmChatIntake(true)}
+                    className="bg-primary text-on-primary px-6 py-2.5 rounded-full text-xs font-bold shadow-md hover:scale-[1.02] active:scale-95 duration-200 cursor-pointer flex items-center gap-1"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">check</span>
+                    {lang === "es" ? "Sí, es correcto" : "Yes, correct"}
+                  </button>
+                  <button
+                    onClick={() => handleConfirmChatIntake(false)}
+                    className="border border-error text-error hover:bg-error-container/20 px-6 py-2.5 rounded-full text-xs font-bold shadow-sm hover:scale-[1.02] active:scale-95 duration-200 cursor-pointer flex items-center gap-1"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">refresh</span>
+                    {lang === "es" ? "No, volver a empezar" : "No, start over"}
+                  </button>
+                </div>
               ) : (
                 currentQuestionIndex > 1 && !isTyping && (
                   <div className="flex flex-wrap gap-2 justify-center mb-4">
@@ -3510,31 +3603,40 @@ export default function Home() {
                 }}
                 className="glass-panel rounded-full p-2 flex items-center shadow-2xl"
               >
-                <button type="button" className="p-3 text-outline hover:text-primary transition-colors shrink-0">
+                <button 
+                  disabled={isConfirmingAutoFill || isConfirmingChatIntake || isTyping}
+                  type="button" 
+                  className="p-3 text-outline hover:text-primary transition-colors shrink-0 disabled:opacity-30"
+                >
                   <span className="material-symbols-outlined">attach_file</span>
                 </button>
                 <input
+                  disabled={isConfirmingAutoFill || isConfirmingChatIntake || isTyping}
                   value={chatInput}
                   onChange={(e) => setChatInput(e.target.value)}
-                  className="flex-grow bg-transparent border-none focus:ring-0 px-4 font-body-lg text-body-md text-on-background placeholder:text-outline/40 focus:outline-none"
+                  className="flex-grow bg-transparent border-none focus:ring-0 px-4 font-body-lg text-body-md text-on-background placeholder:text-outline/40 focus:outline-none disabled:opacity-50"
                   placeholder={
-                    questionsList[currentQuestionIndex - 1].key === "monthly_income"
-                      ? "e.g. 2500"
-                      : "Type your answer here..."
+                    isConfirmingChatIntake || isConfirmingAutoFill
+                      ? (lang === "es" ? "Por favor confirme arriba..." : "Please confirm above...")
+                      : questionsList[currentQuestionIndex - 1].key === "monthly_income"
+                        ? "e.g. 2500"
+                        : "Type your answer here..."
                   }
                   type="text"
                 />
                 <div className="flex items-center gap-2 mr-1 shrink-0">
                   <button
+                    disabled={isConfirmingAutoFill || isConfirmingChatIntake || isTyping}
                     type="button"
                     onClick={isRecording ? () => stopVoiceRecording(true) : startVoiceRecording}
-                    className={`p-3 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95 ${isRecording ? "bg-error hover:bg-error/80 text-on-error animate-pulse shadow-md shadow-error/20" : "text-outline hover:bg-primary hover:text-on-primary bg-transparent"}`}
+                    className={`p-3 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-30 ${isRecording ? "bg-error hover:bg-error/80 text-on-error animate-pulse shadow-md shadow-error/20" : "text-outline hover:bg-primary hover:text-on-primary bg-transparent"}`}
                   >
                     <span className="material-symbols-outlined">{isRecording ? "mic_off" : "mic"}</span>
                   </button>
                   <button
+                    disabled={isConfirmingAutoFill || isConfirmingChatIntake || isTyping || !chatInput.trim()}
                     type="submit"
-                    className="bg-primary text-on-primary p-3 rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                    className="bg-primary text-on-primary p-3 rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer disabled:opacity-35"
                   >
                     <span className="material-symbols-outlined">arrow_upward</span>
                   </button>
