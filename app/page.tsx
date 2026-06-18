@@ -2979,7 +2979,7 @@ export default function Home() {
 
             {/* AI JUSTIFICATION SECTION */}
             <section className="w-full py-24 bg-surface-container-low border-y border-outline-variant/20 relative overflow-hidden">
-              <div className="absolute inset-0 opacity-5 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]"></div>
+              <div className="absolute inset-0 opacity-5 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px] pointer-events-none"></div>
               <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
 
               <div className="max-w-6xl mx-auto px-margin-mobile md:px-margin-page space-y-12">
