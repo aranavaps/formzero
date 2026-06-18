@@ -446,6 +446,8 @@ export default function Home() {
   const [clockSessionId, setClockSessionId] = useState("");
   const [policyUpdates, setPolicyUpdates] = useState<PolicyUpdate[]>([]);
   const [updatesFilter, setUpdatesFilter] = useState<"all" | "affects_me" | "new_programs">("all");
+  // Active comparison path tab
+  const [activeComparisonTab, setActiveComparisonTab] = useState("formzero");
 
   // Modals & Sub-views
   const [selectedAuditProgram, setSelectedAuditProgram] = useState<EligibilityProgramResult | null>(null);
@@ -1822,6 +1824,111 @@ export default function Home() {
         language: "spanish",
       },
     },
+    {
+      id: "senior",
+      name: "Low-income senior in PA",
+      nameEs: "Adulto mayor de bajos recursos en PA",
+      desc: "Focusing on SSI, prescriptions, and utility assistance",
+      descEs: "Enfoque en SSI, medicamentos y asistencia de servicios públicos",
+      val: "$3,200/year",
+      valEs: "$3,200/año",
+      icon: "elderly",
+      profile: {
+        state: "Pennsylvania",
+        household_size: "1",
+        monthly_income: "1100",
+        has_children: "false",
+        has_pregnant: "false",
+        has_elderly_or_disabled: "true",
+        is_student: "false",
+        immigration_status: "citizen",
+        language: "english",
+      },
+    },
+    {
+      id: "veteran",
+      name: "Disabled veteran in OH",
+      nameEs: "Veterano discapacitado en OH",
+      desc: "Focusing on VA pension supplement, property tax, and Lifeline",
+      descEs: "Enfoque en suplemento de pensión de VA, impuestos y Lifeline",
+      val: "$5,400/year",
+      valEs: "$5,400/año",
+      icon: "military_tech",
+      profile: {
+        state: "Ohio",
+        household_size: "2",
+        monthly_income: "1900",
+        has_children: "false",
+        has_pregnant: "false",
+        has_elderly_or_disabled: "true",
+        is_student: "false",
+        immigration_status: "citizen",
+        language: "english",
+      },
+    },
+    {
+      id: "worker",
+      name: "Gig worker in NY",
+      nameEs: "Trabajador de gig-economy en NY",
+      desc: "Focusing on ACA healthcare subsidies, EITC, and SNAP",
+      descEs: "Enfoque en subsidio de salud ACA, EITC y SNAP",
+      val: "$2,900/year",
+      valEs: "$2,900/año",
+      icon: "work",
+      profile: {
+        state: "New York",
+        household_size: "1",
+        monthly_income: "1400",
+        has_children: "false",
+        has_pregnant: "false",
+        has_elderly_or_disabled: "false",
+        is_student: "false",
+        immigration_status: "citizen",
+        language: "english",
+      },
+    },
+    {
+      id: "fastfood",
+      name: "Part-time helper in GA",
+      nameEs: "Trabajador de medio tiempo en GA",
+      desc: "Focusing on food stamps (SNAP), energy bills, and Medicaid",
+      descEs: "Enfoque en cupones de alimentos (SNAP), facturas de luz y Medicaid",
+      val: "$2,400/year",
+      valEs: "$2,400/año",
+      icon: "restaurant",
+      profile: {
+        state: "Georgia",
+        household_size: "1",
+        monthly_income: "950",
+        has_children: "false",
+        has_pregnant: "false",
+        has_elderly_or_disabled: "false",
+        is_student: "false",
+        immigration_status: "citizen",
+        language: "english",
+      },
+    },
+    {
+      id: "unemployed",
+      name: "Unemployed parent in FL",
+      nameEs: "Madre/padre desempleado en FL",
+      desc: "Focusing on TANF cash assistance, WIC, and local food assistance",
+      descEs: "Enfoque en ayuda en efectivo TANF, WIC y despensa de comida local",
+      val: "$4,800/year",
+      valEs: "$4,800/año",
+      icon: "child_care",
+      profile: {
+        state: "Florida",
+        household_size: "3",
+        monthly_income: "400",
+        has_children: "true",
+        has_pregnant: "false",
+        has_elderly_or_disabled: "false",
+        is_student: "false",
+        immigration_status: "citizen",
+        language: "english",
+      },
+    },
   ];
 
   // System status sentences for simulated discovery feed
@@ -1835,6 +1942,8 @@ export default function Home() {
     "Analyzing income statements & paystub verification pipelines...",
     "Reading regulatory guidelines for state Medicaid eligibility limits...",
   ];
+
+
 
   // Fetch Policy Updates from Next API
   useEffect(() => {
@@ -1971,12 +2080,6 @@ export default function Home() {
 
   // Handle preset profile selection
   function handleSelectPreset(preset: typeof presetProfiles[0]) {
-    // Auth gate: require login before using features
-    if (!currentUser) {
-      setIsSignUp(true);
-      setShowAuthModal(true);
-      return;
-    }
     const profileData = preset.profile;
     setLang(profileData.language === "spanish" ? "es" : "en");
     setProfileFacts(profileData);
@@ -2763,38 +2866,76 @@ export default function Home() {
               )}
 
               {/* Profile Bento Selector */}
-              <div className="w-full max-w-4xl mb-24">
-                <h2 className="font-headline-md text-headline-md text-primary text-center mb-8">
+              <div className="w-full max-w-full mb-24 flex flex-col items-center select-none overflow-hidden">
+                <h2 className="font-headline-md text-headline-md text-primary text-center mb-8 px-4">
                   {activeTranslations.profileHeader}
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {presetProfiles.map((p) => (
-                    <button
-                      key={p.id}
-                      onClick={() => handleSelectPreset(p)}
-                      className="glass-card p-6 rounded-xl text-left hover:bg-white/80 transition-all flex flex-col justify-between group cursor-pointer shadow-sm min-h-[180px]"
-                    >
-                      <div>
-                        <div className="w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform text-primary">
-                          <span className="material-symbols-outlined">{p.icon}</span>
-                        </div>
-                        <h3 className="font-bold text-body-lg text-primary mb-1">
-                          {lang === "es" ? p.nameEs : p.name}
-                        </h3>
-                        <p className="text-xs text-on-surface-variant leading-relaxed">
-                          {lang === "es" ? p.descEs : p.desc}
-                        </p>
-                      </div>
-                      <div className="mt-4 pt-4 border-t border-outline-variant/20 flex justify-between items-end">
-                        <span className="text-[10px] font-semibold text-on-surface-variant/60 uppercase tracking-wider">
-                          {activeTranslations.estimatedVal}
-                        </span>
-                        <span className="font-display-lg text-lg text-primary font-bold">
-                          {lang === "es" ? p.valEs : p.val}
-                        </span>
-                      </div>
-                    </button>
-                  ))}
+                
+                {/* Marquee container with fading mask */}
+                <div className="marquee-container w-full">
+                  <div className="marquee-track">
+                    {/* Render first group of presets */}
+                    <div className="flex gap-6 pr-6">
+                      {presetProfiles.map((p) => (
+                        <button
+                          key={`group1-${p.id}`}
+                          onClick={() => handleSelectPreset(p)}
+                          className="w-[280px] sm:w-[300px] flex-shrink-0 glass-card p-6 rounded-2xl text-left bg-white/95 border border-outline-variant/30 hover:border-primary shadow-sm hover:shadow-xl hover:scale-[1.03] transition-all flex flex-col justify-between group cursor-pointer min-h-[220px]"
+                        >
+                          <div>
+                            <div className="w-10 h-10 rounded-full bg-primary/5 text-primary flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-on-primary transition-all duration-300">
+                              <span className="material-symbols-outlined">{p.icon}</span>
+                            </div>
+                            <h3 className="font-bold text-body-lg text-primary mb-1">
+                              {lang === "es" ? p.nameEs : p.name}
+                            </h3>
+                            <p className="text-xs text-on-surface-variant leading-relaxed line-clamp-2">
+                              {lang === "es" ? p.descEs : p.desc}
+                            </p>
+                          </div>
+                          <div className="mt-4 pt-4 border-t border-outline-variant/20 flex justify-between items-end">
+                            <span className="text-[10px] font-semibold text-on-surface-variant/60 uppercase tracking-wider">
+                              {activeTranslations.estimatedVal}
+                            </span>
+                            <span className="font-display-lg text-lg text-primary font-bold">
+                              {lang === "es" ? p.valEs : p.val}
+                            </span>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Render identical second group of presets to create seamless loop */}
+                    <div className="flex gap-6 pr-6">
+                      {presetProfiles.map((p) => (
+                        <button
+                          key={`group2-${p.id}`}
+                          onClick={() => handleSelectPreset(p)}
+                          className="w-[280px] sm:w-[300px] flex-shrink-0 glass-card p-6 rounded-2xl text-left bg-white/95 border border-outline-variant/30 hover:border-primary shadow-sm hover:shadow-xl hover:scale-[1.03] transition-all flex flex-col justify-between group cursor-pointer min-h-[220px]"
+                        >
+                          <div>
+                            <div className="w-10 h-10 rounded-full bg-primary/5 text-primary flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-on-primary transition-all duration-300">
+                              <span className="material-symbols-outlined">{p.icon}</span>
+                            </div>
+                            <h3 className="font-bold text-body-lg text-primary mb-1">
+                              {lang === "es" ? p.nameEs : p.name}
+                            </h3>
+                            <p className="text-xs text-on-surface-variant leading-relaxed line-clamp-2">
+                              {lang === "es" ? p.descEs : p.desc}
+                            </p>
+                          </div>
+                          <div className="mt-4 pt-4 border-t border-outline-variant/20 flex justify-between items-end">
+                            <span className="text-[10px] font-semibold text-on-surface-variant/60 uppercase tracking-wider">
+                              {activeTranslations.estimatedVal}
+                            </span>
+                            <span className="font-display-lg text-lg text-primary font-bold">
+                              {lang === "es" ? p.valEs : p.val}
+                            </span>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -2846,70 +2987,311 @@ export default function Home() {
                   <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 px-4 py-1.5 rounded-full">
                     <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse"></span>
                     <span className="font-label-sm text-[10px] text-primary tracking-widest uppercase font-bold">
-                      AI Reasoning & Tech Fit
+                      Why FormZero is Different
                     </span>
                   </div>
                   <h2 className="font-display-lg text-4xl md:text-5xl font-bold tracking-tight text-primary">
-                    FormZero AI vs. Traditional Decision Trees
+                    How FormZero Helps You Claim Your Money
                   </h2>
                   <p className="font-body-lg text-body-md text-secondary leading-relaxed max-w-2xl mx-auto">
-                    Why does FormZero utilize NLP and RAG instead of a simpler rules-based eligibility screener? Here is why traditional decision trees fail to solve the eligibility crisis.
+                    Getting government aid is usually confusing and slow. Here is how we make the process simple, free, and reliable for you.
                   </p>
                 </header>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch mt-12">
-                  {/* Why Decision Trees Fail */}
-                  <div className="bg-white border border-red-500/20 hover:border-red-500/30 transition-all rounded-3xl p-8 md:p-10 flex flex-col justify-between space-y-8 shadow-xl">
-                    <div className="space-y-6">
-                      <div className="flex items-center gap-3 text-red-600 font-bold text-sm uppercase tracking-wider">
-                        <span className="material-symbols-outlined text-[20px] bg-red-500/10 p-2 rounded-xl">cancel</span>
-                        Traditional Rules-Based Screeners (Decision Trees)
+                {/* Interactive Path Tabs */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto mt-8">
+                  {/* Tab 1: Confusing Forms */}
+                  <button
+                    onClick={() => setActiveComparisonTab("forms")}
+                    className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col items-center justify-center gap-2 ${
+                      activeComparisonTab === "forms"
+                        ? "bg-red-500/10 border-red-500 text-red-600 shadow-md scale-[1.02]"
+                        : "bg-white border-outline-variant/30 text-on-surface-variant hover:border-red-500/30"
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-[24px]">cancel</span>
+                    <span className="font-bold text-xs sm:text-sm">Confusing Forms</span>
+                  </button>
+
+                  {/* Tab 2: Private Experts */}
+                  <button
+                    onClick={() => setActiveComparisonTab("experts")}
+                    className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col items-center justify-center gap-2 ${
+                      activeComparisonTab === "experts"
+                        ? "bg-amber-500/10 border-amber-500 text-amber-600 shadow-md scale-[1.02]"
+                        : "bg-white border-outline-variant/30 text-on-surface-variant hover:border-amber-500/30"
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-[24px]">payments</span>
+                    <span className="font-bold text-xs sm:text-sm">Private Experts</span>
+                  </button>
+
+                  {/* Tab 3: FormZero AI */}
+                  <button
+                    onClick={() => setActiveComparisonTab("formzero")}
+                    className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col items-center justify-center gap-2 ${
+                      activeComparisonTab === "formzero"
+                        ? "bg-emerald-500/10 border-emerald-500 text-emerald-600 shadow-md scale-[1.02]"
+                        : "bg-white border-outline-variant/30 text-on-surface-variant hover:border-emerald-500/30"
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-[24px]">check_circle</span>
+                    <span className="font-bold text-xs sm:text-sm">FormZero Smart AI</span>
+                  </button>
+
+                  {/* Tab 4: Caseworker Backing */}
+                  <button
+                    onClick={() => setActiveComparisonTab("caseworker")}
+                    className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col items-center justify-center gap-2 ${
+                      activeComparisonTab === "caseworker"
+                        ? "bg-blue-500/10 border-blue-500 text-blue-600 shadow-md scale-[1.02]"
+                        : "bg-white border-outline-variant/30 text-on-surface-variant hover:border-blue-500/30"
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-[24px]">support_agent</span>
+                    <span className="font-bold text-xs sm:text-sm">Caseworker Check</span>
+                  </button>
+                </div>
+
+                {/* Details Board */}
+                <div className="bg-white border border-outline-variant/20 rounded-3xl p-6 md:p-10 shadow-2xl max-w-4xl mx-auto min-h-[380px] flex flex-col lg:flex-row gap-8 items-center justify-between transition-all duration-300">
+                  {/* Left Side: Stats & Text */}
+                  <div className="flex-1 space-y-6 w-full">
+                    {activeComparisonTab === "forms" && (
+                      <div className="space-y-4 animate-fade-in">
+                        <h3 className="text-xl font-bold text-red-600 flex items-center gap-2">
+                          <span className="material-symbols-outlined">cancel</span>
+                          Confusing Official Forms
+                        </h3>
+                        <p className="text-sm text-on-surface-variant leading-relaxed">
+                          Trying to use standard government web portals or paper applications is stressful and difficult. One simple mistake can cause months of delay or immediate rejection.
+                        </p>
+                        <div className="grid grid-cols-3 gap-4 pt-2">
+                          <div className="bg-red-500/5 p-3 rounded-xl border border-red-500/10 text-center">
+                            <div className="text-[10px] text-red-600 uppercase font-bold tracking-wider">Cost</div>
+                            <div className="font-bold text-base text-primary">Free</div>
+                          </div>
+                          <div className="bg-red-500/5 p-3 rounded-xl border border-red-500/10 text-center">
+                            <div className="text-[10px] text-red-600 uppercase font-bold tracking-wider">Time</div>
+                            <div className="font-bold text-base text-primary">3-5 Hours</div>
+                          </div>
+                          <div className="bg-red-500/5 p-3 rounded-xl border border-red-500/10 text-center">
+                            <div className="text-[10px] text-red-600 uppercase font-bold tracking-wider">Chance of Error</div>
+                            <div className="font-bold text-base text-red-600">Very High</div>
+                          </div>
+                        </div>
+                        <ul className="space-y-2.5 text-xs text-on-surface-variant list-disc pl-4 pt-2">
+                          <li>Must know complicated legal words and rules.</li>
+                          <li>Must calculate your own household math exactly.</li>
+                          <li>If you are rejected, you are not told why.</li>
+                        </ul>
                       </div>
-                      <ul className="space-y-4 text-xs text-on-surface-variant leading-relaxed list-disc pl-4">
-                        <li>
-                          <strong className="text-primary">Rigid Form Inputs:</strong> Requires users to know exact legal thresholds and answer static dropdown questions. It fails completely under colloquial human expressions (e.g. "I do freelance yard work" won't match a rigid self-employed gross income box).
-                        </li>
-                        <li>
-                          <strong className="text-primary">Combinatorial Rules Explosion:</strong> Hard-coding rules for every intersection of household size, regional county limits, student exemptions, and immigration parameters across 10+ programs results in unmaintainable code trees that easily break.
-                        </li>
-                        <li>
-                          <strong className="text-white">Fragility to Policy Modifications:</strong> Minor shifts in state welfare rules (e.g., expanding SNAP to student groups) require full redevelopment and code updates, making systems highly fragile.
-                        </li>
-                        <li>
-                          <strong className="text-primary">Opaque "Black-Box" Outputs:</strong> Displays eligibility results as a flat yes/no with zero direct references to source legal texts, raising user skepticism.
-                        </li>
-                      </ul>
-                    </div>
-                    <div className="text-[10px] font-mono text-red-700 bg-red-500/10 p-4 rounded-2xl border border-red-500/10">
-                      FAIL STATE: Fragile, high maintenance, and unyielding to unstructured human stories.
-                    </div>
+                    )}
+
+                    {activeComparisonTab === "experts" && (
+                      <div className="space-y-4 animate-fade-in">
+                        <h3 className="text-xl font-bold text-amber-600 flex items-center gap-2">
+                          <span className="material-symbols-outlined">payments</span>
+                          Hiring Private Experts
+                        </h3>
+                        <p className="text-sm text-on-surface-variant leading-relaxed">
+                          Hiring a lawyer or application assistant to do the work for you is expensive. Low-income families who need help the most are priced out.
+                        </p>
+                        <div className="grid grid-cols-3 gap-4 pt-2">
+                          <div className="bg-amber-500/5 p-3 rounded-xl border border-amber-500/10 text-center">
+                            <div className="text-[10px] text-amber-600 uppercase font-bold tracking-wider">Cost</div>
+                            <div className="font-bold text-base text-amber-600">$150 - $400</div>
+                          </div>
+                          <div className="bg-amber-500/5 p-3 rounded-xl border border-amber-500/10 text-center">
+                            <div className="text-[10px] text-amber-600 uppercase font-bold tracking-wider">Time</div>
+                            <div className="font-bold text-base text-primary">2-3 Weeks</div>
+                          </div>
+                          <div className="bg-amber-500/5 p-3 rounded-xl border border-amber-500/10 text-center">
+                            <div className="text-[10px] text-amber-600 uppercase font-bold tracking-wider">Chance of Error</div>
+                            <div className="font-bold text-base text-primary">Low</div>
+                          </div>
+                        </div>
+                        <ul className="space-y-2.5 text-xs text-on-surface-variant list-disc pl-4 pt-2">
+                          <li>Costs hundreds of dollars before you get any cash.</li>
+                          <li>Requires waiting for appointments and call-backs.</li>
+                          <li>Hard for ordinary people to afford.</li>
+                        </ul>
+                      </div>
+                    )}
+
+                    {activeComparisonTab === "formzero" && (
+                      <div className="space-y-4 animate-fade-in">
+                        <h3 className="text-xl font-bold text-emerald-600 flex items-center gap-2">
+                          <span className="material-symbols-outlined">check_circle</span>
+                          FormZero Smart AI
+                        </h3>
+                        <p className="text-sm text-on-surface-variant leading-relaxed">
+                          Our automated system does the complex reading and math for you instantly. Just talk or type in normal words, and we find your matching benefits.
+                        </p>
+                        <div className="grid grid-cols-3 gap-4 pt-2">
+                          <div className="bg-emerald-500/5 p-3 rounded-xl border border-emerald-500/10 text-center">
+                            <div className="text-[10px] text-emerald-600 uppercase font-bold tracking-wider">Cost</div>
+                            <div className="font-bold text-base text-emerald-600">100% Free</div>
+                          </div>
+                          <div className="bg-emerald-500/5 p-3 rounded-xl border border-emerald-500/10 text-center">
+                            <div className="text-[10px] text-emerald-600 uppercase font-bold tracking-wider">Time</div>
+                            <div className="font-bold text-base text-emerald-600">2 Seconds</div>
+                          </div>
+                          <div className="bg-emerald-500/5 p-3 rounded-xl border border-emerald-500/10 text-center">
+                            <div className="text-[10px] text-emerald-600 uppercase font-bold tracking-wider">Chance of Error</div>
+                            <div className="font-bold text-base text-emerald-600">None</div>
+                          </div>
+                        </div>
+                        <ul className="space-y-2.5 text-xs text-on-surface-variant list-disc pl-4 pt-2">
+                          <li>Speak naturally like talking to a friend.</li>
+                          <li>Checks thousands of official rules instantly.</li>
+                          <li>Shows exact proof from official documents.</li>
+                        </ul>
+                      </div>
+                    )}
+
+                    {activeComparisonTab === "caseworker" && (
+                      <div className="space-y-4 animate-fade-in">
+                        <h3 className="text-xl font-bold text-blue-600 flex items-center gap-2">
+                          <span className="material-symbols-outlined">support_agent</span>
+                          Caseworker Verification
+                        </h3>
+                        <p className="text-sm text-on-surface-variant leading-relaxed">
+                          If your case is complex or requires extra help, we connect you to real local legal aid groups who verify your profile and help submit the forms for free.
+                        </p>
+                        <div className="grid grid-cols-3 gap-4 pt-2">
+                          <div className="bg-blue-500/5 p-3 rounded-xl border border-blue-500/10 text-center">
+                            <div className="text-[10px] text-blue-600 uppercase font-bold tracking-wider">Cost</div>
+                            <div className="font-bold text-base text-blue-600">Free</div>
+                          </div>
+                          <div className="bg-blue-500/5 p-3 rounded-xl border border-blue-500/10 text-center">
+                            <div className="text-[10px] text-blue-600 uppercase font-bold tracking-wider">Time</div>
+                            <div className="font-bold text-base text-primary">1-2 Days</div>
+                          </div>
+                          <div className="bg-blue-500/5 p-3 rounded-xl border border-blue-500/10 text-center">
+                            <div className="text-[10px] text-blue-600 uppercase font-bold tracking-wider">Chance of Error</div>
+                            <div className="font-bold text-base text-emerald-600">None</div>
+                          </div>
+                        </div>
+                        <ul className="space-y-2.5 text-xs text-on-surface-variant list-disc pl-4 pt-2">
+                          <li>Real human experts double-check your claims.</li>
+                          <li>Matches you with free legal aid organizations nearby.</li>
+                          <li>Step-by-step guidance on signing and submitting.</li>
+                        </ul>
+                      </div>
+                    )}
                   </div>
 
-                  {/* How FormZero AI Wins */}
-                  <div className="bg-white border border-emerald-500/20 hover:border-emerald-500/30 transition-all rounded-3xl p-8 md:p-10 flex flex-col justify-between space-y-8 shadow-xl">
-                    <div className="space-y-6">
-                      <div className="flex items-center gap-3 text-emerald-600 font-bold text-sm uppercase tracking-wider">
-                        <span className="material-symbols-outlined text-[20px] bg-emerald-500/10 p-2 rounded-xl">check_circle</span>
-                        FormZero AI Architecture (NLP + RAG)
+                  {/* Right Side: Interactive Layout Mockups */}
+                  <div className="w-full lg:w-[320px] h-[260px] rounded-2xl bg-surface-container/50 border border-outline-variant/30 flex items-center justify-center p-6 relative overflow-hidden shadow-inner shrink-0">
+                    
+                    {/* Visual mockup for Confusing Forms */}
+                    {activeComparisonTab === "forms" && (
+                      <div className="w-full space-y-3 animate-fade-in">
+                        <div className="text-[10px] font-mono text-red-600 bg-red-500/5 border border-red-500/10 px-2.5 py-1 rounded-md uppercase font-bold tracking-widest text-center w-max mx-auto">
+                          Official Site Portal
+                        </div>
+                        <div className="space-y-2 bg-white p-4 rounded-xl border border-outline-variant/30 shadow-sm relative">
+                          <div className="h-3 bg-neutral-200 rounded w-2/3"></div>
+                          <div className="h-2 bg-neutral-100 rounded w-full"></div>
+                          <div className="h-6 bg-neutral-50 rounded border border-neutral-200 flex items-center px-2 text-[8px] text-neutral-400">
+                            Select Eligibility Code (e.g. 1040-ES SEC 4)...
+                          </div>
+                          <div className="h-6 bg-neutral-50 rounded border border-neutral-200 flex items-center px-2 text-[8px] text-neutral-400">
+                            Household Gross Adjusted Annual Income ($)...
+                          </div>
+                          <div className="absolute inset-0 bg-red-500/5 backdrop-blur-[1px] flex items-center justify-center rounded-xl">
+                            <div className="bg-red-600 text-white font-bold text-xs uppercase tracking-widest px-4 py-2 rounded-lg border-2 border-white shadow-lg rotate-12">
+                              REJECTED
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-[9px] text-center text-red-600 font-semibold">
+                          Reason: Wrong income bracket entered.
+                        </div>
                       </div>
-                      <ul className="space-y-4 text-xs text-on-surface-variant leading-relaxed list-disc pl-4">
-                        <li>
-                          <strong className="text-primary">Semantic Elasticity:</strong> NLP extracts household facts directly from natural human storytelling (spoken or typed). Users describe their lives in plain words, and the AI maps it to eligibility parameters.
-                        </li>
-                        <li>
-                          <strong className="text-primary">Scalable RAG Vector Store:</strong> RAG indexes raw PDF eligibility codes and state policy manuals. Instead of writing code branches, new policy manuals are simply ingested into the vector database, instantly updating the rules engine.
-                        </li>
-                        <li>
-                          <strong className="text-primary">Conversational Clarification:</strong> The AI agent detects profile contradictions in real-time (e.g. claiming no monthly income but having college student expenses) and guides the user through resolution.
-                        </li>
-                        <li>
-                          <strong className="text-primary">Grounded Audit Citations:</strong> The Hallucination Audit Ledger links every eligibility finding directly to direct legal citations, highlighting source PDFs to assure trust.
-                        </li>
-                      </ul>
-                    </div>
-                    <div className="text-[10px] font-mono text-emerald-700 bg-emerald-500/10 p-4 rounded-2xl border border-emerald-500/10">
-                      SUCCESS STATE: Resilient, semantically aware, and grounded in auditable administrative truth.
-                    </div>
+                    )}
+
+                    {/* Visual mockup for Private Experts */}
+                    {activeComparisonTab === "experts" && (
+                      <div className="w-full space-y-3 animate-fade-in">
+                        <div className="text-[10px] font-mono text-amber-600 bg-amber-500/5 border border-amber-500/10 px-2.5 py-1 rounded-md uppercase font-bold tracking-widest text-center w-max mx-auto">
+                          Consultant Bill
+                        </div>
+                        <div className="bg-white p-4 rounded-xl border border-outline-variant/30 shadow-sm space-y-2 text-xs">
+                          <div className="flex justify-between border-b pb-2 text-[10px]">
+                            <span className="font-semibold text-primary">Item</span>
+                            <span className="font-semibold text-primary">Cost</span>
+                          </div>
+                          <div className="flex justify-between text-[9px]">
+                            <span>Consultation Fee</span>
+                            <span className="font-bold text-primary">$150.00</span>
+                          </div>
+                          <div className="flex justify-between text-[9px]">
+                            <span>Form Assistance</span>
+                            <span className="font-bold text-primary">$200.00</span>
+                          </div>
+                          <div className="flex justify-between border-t pt-2 font-bold text-amber-600 text-[10px]">
+                            <span>Total Due</span>
+                            <span>$350.00</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-center gap-1.5 text-[10px] text-on-surface-variant">
+                          <span className="material-symbols-outlined text-[14px] animate-spin">schedule</span>
+                          Waiting time: 3 weeks
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Visual mockup for FormZero AI */}
+                    {activeComparisonTab === "formzero" && (
+                      <div className="w-full space-y-3 animate-fade-in">
+                        <div className="text-[10px] font-mono text-emerald-600 bg-emerald-500/5 border border-emerald-500/10 px-2.5 py-1 rounded-md uppercase font-bold tracking-widest text-center w-max mx-auto">
+                          FormZero Chat
+                        </div>
+                        <div className="space-y-3">
+                          {/* User message */}
+                          <div className="flex justify-end">
+                            <div className="bg-primary text-on-primary text-[10px] px-3.5 py-2 rounded-2xl rounded-tr-none max-w-[85%] shadow-sm">
+                              I do part-time yard helper work and make $950/month in GA.
+                            </div>
+                          </div>
+                          {/* AI message */}
+                          <div className="flex justify-start">
+                            <div className="bg-white border border-outline-variant/30 text-[10px] px-3.5 py-2 rounded-2xl rounded-tl-none max-w-[85%] shadow-sm text-primary flex items-start gap-2">
+                              <span className="material-symbols-outlined text-emerald-500 text-[16px] shrink-0">check_circle</span>
+                              <div>
+                                <div className="font-bold">You qualify for SNAP!</div>
+                                <div className="text-[9px] text-on-surface-variant font-medium mt-0.5">Estimated: $2,400/year</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Visual mockup for Caseworker Verification */}
+                    {activeComparisonTab === "caseworker" && (
+                      <div className="w-full space-y-3 animate-fade-in">
+                        <div className="text-[10px] font-mono text-blue-600 bg-blue-500/5 border border-blue-500/10 px-2.5 py-1 rounded-md uppercase font-bold tracking-widest text-center w-max mx-auto">
+                          Human Review
+                        </div>
+                        <div className="bg-white p-4 rounded-xl border border-outline-variant/30 shadow-sm flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shrink-0 font-bold text-sm">
+                            JD
+                          </div>
+                          <div className="space-y-0.5">
+                            <div className="text-[10px] font-bold text-primary">Legal Aid Partner</div>
+                            <p className="text-[9px] text-on-surface-variant italic leading-snug">
+                              "Hi! I reviewed your Georgia application, everything is correct. Let's submit it!"
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-[9px] text-center text-blue-600 font-semibold bg-blue-500/5 py-1 rounded-lg border border-blue-500/10 font-bold">
+                          Status: Verified & Ready
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
