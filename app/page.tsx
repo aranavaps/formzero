@@ -4536,7 +4536,7 @@ export default function Home() {
                       {/* Document Status Breakdown List */}
                       <div className="space-y-3">
                         <div className="flex items-center justify-between font-bold text-xs text-on-surface">
-                          <span>{lang === "es" ? "Listo para Enviar" : "Ready to Submit"}</span>
+                          <span>{lang === "es" ? "Probablemente Disponible" : "Likely Available"}</span>
                           <span className="text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-full text-[10px]">
                             {likelyHaveDocs} {lang === "es" ? "docs" : "docs"} ({preparednessPercentage}%)
                           </span>
@@ -4552,7 +4552,7 @@ export default function Home() {
                         <div className="grid grid-cols-3 gap-2 text-[10px] text-on-surface-variant font-semibold pt-1">
                           <div className="flex items-center gap-1.5 justify-center py-1 bg-emerald-50/50 border border-emerald-100 rounded">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                            <span>{likelyHaveDocs} {lang === "es" ? "Listo" : "Ready"}</span>
+                            <span>{likelyHaveDocs} {lang === "es" ? "Probable" : "Likely Have"}</span>
                           </div>
                           <div className="flex items-center gap-1.5 justify-center py-1 bg-amber-50/50 border border-amber-100 rounded">
                             <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
@@ -4608,8 +4608,8 @@ export default function Home() {
                             </span>
                             <span>
                               {lang === "es" 
-                                ? `${likelyHaveDocs} de ${totalDocs} documentos listos` 
-                                : `${likelyHaveDocs} of ${totalDocs} documents ready`}
+                                ? `${likelyHaveDocs} de ${totalDocs} documentos probables` 
+                                : `${likelyHaveDocs} of ${totalDocs} documents likely available`}
                             </span>
                           </li>
                         </ul>
