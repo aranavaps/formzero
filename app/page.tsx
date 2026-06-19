@@ -4521,12 +4521,23 @@ export default function Home() {
                                 <div className="shrink-0 flex items-center justify-end">
                                   {doc.status === "likely_have" ? (
                                     <span className="text-[9px] font-bold text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full uppercase tracking-wider">
-                                      {activeTranslations.verified}
+                                      {activeTranslations.likelyHave}
                                     </span>
                                   ) : doc.status === "need_to_gather" ? (
-                                    <button className="text-primary font-bold text-xs hover:underline cursor-pointer">
-                                      {activeTranslations.obtain}
-                                    </button>
+                                    doc.obtain_url ? (
+                                      <a
+                                        href={doc.obtain_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-primary font-bold text-xs hover:underline cursor-pointer"
+                                      >
+                                        {activeTranslations.obtain}
+                                      </a>
+                                    ) : (
+                                      <button className="text-primary font-bold text-xs hover:underline cursor-pointer">
+                                        {activeTranslations.obtain}
+                                      </button>
+                                    )
                                   ) : (
                                     <button className="text-error font-bold text-xs underline hover:opacity-80 transition-opacity cursor-pointer">
                                       {activeTranslations.uploadNow}
