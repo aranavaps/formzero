@@ -46,6 +46,10 @@
   --color-surface-dim: #ddd9d8;
   --color-surface-bright: #faf8f5;
   --color-on-primary-fixed: #202327;
+
+  --spacing-margin-mobile: 1.25rem;
+  --spacing-margin-page: 2rem;
+  --spacing-container-max: 80rem;
 }
 
 :root {
@@ -260,8 +264,15 @@ details > summary::-webkit-details-marker { display: none; }
   overflow: hidden;
   position: relative;
   padding: 16px 0;
-  mask-image: linear-gradient(to right, transparent, white 10%, white 90%, transparent);
-  -webkit-mask-image: linear-gradient(to right, transparent, white 10%, white 90%, transparent);
+  mask-image: linear-gradient(to right, transparent, white 2%, white 98%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, white 2%, white 98%, transparent);
+}
+
+@media (min-width: 768px) {
+  .marquee-container {
+    mask-image: linear-gradient(to right, transparent, white 10%, white 90%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, white 10%, white 90%, transparent);
+  }
 }
 
 .marquee-track {

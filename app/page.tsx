@@ -2667,7 +2667,7 @@ export default function Home() {
       {/* 1. TOP NAVBAR */}
       <nav className="bg-background/80 backdrop-blur-xl border-b border-outline-variant/20 sticky top-0 z-40">
         <div className="flex justify-between items-center px-margin-mobile md:px-margin-page py-4 w-full max-w-container-max mx-auto">
-          <button onClick={() => setActiveView("landing")} className="font-display-lg text-2xl font-bold tracking-tight text-primary cursor-pointer select-none py-1.5 px-3 -ml-3 rounded-xl hover:bg-surface-container/20">
+          <button onClick={() => setActiveView("landing")} className="font-display-lg text-2xl font-bold tracking-tight text-primary cursor-pointer select-none py-1.5 px-3 rounded-xl hover:bg-surface-container/20">
             FormZero
           </button>
           
@@ -2869,7 +2869,7 @@ export default function Home() {
                   <span className="material-symbols-outlined text-primary text-2xl mb-1">local_dining</span>
                   <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">USDA SNAP</p>
                 </div>
-                <div className="floating-card top-[8%] right-[8%] rotate-[2deg]">
+                <div className="floating-card top-[12%] right-[8%] rotate-[2deg]">
                   <span className="material-symbols-outlined text-primary text-2xl mb-1">school</span>
                   <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">Pell Grant</p>
                 </div>
@@ -2884,7 +2884,10 @@ export default function Home() {
               </div>
 
               {/* Title & Headline */}
-              <h1 className="font-display-lg text-display-lg-mobile md:text-display-lg text-primary text-center max-w-4xl mb-6">
+              <h1 
+                className="font-display-lg text-4xl md:text-5xl text-primary text-center max-w-4xl mb-6 tracking-tight leading-tight"
+                style={{ fontWeight: 700 }}
+              >
                 {activeTranslations.tagline}
               </h1>
               <p className="font-body-lg text-body-lg text-on-surface-variant text-center max-w-2xl mb-12">
@@ -3069,14 +3072,16 @@ export default function Home() {
                   <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 px-4 py-1.5 rounded-full">
                     <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse"></span>
                     <span className="font-label-sm text-[10px] text-primary tracking-widest uppercase font-bold">
-                      Why FormZero is Different
+                      {lang === "es" ? "Por qué FormZero es diferente" : "Why FormZero is Different"}
                     </span>
                   </div>
                   <h2 className="font-display-lg text-4xl md:text-5xl font-bold tracking-tight text-primary">
-                    How FormZero Helps You Claim Your Money
+                    {lang === "es" ? "Cómo FormZero le ayuda a reclamar su dinero" : "How FormZero Helps You Claim Your Money"}
                   </h2>
                   <p className="font-body-lg text-body-md text-secondary leading-relaxed max-w-2xl mx-auto">
-                    Getting government aid is usually confusing and slow. Here is how we make the process simple, free, and reliable for you.
+                    {lang === "es"
+                      ? "Obtener ayuda del gobierno suele ser confuso y lento. Así es como hacemos el proceso simple, gratuito y confiable para usted."
+                      : "Getting government aid is usually confusing and slow. Here is how we make the process simple, free, and reliable for you."}
                   </p>
                 </header>
 
@@ -3092,7 +3097,7 @@ export default function Home() {
                     }`}
                   >
                     <span className="material-symbols-outlined text-[24px]">cancel</span>
-                    <span className="font-bold text-xs sm:text-sm">Confusing Forms</span>
+                    <span className="font-bold text-xs sm:text-sm">{lang === "es" ? "Formularios confusos" : "Confusing Forms"}</span>
                   </button>
 
                   {/* Tab 2: Private Experts */}
@@ -3105,7 +3110,7 @@ export default function Home() {
                     }`}
                   >
                     <span className="material-symbols-outlined text-[24px]">payments</span>
-                    <span className="font-bold text-xs sm:text-sm">Private Experts</span>
+                    <span className="font-bold text-xs sm:text-sm">{lang === "es" ? "Expertos privados" : "Private Experts"}</span>
                   </button>
 
                   {/* Tab 3: FormZero AI */}
@@ -3118,7 +3123,7 @@ export default function Home() {
                     }`}
                   >
                     <span className="material-symbols-outlined text-[24px]">check_circle</span>
-                    <span className="font-bold text-xs sm:text-sm">FormZero Smart AI</span>
+                    <span className="font-bold text-xs sm:text-sm">{lang === "es" ? "IA inteligente FormZero" : "FormZero Smart AI"}</span>
                   </button>
 
                   {/* Tab 4: Caseworker Backing */}
@@ -3131,7 +3136,7 @@ export default function Home() {
                     }`}
                   >
                     <span className="material-symbols-outlined text-[24px]">support_agent</span>
-                    <span className="font-bold text-xs sm:text-sm">Caseworker Check</span>
+                    <span className="font-bold text-xs sm:text-sm">{lang === "es" ? "Control de Asistente" : "Caseworker Check"}</span>
                   </button>
                 </div>
 
@@ -3143,29 +3148,31 @@ export default function Home() {
                       <div className="space-y-4 animate-fade-in">
                         <h3 className="text-xl font-bold text-red-600 flex items-center gap-2">
                           <span className="material-symbols-outlined">cancel</span>
-                          Confusing Official Forms
+                          {lang === "es" ? "Formularios Oficiales Confusos" : "Confusing Official Forms"}
                         </h3>
                         <p className="text-sm text-on-surface-variant leading-relaxed">
-                          Trying to use standard government web portals or paper applications is stressful and difficult. One simple mistake can cause months of delay or immediate rejection.
+                          {lang === "es"
+                            ? "Intentar usar los portales web oficiales del gobierno o solicitudes en papel es estresante y difícil. Un simple error puede causar meses de retraso o el rechazo inmediato."
+                            : "Trying to use standard government web portals or paper applications is stressful and difficult. One simple mistake can cause months of delay or immediate rejection."}
                         </p>
-                        <div className="grid grid-cols-3 gap-4 pt-2">
-                          <div className="bg-red-500/5 p-3 rounded-xl border border-red-500/10 text-center">
-                            <div className="text-[10px] text-red-600 uppercase font-bold tracking-wider">Cost</div>
-                            <div className="font-bold text-base text-primary">Free</div>
+                        <div className="grid grid-cols-3 gap-2 sm:gap-4 pt-2">
+                          <div className="bg-red-500/5 p-2 sm:p-3 rounded-xl border border-red-500/10 text-center">
+                            <div className="text-[8px] sm:text-[10px] text-red-600 uppercase font-bold tracking-wider">{lang === "es" ? "Costo" : "Cost"}</div>
+                            <div className="font-bold text-xs sm:text-base text-primary">{lang === "es" ? "Gratis" : "Free"}</div>
                           </div>
-                          <div className="bg-red-500/5 p-3 rounded-xl border border-red-500/10 text-center">
-                            <div className="text-[10px] text-red-600 uppercase font-bold tracking-wider">Time</div>
-                            <div className="font-bold text-base text-primary">3-5 Hours</div>
+                          <div className="bg-red-500/5 p-2 sm:p-3 rounded-xl border border-red-500/10 text-center">
+                            <div className="text-[8px] sm:text-[10px] text-red-600 uppercase font-bold tracking-wider">{lang === "es" ? "Tiempo" : "Time"}</div>
+                            <div className="font-bold text-xs sm:text-base text-primary">{lang === "es" ? "3-5 Horas" : "3-5 Hours"}</div>
                           </div>
-                          <div className="bg-red-500/5 p-3 rounded-xl border border-red-500/10 text-center">
-                            <div className="text-[10px] text-red-600 uppercase font-bold tracking-wider">Chance of Error</div>
-                            <div className="font-bold text-base text-red-600">Very High</div>
+                          <div className="bg-red-500/5 p-2 sm:p-3 rounded-xl border border-red-500/10 text-center">
+                            <div className="text-[8px] sm:text-[10px] text-red-600 uppercase font-bold tracking-wider">{lang === "es" ? "Riesgo" : "Chance of Error"}</div>
+                            <div className="font-bold text-xs sm:text-base text-red-600">{lang === "es" ? "Muy Alto" : "Very High"}</div>
                           </div>
                         </div>
                         <ul className="space-y-2.5 text-xs text-on-surface-variant list-disc pl-4 pt-2">
-                          <li>Must know complicated legal words and rules.</li>
-                          <li>Must calculate your own household math exactly.</li>
-                          <li>If you are rejected, you are not told why.</li>
+                          <li>{lang === "es" ? "Debe conocer reglas y términos legales complicados." : "Must know complicated legal words and rules."}</li>
+                          <li>{lang === "es" ? "Debe calcular los números de su hogar exactamente." : "Must calculate your own household math exactly."}</li>
+                          <li>{lang === "es" ? "Si es rechazado, no se le explica el motivo." : "If you are rejected, you are not told why."}</li>
                         </ul>
                       </div>
                     )}
@@ -3174,29 +3181,31 @@ export default function Home() {
                       <div className="space-y-4 animate-fade-in">
                         <h3 className="text-xl font-bold text-amber-600 flex items-center gap-2">
                           <span className="material-symbols-outlined">payments</span>
-                          Hiring Private Experts
+                          {lang === "es" ? "Contratar Expertos Privados" : "Hiring Private Experts"}
                         </h3>
                         <p className="text-sm text-on-surface-variant leading-relaxed">
-                          Hiring a lawyer or application assistant to do the work for you is expensive. Low-income families who need help the most are priced out.
+                          {lang === "es"
+                            ? "Contratar a un abogado o asistente de solicitudes para que haga el trabajo por usted es costoso. Las familias de bajos ingresos que más necesitan ayuda quedan excluidas."
+                            : "Hiring a lawyer or application assistant to do the work for you is expensive. Low-income families who need help the most are priced out."}
                         </p>
-                        <div className="grid grid-cols-3 gap-4 pt-2">
-                          <div className="bg-amber-500/5 p-3 rounded-xl border border-amber-500/10 text-center">
-                            <div className="text-[10px] text-amber-600 uppercase font-bold tracking-wider">Cost</div>
-                            <div className="font-bold text-base text-amber-600">$150 - $400</div>
+                        <div className="grid grid-cols-3 gap-2 sm:gap-4 pt-2">
+                          <div className="bg-amber-500/5 p-2 sm:p-3 rounded-xl border border-amber-500/10 text-center">
+                            <div className="text-[8px] sm:text-[10px] text-amber-600 uppercase font-bold tracking-wider">{lang === "es" ? "Costo" : "Cost"}</div>
+                            <div className="font-bold text-xs sm:text-base text-amber-600">$150 - $400</div>
                           </div>
-                          <div className="bg-amber-500/5 p-3 rounded-xl border border-amber-500/10 text-center">
-                            <div className="text-[10px] text-amber-600 uppercase font-bold tracking-wider">Time</div>
-                            <div className="font-bold text-base text-primary">2-3 Weeks</div>
+                          <div className="bg-amber-500/5 p-2 sm:p-3 rounded-xl border border-amber-500/10 text-center">
+                            <div className="text-[8px] sm:text-[10px] text-amber-600 uppercase font-bold tracking-wider">{lang === "es" ? "Tiempo" : "Time"}</div>
+                            <div className="font-bold text-xs sm:text-base text-primary">{lang === "es" ? "2-3 Semanas" : "2-3 Weeks"}</div>
                           </div>
-                          <div className="bg-amber-500/5 p-3 rounded-xl border border-amber-500/10 text-center">
-                            <div className="text-[10px] text-amber-600 uppercase font-bold tracking-wider">Chance of Error</div>
-                            <div className="font-bold text-base text-primary">Low</div>
+                          <div className="bg-amber-500/5 p-2 sm:p-3 rounded-xl border border-amber-500/10 text-center">
+                            <div className="text-[8px] sm:text-[10px] text-amber-600 uppercase font-bold tracking-wider">{lang === "es" ? "Riesgo" : "Chance of Error"}</div>
+                            <div className="font-bold text-xs sm:text-base text-primary">{lang === "es" ? "Bajo" : "Low"}</div>
                           </div>
                         </div>
                         <ul className="space-y-2.5 text-xs text-on-surface-variant list-disc pl-4 pt-2">
-                          <li>Costs hundreds of dollars before you get any cash.</li>
-                          <li>Requires waiting for appointments and call-backs.</li>
-                          <li>Hard for ordinary people to afford.</li>
+                          <li>{lang === "es" ? "Cuesta cientos de dólares antes de recibir dinero." : "Costs hundreds of dollars before you get any cash."}</li>
+                          <li>{lang === "es" ? "Requiere esperar citas y llamadas de seguimiento." : "Requires waiting for appointments and call-backs."}</li>
+                          <li>{lang === "es" ? "Es difícil de pagar para la gente común." : "Hard for ordinary people to afford."}</li>
                         </ul>
                       </div>
                     )}
@@ -3205,29 +3214,31 @@ export default function Home() {
                       <div className="space-y-4 animate-fade-in">
                         <h3 className="text-xl font-bold text-emerald-600 flex items-center gap-2">
                           <span className="material-symbols-outlined">check_circle</span>
-                          FormZero Smart AI
+                          {lang === "es" ? "IA Inteligente FormZero" : "FormZero Smart AI"}
                         </h3>
                         <p className="text-sm text-on-surface-variant leading-relaxed">
-                          Our automated system does the complex reading and math for you instantly. Just talk or type in normal words, and we find your matching benefits.
+                          {lang === "es"
+                            ? "Nuestro sistema automatizado hace la lectura compleja y las matemáticas por usted al instante. Solo hable o escriba con palabras normales, y encontraremos sus beneficios."
+                            : "Our automated system does the complex reading and math for you instantly. Just talk or type in normal words, and we find your matching benefits."}
                         </p>
-                        <div className="grid grid-cols-3 gap-4 pt-2">
-                          <div className="bg-emerald-500/5 p-3 rounded-xl border border-emerald-500/10 text-center">
-                            <div className="text-[10px] text-emerald-600 uppercase font-bold tracking-wider">Cost</div>
-                            <div className="font-bold text-base text-emerald-600">100% Free</div>
+                        <div className="grid grid-cols-3 gap-2 sm:gap-4 pt-2">
+                          <div className="bg-emerald-500/5 p-2 sm:p-3 rounded-xl border border-emerald-500/10 text-center">
+                            <div className="text-[8px] sm:text-[10px] text-emerald-600 uppercase font-bold tracking-wider">{lang === "es" ? "Costo" : "Cost"}</div>
+                            <div className="font-bold text-xs sm:text-base text-emerald-600">{lang === "es" ? "100% Gratis" : "100% Free"}</div>
                           </div>
-                          <div className="bg-emerald-500/5 p-3 rounded-xl border border-emerald-500/10 text-center">
-                            <div className="text-[10px] text-emerald-600 uppercase font-bold tracking-wider">Time</div>
-                            <div className="font-bold text-base text-emerald-600">2 Seconds</div>
+                          <div className="bg-emerald-500/5 p-2 sm:p-3 rounded-xl border border-emerald-500/10 text-center">
+                            <div className="text-[8px] sm:text-[10px] text-emerald-600 uppercase font-bold tracking-wider">{lang === "es" ? "Tiempo" : "Time"}</div>
+                            <div className="font-bold text-xs sm:text-base text-emerald-600">{lang === "es" ? "2 Segundos" : "2 Seconds"}</div>
                           </div>
-                          <div className="bg-emerald-500/5 p-3 rounded-xl border border-emerald-500/10 text-center">
-                            <div className="text-[10px] text-emerald-600 uppercase font-bold tracking-wider">Chance of Error</div>
-                            <div className="font-bold text-base text-emerald-600">None</div>
+                          <div className="bg-emerald-500/5 p-2 sm:p-3 rounded-xl border border-emerald-500/10 text-center">
+                            <div className="text-[8px] sm:text-[10px] text-emerald-600 uppercase font-bold tracking-wider">{lang === "es" ? "Riesgo" : "Chance of Error"}</div>
+                            <div className="font-bold text-xs sm:text-base text-emerald-600">{lang === "es" ? "Ninguno" : "None"}</div>
                           </div>
                         </div>
                         <ul className="space-y-2.5 text-xs text-on-surface-variant list-disc pl-4 pt-2">
-                          <li>Speak naturally like talking to a friend.</li>
-                          <li>Checks thousands of official rules instantly.</li>
-                          <li>Shows exact proof from official documents.</li>
+                          <li>{lang === "es" ? "Hable con naturalidad, como si hablara con un amigo." : "Speak naturally like talking to a friend."}</li>
+                          <li>{lang === "es" ? "Verifica miles de reglas oficiales al instante." : "Checks thousands of official rules instantly."}</li>
+                          <li>{lang === "es" ? "Muestra pruebas exactas de documentos oficiales." : "Shows exact proof from official documents."}</li>
                         </ul>
                       </div>
                     )}
@@ -3236,29 +3247,31 @@ export default function Home() {
                       <div className="space-y-4 animate-fade-in">
                         <h3 className="text-xl font-bold text-blue-600 flex items-center gap-2">
                           <span className="material-symbols-outlined">support_agent</span>
-                          Caseworker Verification
+                          {lang === "es" ? "Verificación de Asistente Social" : "Caseworker Verification"}
                         </h3>
                         <p className="text-sm text-on-surface-variant leading-relaxed">
-                          If your case is complex or requires extra help, we connect you to real local legal aid groups who verify your profile and help submit the forms for free.
+                          {lang === "es"
+                            ? "Si su caso es complejo o requiere ayuda adicional, lo conectamos con grupos locales de asistencia legal real que verifican su perfil y ayudan a enviar los formularios de forma gratuita."
+                            : "If your case is complex or requires extra help, we connect you to real local legal aid groups who verify your profile and help submit the forms for free."}
                         </p>
-                        <div className="grid grid-cols-3 gap-4 pt-2">
-                          <div className="bg-blue-500/5 p-3 rounded-xl border border-blue-500/10 text-center">
-                            <div className="text-[10px] text-blue-600 uppercase font-bold tracking-wider">Cost</div>
-                            <div className="font-bold text-base text-blue-600">Free</div>
+                        <div className="grid grid-cols-3 gap-2 sm:gap-4 pt-2">
+                          <div className="bg-blue-500/5 p-2 sm:p-3 rounded-xl border border-blue-500/10 text-center">
+                            <div className="text-[8px] sm:text-[10px] text-blue-600 uppercase font-bold tracking-wider">{lang === "es" ? "Costo" : "Cost"}</div>
+                            <div className="font-bold text-xs sm:text-base text-blue-600">{lang === "es" ? "Gratis" : "Free"}</div>
                           </div>
-                          <div className="bg-blue-500/5 p-3 rounded-xl border border-blue-500/10 text-center">
-                            <div className="text-[10px] text-blue-600 uppercase font-bold tracking-wider">Time</div>
-                            <div className="font-bold text-base text-primary">1-2 Days</div>
+                          <div className="bg-blue-500/5 p-2 sm:p-3 rounded-xl border border-blue-500/10 text-center">
+                            <div className="text-[8px] sm:text-[10px] text-blue-600 uppercase font-bold tracking-wider">{lang === "es" ? "Tiempo" : "Time"}</div>
+                            <div className="font-bold text-xs sm:text-base text-primary">{lang === "es" ? "1-2 Días" : "1-2 Days"}</div>
                           </div>
-                          <div className="bg-blue-500/5 p-3 rounded-xl border border-blue-500/10 text-center">
-                            <div className="text-[10px] text-blue-600 uppercase font-bold tracking-wider">Chance of Error</div>
-                            <div className="font-bold text-base text-emerald-600">None</div>
+                          <div className="bg-blue-500/5 p-2 sm:p-3 rounded-xl border border-blue-500/10 text-center">
+                            <div className="text-[8px] sm:text-[10px] text-blue-600 uppercase font-bold tracking-wider">{lang === "es" ? "Riesgo" : "Chance of Error"}</div>
+                            <div className="font-bold text-xs sm:text-base text-emerald-600">{lang === "es" ? "Ninguno" : "None"}</div>
                           </div>
                         </div>
                         <ul className="space-y-2.5 text-xs text-on-surface-variant list-disc pl-4 pt-2">
-                          <li>Real human experts double-check your claims.</li>
-                          <li>Matches you with free legal aid organizations nearby.</li>
-                          <li>Step-by-step guidance on signing and submitting.</li>
+                          <li>{lang === "es" ? "Expertos humanos reales verifican sus reclamaciones." : "Real human experts double-check your claims."}</li>
+                          <li>{lang === "es" ? "Le conecta con organizaciones de ayuda legal gratuitas cercanas." : "Matches you with free legal aid organizations nearby."}</li>
+                          <li>{lang === "es" ? "Guía paso a paso para firmar y enviar." : "Step-by-step guidance on signing and submitting."}</li>
                         </ul>
                       </div>
                     )}
@@ -3267,29 +3280,29 @@ export default function Home() {
                   {/* Right Side: Interactive Layout Mockups */}
                   <div className="w-full lg:w-[320px] h-[260px] rounded-2xl bg-surface-container/50 border border-outline-variant/30 flex items-center justify-center p-6 relative overflow-hidden shadow-inner shrink-0">
                     
-                    {/* Visual mockup for Confusing Forms */}
+                     {/* Visual mockup for Confusing Forms */}
                     {activeComparisonTab === "forms" && (
                       <div className="w-full space-y-3 animate-fade-in">
                         <div className="text-[10px] font-mono text-red-600 bg-red-500/5 border border-red-500/10 px-2.5 py-1 rounded-md uppercase font-bold tracking-widest text-center w-max mx-auto">
-                          Official Site Portal
+                          {lang === "es" ? "Portal del Sitio Oficial" : "Official Site Portal"}
                         </div>
                         <div className="space-y-2 bg-white p-4 rounded-xl border border-outline-variant/30 shadow-sm relative">
                           <div className="h-3 bg-neutral-200 rounded w-2/3"></div>
                           <div className="h-2 bg-neutral-100 rounded w-full"></div>
                           <div className="h-6 bg-neutral-50 rounded border border-neutral-200 flex items-center px-2 text-[8px] text-neutral-400">
-                            Select Eligibility Code (e.g. 1040-ES SEC 4)...
+                            {lang === "es" ? "Seleccione Código de Elegibilidad (ej. 1040-ES SEC 4)..." : "Select Eligibility Code (e.g. 1040-ES SEC 4)..."}
                           </div>
                           <div className="h-6 bg-neutral-50 rounded border border-neutral-200 flex items-center px-2 text-[8px] text-neutral-400">
-                            Household Gross Adjusted Annual Income ($)...
+                            {lang === "es" ? "Ingreso Anual Ajustado Bruto del Hogar ($)..." : "Household Gross Adjusted Annual Income ($)..."}
                           </div>
                           <div className="absolute inset-0 bg-red-500/5 backdrop-blur-[1px] flex items-center justify-center rounded-xl">
                             <div className="bg-red-600 text-white font-bold text-xs uppercase tracking-widest px-4 py-2 rounded-lg border-2 border-white shadow-lg rotate-12">
-                              REJECTED
+                              {lang === "es" ? "RECHAZADO" : "REJECTED"}
                             </div>
                           </div>
                         </div>
                         <div className="text-[9px] text-center text-red-600 font-semibold">
-                          Reason: Wrong income bracket entered.
+                          {lang === "es" ? "Razón: Rango de ingresos incorrecto." : "Reason: Wrong income bracket entered."}
                         </div>
                       </div>
                     )}
@@ -3298,29 +3311,29 @@ export default function Home() {
                     {activeComparisonTab === "experts" && (
                       <div className="w-full space-y-3 animate-fade-in">
                         <div className="text-[10px] font-mono text-amber-600 bg-amber-500/5 border border-amber-500/10 px-2.5 py-1 rounded-md uppercase font-bold tracking-widest text-center w-max mx-auto">
-                          Consultant Bill
+                          {lang === "es" ? "Factura del Consultor" : "Consultant Bill"}
                         </div>
                         <div className="bg-white p-4 rounded-xl border border-outline-variant/30 shadow-sm space-y-2 text-xs">
                           <div className="flex justify-between border-b pb-2 text-[10px]">
-                            <span className="font-semibold text-primary">Item</span>
-                            <span className="font-semibold text-primary">Cost</span>
+                            <span className="font-semibold text-primary">{lang === "es" ? "Concepto" : "Item"}</span>
+                            <span className="font-semibold text-primary">{lang === "es" ? "Costo" : "Cost"}</span>
                           </div>
                           <div className="flex justify-between text-[9px]">
-                            <span>Consultation Fee</span>
+                            <span>{lang === "es" ? "Cuota de Consulta" : "Consultation Fee"}</span>
                             <span className="font-bold text-primary">$150.00</span>
                           </div>
                           <div className="flex justify-between text-[9px]">
-                            <span>Form Assistance</span>
+                            <span>{lang === "es" ? "Asistencia con Formularios" : "Form Assistance"}</span>
                             <span className="font-bold text-primary">$200.00</span>
                           </div>
                           <div className="flex justify-between border-t pt-2 font-bold text-amber-600 text-[10px]">
-                            <span>Total Due</span>
+                            <span>{lang === "es" ? "Total a Pagar" : "Total Due"}</span>
                             <span>$350.00</span>
                           </div>
                         </div>
                         <div className="flex items-center justify-center gap-1.5 text-[10px] text-on-surface-variant">
                           <span className="material-symbols-outlined text-[14px] animate-spin">schedule</span>
-                          Waiting time: 3 weeks
+                          {lang === "es" ? "Tiempo de espera: 3 semanas" : "Waiting time: 3 weeks"}
                         </div>
                       </div>
                     )}
@@ -3329,13 +3342,13 @@ export default function Home() {
                     {activeComparisonTab === "formzero" && (
                       <div className="w-full space-y-3 animate-fade-in">
                         <div className="text-[10px] font-mono text-emerald-600 bg-emerald-500/5 border border-emerald-500/10 px-2.5 py-1 rounded-md uppercase font-bold tracking-widest text-center w-max mx-auto">
-                          FormZero Chat
+                          {lang === "es" ? "Chat de FormZero" : "FormZero Chat"}
                         </div>
                         <div className="space-y-3">
                           {/* User message */}
                           <div className="flex justify-end">
                             <div className="bg-primary text-on-primary text-[10px] px-3.5 py-2 rounded-2xl rounded-tr-none max-w-[85%] shadow-sm">
-                              I do part-time yard helper work and make $950/month in GA.
+                              {lang === "es" ? "Hago trabajo de jardinería a tiempo parcial y gano $950/mes en GA." : "I do part-time yard helper work and make $950/month in GA."}
                             </div>
                           </div>
                           {/* AI message */}
@@ -3343,8 +3356,8 @@ export default function Home() {
                             <div className="bg-white border border-outline-variant/30 text-[10px] px-3.5 py-2 rounded-2xl rounded-tl-none max-w-[85%] shadow-sm text-primary flex items-start gap-2">
                               <span className="material-symbols-outlined text-emerald-500 text-[16px] shrink-0">check_circle</span>
                               <div>
-                                <div className="font-bold">You qualify for SNAP!</div>
-                                <div className="text-[9px] text-on-surface-variant font-medium mt-0.5">Estimated: $2,400/year</div>
+                                <div className="font-bold">{lang === "es" ? "¡Califica para SNAP!" : "You qualify for SNAP!"}</div>
+                                <div className="text-[9px] text-on-surface-variant font-medium mt-0.5">{lang === "es" ? "Estimado: $2,400/año" : "Estimated: $2,400/year"}</div>
                               </div>
                             </div>
                           </div>
@@ -3356,21 +3369,21 @@ export default function Home() {
                     {activeComparisonTab === "caseworker" && (
                       <div className="w-full space-y-3 animate-fade-in">
                         <div className="text-[10px] font-mono text-blue-600 bg-blue-500/5 border border-blue-500/10 px-2.5 py-1 rounded-md uppercase font-bold tracking-widest text-center w-max mx-auto">
-                          Human Review
+                          {lang === "es" ? "Revisión Humana" : "Human Review"}
                         </div>
                         <div className="bg-white p-4 rounded-xl border border-outline-variant/30 shadow-sm flex items-center gap-3">
                           <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shrink-0 font-bold text-sm">
                             JD
                           </div>
                           <div className="space-y-0.5">
-                            <div className="text-[10px] font-bold text-primary">Legal Aid Partner</div>
+                            <div className="text-[10px] font-bold text-primary">{lang === "es" ? "Socio de Ayuda Legal" : "Legal Aid Partner"}</div>
                             <p className="text-[9px] text-on-surface-variant italic leading-snug">
-                              "Hi! I reviewed your Georgia application, everything is correct. Let's submit it!"
+                              {lang === "es" ? "\"¡Hola! Revisé su solicitud de Georgia, todo está correcto. ¡Vamos a enviarla!\"" : "\"Hi! I reviewed your Georgia application, everything is correct. Let's submit it!\""}
                             </p>
                           </div>
                         </div>
                         <div className="text-[9px] text-center text-blue-600 font-semibold bg-blue-500/5 py-1 rounded-lg border border-blue-500/10 font-bold">
-                          Status: Verified & Ready
+                          {lang === "es" ? "Estado: Verificado y Listo" : "Status: Verified & Ready"}
                         </div>
                       </div>
                     )}
@@ -3379,45 +3392,7 @@ export default function Home() {
               </div>
             </section>
 
-            {/* Floating input bottom bar */}
-            <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-lg z-30">
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  if (chatInput.trim()) {
-                    processFreeFormInput(chatInput.trim());
-                    setChatInput("");
-                  }
-                }}
-                className="bg-white/80 backdrop-blur-xl rounded-full p-2 flex items-center shadow-2xl border border-black/5 group"
-              >
-                <div className="flex-grow flex items-center px-4">
-                  <span className="material-symbols-outlined text-on-surface-variant/50 mr-2 group-focus-within:text-primary transition-colors">bolt</span>
-                  <input
-                    value={chatInput}
-                    onChange={(e) => setChatInput(e.target.value)}
-                    className="w-full bg-transparent border-none focus:ring-0 text-body-md text-on-surface placeholder:text-on-surface-variant/40 py-2.5 focus:outline-none"
-                    placeholder={activeTranslations.askPlaceholder}
-                    type="text"
-                  />
-                </div>
-                
-                <button
-                  type="button"
-                  onClick={isRecording ? () => stopVoiceRecording(true) : startVoiceRecording}
-                  className={`w-11 h-11 rounded-full flex items-center justify-center mr-1 transition-all duration-300 shrink-0 cursor-pointer hover:scale-105 active:scale-95 ${isRecording ? "bg-error hover:bg-error/80 text-on-error animate-pulse shadow-md shadow-error/20" : "bg-surface-container hover:bg-primary hover:text-on-primary text-on-surface-variant shadow-sm hover:shadow-md"}`}
-                >
-                  <span className="material-symbols-outlined text-sm">{isRecording ? "mic_off" : "mic"}</span>
-                </button>
 
-                <button
-                  type="submit"
-                  className="bg-primary text-on-primary w-11 h-11 rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition-all shrink-0 cursor-pointer"
-                >
-                  <span className="material-symbols-outlined text-sm">arrow_upward</span>
-                </button>
-              </form>
-            </div>
 
             {/* Footer */}
             <footer className="bg-surface-container border-t border-outline-variant/30 py-12 text-center text-xs text-on-surface-variant/60 w-full mt-auto">
@@ -3902,7 +3877,7 @@ export default function Home() {
                                 <span
                                   className={`text-[9px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider ${b.eligible ? "bg-emerald-100/80 text-emerald-800" : "bg-outline-variant/40 text-on-surface-variant"}`}
                                 >
-                                  {b.eligible ? "Eligible" : "Unlikely"}
+                                  {lang === "es" ? (b.eligible ? "Elegible" : "Improbable") : (b.eligible ? "Eligible" : "Unlikely")}
                                 </span>
                                 {(() => {
                                   const confPercent = Math.round(b.confidence_score * 100);
@@ -3913,22 +3888,28 @@ export default function Home() {
                                       : "bg-rose-50 text-rose-700 border border-rose-200/50";
                                   return (
                                     <span className={`text-[9px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider border ${confClass}`}>
-                                      {confPercent}% Confidence
+                                      {lang === "es" ? `${confPercent}% de Confianza` : `${confPercent}% Confidence`}
                                     </span>
                                   );
                                 })()}
                                 {b.eligible && (() => {
                                   const successProb = Math.round(35 + b.confidence_score * 60 - (b.program_id === "medicaid" ? 4 : b.program_id === "tanf" ? 6 : b.program_id === "ssi_ssdi" ? 10 : 0));
-                                  const backlog = b.program_id === "medicaid" ? "Medium" : b.program_id === "tanf" ? "High" : b.program_id === "ssi_ssdi" ? "Very High" : "Low";
-                                  const docCheck = b.program_id === "medicaid" ? "Docs Check Needed" : b.program_id === "ssi_ssdi" ? "Docs Check Needed" : "Docs Ready";
-                                  const tooltip = `Success Probability: ${successProb}% (Backlog: ${backlog} | ${docCheck})`;
+                                  const backlog = lang === "es"
+                                    ? (b.program_id === "medicaid" ? "Medio" : b.program_id === "tanf" ? "Alto" : b.program_id === "ssi_ssdi" ? "Muy Alto" : "Bajo")
+                                    : (b.program_id === "medicaid" ? "Medium" : b.program_id === "tanf" ? "High" : b.program_id === "ssi_ssdi" ? "Very High" : "Low");
+                                  const docCheck = lang === "es"
+                                    ? (b.program_id === "medicaid" ? "Se Requiere Revisión" : b.program_id === "ssi_ssdi" ? "Se Requiere Revisión" : "Documentos Listos")
+                                    : (b.program_id === "medicaid" ? "Docs Check Needed" : b.program_id === "ssi_ssdi" ? "Docs Check Needed" : "Docs Ready");
+                                  const tooltip = lang === "es"
+                                    ? `Probabilidad de Éxito: ${successProb}% (Retraso: ${backlog} | ${docCheck})`
+                                    : `Success Probability: ${successProb}% (Backlog: ${backlog} | ${docCheck})`;
                                   return (
                                     <span 
                                       className="text-[9px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-200/50 cursor-help flex items-center gap-0.5 select-none"
                                       title={tooltip}
                                     >
                                       <span className="material-symbols-outlined text-[10px] font-bold">query_stats</span>
-                                      Success: {successProb}%
+                                      {lang === "es" ? `Éxito: ${successProb}%` : `Success: ${successProb}%`}
                                     </span>
                                   );
                                 })()}
@@ -3936,7 +3917,7 @@ export default function Home() {
                               {b.confidence_score < 0.8 && b.eligible && (
                                 <div className="flex items-center text-error font-semibold gap-1 text-[10px]">
                                   <span className="material-symbols-outlined text-[15px]">priority_high</span>
-                                  <span>Verify</span>
+                                  <span>{lang === "es" ? "Verificar" : "Verify"}</span>
                                 </div>
                               )}
                             </div>
@@ -5294,14 +5275,22 @@ export default function Home() {
 
             <div className="space-y-2">
               <h2 className="font-display-lg text-headline-md text-primary">
-                {isSignUp ? (isVerifyingOtp ? "Verify Email" : "Create Account") : "Welcome Back"}
+                {lang === "es"
+                  ? (isSignUp ? (isVerifyingOtp ? "Verificar Correo" : "Crear Cuenta") : "Bienvenido de Nuevo")
+                  : (isSignUp ? (isVerifyingOtp ? "Verify Email" : "Create Account") : "Welcome Back")}
               </h2>
               <p className="text-xs text-on-surface-variant leading-relaxed">
-                {isSignUp
-                  ? (isVerifyingOtp 
-                      ? "Enter the verification code to complete your signup." 
-                      : "Sign up to keep your benefit eligibility audits synced and saved forever.")
-                  : "Sign in to access your saved benefit audits and profile facts."}
+                {lang === "es"
+                  ? (isSignUp
+                      ? (isVerifyingOtp 
+                          ? "Ingrese el código de verificación para completar su registro." 
+                          : "Regístrese para mantener sus auditorías de elegibilidad de beneficios sincronizadas y guardadas para siempre.")
+                      : "Inicie sesión para acceder a sus auditorías de beneficios guardadas y datos de perfil.")
+                  : (isSignUp
+                      ? (isVerifyingOtp 
+                          ? "Enter the verification code to complete your signup." 
+                          : "Sign up to keep your benefit eligibility audits synced and saved forever.")
+                      : "Sign in to access your saved benefit audits and profile facts.")}
               </p>
             </div>
 
@@ -5316,17 +5305,28 @@ export default function Home() {
                 <div>
                   <p className="text-xs text-on-surface-variant mb-4">
                     {otpEmailSent ? (
-                      <>
-                        <span className="material-symbols-outlined text-primary text-sm align-middle mr-1">mark_email_read</span>
-                        We&apos;ve sent a 6-digit verification code to <strong className="text-primary">{authEmail}</strong>. Check your inbox (and spam folder) and enter the code below.
-                      </>
+                      lang === "es" ? (
+                        <>
+                          <span className="material-symbols-outlined text-primary text-sm align-middle mr-1">mark_email_read</span>
+                          Hemos enviado un código de verificación de 6 dígitos a <strong className="text-primary">{authEmail}</strong>. Revise su bandeja de entrada (y carpeta de spam) e ingrese el código a continuación.
+                        </>
+                      ) : (
+                        <>
+                          <span className="material-symbols-outlined text-primary text-sm align-middle mr-1">mark_email_read</span>
+                          We&apos;ve sent a 6-digit verification code to <strong className="text-primary">{authEmail}</strong>. Check your inbox (and spam folder) and enter the code below.
+                        </>
+                      )
                     ) : (
-                      <>We&apos;ve generated a 6-digit verification code for <strong className="text-primary">{authEmail}</strong>. Enter it below.</>
+                      lang === "es" ? (
+                        <>Hemos generado un código de verificación de 6 dígitos para <strong className="text-primary">{authEmail}</strong>. Ingréselo a continuación.</>
+                      ) : (
+                        <>We&apos;ve generated a 6-digit verification code for <strong className="text-primary">{authEmail}</strong>. Enter it below.</>
+                      )
                     )}
                   </p>
                   
                   <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">
-                    Verification Code
+                    {lang === "es" ? "Código de Verificación" : "Verification Code"}
                   </label>
                   <input
                     type="text"
@@ -5339,12 +5339,14 @@ export default function Home() {
                   />
                 </div>
 
-
-
                 {otpEmailSent && (
                   <div className="p-3 bg-green-50 text-green-800 rounded-lg text-xs flex items-center gap-2 border border-green-200">
                     <span className="material-symbols-outlined text-green-600 text-sm">check_circle</span>
-                    <span>Email sent successfully! Didn&apos;t receive it? Check your spam folder or go back to try again.</span>
+                    <span>
+                      {lang === "es"
+                        ? "¡Correo enviado con éxito! ¿No lo recibió? Revise su carpeta de correo no deseado o regrese para intentar de nuevo."
+                        : "Email sent successfully! Didn't receive it? Check your spam folder or go back to try again."}
+                    </span>
                   </div>
                 )}
 
@@ -5354,9 +5356,9 @@ export default function Home() {
                   className="w-full bg-primary text-on-primary rounded-full py-3 px-6 font-bold text-xs flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
                 >
                   {authLoading ? (
-                    <span className="animate-pulse">Verifying...</span>
+                    <span className="animate-pulse">{lang === "es" ? "Verificando..." : "Verifying..."}</span>
                   ) : (
-                    "Verify & Sign Up"
+                    lang === "es" ? "Verificar y Registrarse" : "Verify & Sign Up"
                   )}
                 </button>
 
@@ -5366,11 +5368,11 @@ export default function Home() {
                     setIsVerifyingOtp(false);
                     setAuthOtp("");
                     setTempDevOtp("");
-      setOtpEmailSent(false);
+                    setOtpEmailSent(false);
                   }}
                   className="w-full bg-transparent hover:bg-surface-container text-primary rounded-full py-2.5 px-6 font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
                 >
-                  Go Back
+                  {lang === "es" ? "Regresar" : "Go Back"}
                 </button>
               </form>
             ) : (
@@ -5378,7 +5380,7 @@ export default function Home() {
                 {isSignUp && (
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">
-                      Full Name
+                      {lang === "es" ? "Nombre Completo" : "Full Name"}
                     </label>
                     <input
                       type="text"
@@ -5386,14 +5388,14 @@ export default function Home() {
                       value={authName}
                       onChange={(e) => setAuthName(e.target.value)}
                       className="w-full bg-surface-container-lowest border border-outline-variant/35 rounded-lg px-4 py-3 text-body-md text-on-surface focus:outline-none focus:border-primary transition-colors"
-                      placeholder="John Doe"
+                      placeholder={lang === "es" ? "Juan Pérez" : "John Doe"}
                     />
                   </div>
                 )}
 
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">
-                    Email Address
+                    {lang === "es" ? "Dirección de Correo" : "Email Address"}
                   </label>
                   <input
                     type="email"
@@ -5407,7 +5409,7 @@ export default function Home() {
 
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">
-                    Password
+                    {lang === "es" ? "Contraseña" : "Password"}
                   </label>
                   <input
                     type="password"
@@ -5425,7 +5427,9 @@ export default function Home() {
                   className="w-full bg-primary text-on-primary rounded-full py-3 px-6 font-bold text-xs flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
                 >
                   {authLoading ? (
-                    <span className="animate-pulse">Loading...</span>
+                    <span className="animate-pulse">{lang === "es" ? "Cargando..." : "Loading..."}</span>
+                  ) : lang === "es" ? (
+                    isSignUp ? "Crear Cuenta" : "Iniciar Sesión"
                   ) : isSignUp ? (
                     "Create Account"
                   ) : (
@@ -5437,7 +5441,9 @@ export default function Home() {
 
             {!isVerifyingOtp && (
               <div className="text-center pt-2 border-t border-outline-variant/15 text-xs text-on-surface-variant">
-                {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
+                {lang === "es"
+                  ? (isSignUp ? "¿Ya tiene una cuenta?" : "¿No tiene una cuenta?")
+                  : (isSignUp ? "Already have an account?" : "Don't have an account?")}{" "}
                 <button
                   onClick={() => {
                     setIsSignUp(!isSignUp);
@@ -5445,11 +5451,13 @@ export default function Home() {
                     setIsVerifyingOtp(false);
                     setAuthOtp("");
                     setTempDevOtp("");
-      setOtpEmailSent(false);
+                    setOtpEmailSent(false);
                   }}
                   className="font-bold text-primary hover:underline"
                 >
-                  {isSignUp ? "Sign In" : "Create Account"}
+                  {lang === "es"
+                    ? (isSignUp ? "Iniciar Sesión" : "Crear Cuenta")
+                    : (isSignUp ? "Sign In" : "Create Account")}
                 </button>
               </div>
             )}
