@@ -4407,153 +4407,180 @@ export default function Home() {
             )}
 
             {/* TAB 3: DOCUMENT CHECKLIST */}
-            {activeTab === "documents" && (
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
-                {/* Left Side: Summary Panel */}
-                <div className="lg:col-span-4 lg:sticky lg:top-32 w-full">
-                  <div className="glass-card p-8 rounded-xl border border-outline-variant/30 space-y-6">
-                    <h3 className="font-headline-md text-2xl font-bold text-primary">Summary Analysis</h3>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between font-semibold text-xs text-on-surface-variant">
-                        <span>Verified Assets</span>
-                        <span className="text-primary font-bold">80%</span>
-                      </div>
-                      <div className="w-full bg-surface-container h-2 rounded-full overflow-hidden">
-                        <div className="bg-primary h-full w-[80%]"></div>
-                      </div>
-                      <p className="text-xs text-on-surface-variant leading-relaxed">
-                        Most state programs share 70% of document requirements. Missing items for Medicaid often fulfill SNAP criteria as well.
-                      </p>
-                      <div className="pt-6 border-t border-outline-variant/20 space-y-4">
-                        <div className="bg-emerald-50/70 border border-emerald-200/50 rounded-xl p-4 flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-800 shrink-0">
-                            <span className="material-symbols-outlined text-sm font-bold">verified</span>
-                          </div>
-                          <div>
-                            <div className="text-[10px] font-bold text-emerald-950 uppercase tracking-wide">Security Shield Active</div>
-                            <div className="text-[10px] text-emerald-800/80">Integrity verified via AES-256</div>
+            {activeTab === "documents" && (() => {
+              // Dynamically calculate document preparedness
+              let totalDocs = 0;
+              let likelyHaveDocs = 0;
+              const seenDocs = new Set<string>();
+
+              eligibilityResults.forEach((b) => {
+                const checklist = getDocumentChecklist(b.program_name);
+                if (checklist) {
+                  checklist.documents.forEach((doc) => {
+                    if (!seenDocs.has(doc.name)) {
+                      seenDocs.add(doc.name);
+                      totalDocs++;
+                      if (doc.status === "likely_have") {
+                        likelyHaveDocs++;
+                      }
+                    }
+                  });
+                }
+              });
+
+              const preparednessPercentage = totalDocs > 0 ? Math.round((likelyHaveDocs / totalDocs) * 100) : 0;
+
+              return (
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
+                  {/* Left Side: Summary Panel */}
+                  <div className="lg:col-span-4 lg:sticky lg:top-32 w-full">
+                    <div className="glass-card p-8 rounded-xl border border-outline-variant/30 space-y-6">
+                      <h3 className="font-headline-md text-2xl font-bold text-primary">
+                        {lang === "es" ? "Análisis de Resumen" : "Summary Analysis"}
+                      </h3>
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between font-semibold text-xs text-on-surface-variant">
+                          <span>{lang === "es" ? "Probablemente Disponible" : "Likely Available"}</span>
+                          <span className="text-primary font-bold">{preparednessPercentage}%</span>
+                        </div>
+                        <div className="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+                          <div className="bg-primary h-full transition-all duration-500" style={{ width: `${preparednessPercentage}%` }}></div>
+                        </div>
+                        <p className="text-xs text-on-surface-variant leading-relaxed">
+                          {lang === "es"
+                            ? `Según los programas para los que califica, es probable que ya tenga el ${preparednessPercentage}% de los documentos requeridos. Los programas estatales suelen compartir los mismos requisitos.`
+                            : `Based on the programs you qualify for, you likely already have ${preparednessPercentage}% of the required documents. State programs often share the same requirements.`}
+                        </p>
+                        <div className="pt-6 border-t border-outline-variant/20 space-y-4">
+                          <div className="bg-primary/5 border border-primary/10 rounded-xl p-4 flex items-start gap-3">
+                            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0 mt-0.5">
+                              <span className="material-symbols-outlined text-sm font-bold">shield_lock</span>
+                            </div>
+                            <div>
+                              <div className="text-[10px] font-bold text-primary uppercase tracking-wide">
+                                {lang === "es" ? "Privacidad Primero" : "Privacy First"}
+                              </div>
+                              <div className="text-[10px] text-on-surface-variant/80 leading-normal mt-1">
+                                {lang === "es"
+                                  ? "Nunca almacenamos sus documentos ni datos personales en nuestros servidores. Todo se procesa localmente en su dispositivo."
+                                  : "We never store your documents or personal data on our servers. Everything is processed locally on your device."}
+                              </div>
+                            </div>
                           </div>
                         </div>
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-on-tertiary-container italic block text-center">
-                          Verified by FormZero AI Integrity Layer
-                        </span>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Right Side: Collapsible lists */}
-                <div className="lg:col-span-8 w-full space-y-6">
-                  <div className="mb-4">
-                    <h1 className="font-display-lg text-display-lg-mobile md:text-5xl text-primary mb-4">
-                      {activeTranslations.docTitle}
-                    </h1>
-                    <p className="font-body-lg text-body-md text-on-surface-variant max-w-2xl leading-relaxed">
-                      {activeTranslations.docDesc}
-                    </p>
-                  </div>
+                  {/* Right Side: Collapsible lists */}
+                  <div className="lg:col-span-8 w-full space-y-6">
+                    <div className="mb-4">
+                      <h1 className="font-display-lg text-display-lg-mobile md:text-5xl text-primary mb-4">
+                        {activeTranslations.docTitle}
+                      </h1>
+                      <p className="font-body-lg text-body-md text-on-surface-variant max-w-2xl leading-relaxed">
+                        {activeTranslations.docDesc}
+                      </p>
+                    </div>
 
-                  {eligibilityResults.map((b) => {
-                    const checklist = getDocumentChecklist(b.program_name);
-                    if (!checklist) return null;
-                    const isOpen = expandedDocumentChecklist === b.program_id;
+                    {eligibilityResults.map((b) => {
+                      const checklist = getDocumentChecklist(b.program_name);
+                      if (!checklist) return null;
+                      const isOpen = expandedDocumentChecklist === b.program_id;
 
-                    return (
-                      <details
-                        key={b.program_id}
-                        className="group glass-card rounded-xl overflow-hidden transition-all duration-300"
-                        open={isOpen}
-                        onToggle={(e) => {
-                          const open = (e.target as HTMLDetailsElement).open;
-                          setExpandedDocumentChecklist(open ? b.program_id : null);
-                        }}
-                      >
-                        <summary className="flex items-center justify-between p-6 cursor-pointer hover:bg-surface-container-low transition-colors">
-                          <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center shrink-0">
-                              <span className="material-symbols-outlined text-on-primary text-lg">
-                                {b.program_id === "snap" ? "restaurant" : b.program_id === "medicaid" ? "medical_services" : b.program_id === "wic" ? "child_care" : b.program_id === "pell_grant" ? "school" : b.program_id === "ssi_ssdi" ? "accessible" : "assignment_ind"}
-                              </span>
+                      return (
+                        <details
+                          key={b.program_id}
+                          className="group glass-card rounded-xl overflow-hidden transition-all duration-300"
+                          open={isOpen}
+                          onToggle={(e) => {
+                            const open = (e.target as HTMLDetailsElement).open;
+                            setExpandedDocumentChecklist(open ? b.program_id : null);
+                          }}
+                        >
+                          <summary className="flex items-center justify-between p-6 cursor-pointer hover:bg-surface-container-low transition-colors">
+                            <div className="flex items-center gap-4">
+                              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center shrink-0">
+                                <span className="material-symbols-outlined text-on-primary text-lg">
+                                  {b.program_id === "snap" ? "restaurant" : b.program_id === "medicaid" ? "medical_services" : b.program_id === "wic" ? "child_care" : b.program_id === "pell_grant" ? "school" : b.program_id === "ssi_ssdi" ? "accessible" : "assignment_ind"}
+                                </span>
+                              </div>
+                              <div>
+                                <h2 className="font-headline-md text-2xl text-primary font-bold">{b.program_name}</h2>
+                                <p className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-wider">
+                                  {b.eligible ? "Requirements Checklist" : "Reference Checklist"}
+                                </p>
+                              </div>
                             </div>
-                            <div>
-                              <h2 className="font-headline-md text-2xl text-primary font-bold">{b.program_name}</h2>
-                              <p className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-wider">
-                                {b.eligible ? "Requirements Checklist" : "Reference Checklist"}
-                              </p>
-                            </div>
-                          </div>
-                          <span className="material-symbols-outlined transition-transform group-open:rotate-180 text-xl font-bold">
-                            expand_more
-                          </span>
-                        </summary>
-                        <div className="p-6 pt-0 border-t border-outline-variant/10">
-                          <ul className="space-y-4 pt-6">
-                            {checklist.documents.map((doc, dIdx) => (
-                              <li
-                                key={dIdx}
-                                className={`flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-surface-container-lowest rounded-xl border border-outline-variant/10 shadow-sm gap-4 border-l-4 ${doc.status === "likely_have" ? "border-l-emerald-600" : doc.status === "need_to_gather" ? "border-l-amber-600" : "border-l-error"}`}
-                              >
-                                <div className="flex items-start gap-4">
-                                  <div
-                                    className={`p-2 rounded-full shrink-0 ${doc.status === "likely_have" ? "text-emerald-600 bg-emerald-50" : doc.status === "need_to_gather" ? "text-amber-600 bg-amber-50" : "text-error bg-error-container"}`}
-                                  >
-                                    <span className="material-symbols-outlined text-sm font-bold">
-                                      {doc.status === "likely_have" ? "check_circle" : doc.status === "need_to_gather" ? "hourglass_empty" : "close"}
-                                    </span>
+                            <span className="material-symbols-outlined transition-transform group-open:rotate-180 text-xl font-bold">
+                              expand_more
+                            </span>
+                          </summary>
+                          <div className="p-6 pt-0 border-t border-outline-variant/10">
+                            <ul className="space-y-4 pt-6">
+                              {checklist.documents.map((doc, dIdx) => (
+                                <li
+                                  key={dIdx}
+                                  className={`flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-surface-container-lowest rounded-xl border border-outline-variant/10 shadow-sm gap-4 border-l-4 ${doc.status === "likely_have" ? "border-l-emerald-600" : doc.status === "need_to_gather" ? "border-l-amber-600" : "border-l-error"}`}
+                                >
+                                  <div className="flex items-start gap-4">
+                                    <div
+                                      className={`p-2 rounded-full shrink-0 ${doc.status === "likely_have" ? "text-emerald-600 bg-emerald-50" : doc.status === "need_to_gather" ? "text-amber-600 bg-amber-50" : "text-error bg-error-container"}`}
+                                    >
+                                      <span className="material-symbols-outlined text-sm font-bold">
+                                        {doc.status === "likely_have" ? "check_circle" : doc.status === "need_to_gather" ? "hourglass_empty" : "close"}
+                                      </span>
+                                    </div>
+                                    <div>
+                                      <h4 className="font-bold text-sm text-primary">
+                                        {lang === "es" ? doc.name_es : doc.name}
+                                      </h4>
+                                      <p className="text-xs text-on-surface-variant leading-relaxed">
+                                        {lang === "es" ? doc.description_es : doc.description}
+                                      </p>
+                                      <span className="text-[10px] font-semibold text-on-surface-variant/70 uppercase tracking-wide block mt-1">
+                                        {doc.status === "likely_have"
+                                          ? activeTranslations.likelyHave
+                                          : doc.status === "need_to_gather"
+                                          ? activeTranslations.needToGather
+                                          : activeTranslations.mayNotHave}{" "}
+                                        • {lang === "es" ? doc.time_estimate_es : doc.time_estimate}
+                                      </span>
+                                    </div>
                                   </div>
-                                  <div>
-                                    <h4 className="font-bold text-sm text-primary">
-                                      {lang === "es" ? doc.name_es : doc.name}
-                                    </h4>
-                                    <p className="text-xs text-on-surface-variant leading-relaxed">
-                                      {lang === "es" ? doc.description_es : doc.description}
-                                    </p>
-                                    <span className="text-[10px] font-semibold text-on-surface-variant/70 uppercase tracking-wide block mt-1">
-                                      {doc.status === "likely_have"
-                                        ? activeTranslations.likelyHave
-                                        : doc.status === "need_to_gather"
-                                        ? activeTranslations.needToGather
-                                        : activeTranslations.mayNotHave}{" "}
-                                      • {lang === "es" ? doc.time_estimate_es : doc.time_estimate}
-                                    </span>
-                                  </div>
-                                </div>
-                                <div className="shrink-0 flex items-center justify-end">
-                                  {doc.status === "likely_have" ? (
-                                    <span className="text-[9px] font-bold text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full uppercase tracking-wider">
-                                      {activeTranslations.likelyHave}
-                                    </span>
-                                  ) : doc.status === "need_to_gather" ? (
-                                    doc.obtain_url ? (
-                                      <a
-                                        href={doc.obtain_url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-primary font-bold text-xs hover:underline cursor-pointer"
-                                      >
-                                        {activeTranslations.obtain}
-                                      </a>
+                                  <div className="shrink-0 flex items-center justify-end">
+                                    {doc.status === "likely_have" ? (
+                                      <span className="text-[9px] font-bold text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full uppercase tracking-wider">
+                                        {activeTranslations.likelyHave}
+                                      </span>
                                     ) : (
-                                      <button className="text-primary font-bold text-xs hover:underline cursor-pointer">
-                                        {activeTranslations.obtain}
-                                      </button>
-                                    )
-                                  ) : (
-                                    <button className="text-error font-bold text-xs underline hover:opacity-80 transition-opacity cursor-pointer">
-                                      {activeTranslations.uploadNow}
-                                    </button>
-                                  )}
-                                </div>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      </details>
-                    );
-                  })}
+                                      doc.obtain_url ? (
+                                        <a
+                                          href={doc.obtain_url}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="text-primary font-bold text-xs hover:underline cursor-pointer"
+                                        >
+                                          {activeTranslations.obtain}
+                                        </a>
+                                      ) : (
+                                        <button className="text-primary font-bold text-xs hover:underline cursor-pointer">
+                                          {activeTranslations.obtain}
+                                        </button>
+                                      )
+                                    )}
+                                  </div>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </details>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
 
             {/* TAB 4: DEPENDENCY ROADMAP */}
             {activeTab === "roadmap" && (
