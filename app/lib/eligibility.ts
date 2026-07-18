@@ -1,13 +1,31 @@
 export type UserProfile = {
+  country: "usa" | "india";
+
   state: string;
+
   household_size: number;
   monthly_income: number;
+
   has_children: boolean;
   has_pregnant: boolean;
   has_elderly_or_disabled: boolean;
+
   is_student: boolean;
-  immigration_status: "citizen" | "permanent_resident" | "not_disclosed";
+
+  immigration_status:
+    | "citizen"
+    | "permanent_resident"
+    | "not_disclosed";
+
   language: "english" | "spanish";
+
+  category?: "general" | "obc" | "sc" | "st";
+
+  is_farmer?: boolean;
+
+  age?: number;
+
+  gender?: "male" | "female" | "other";
 };
 
 export type BenefitSource = {

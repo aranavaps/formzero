@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { getDependencyOrder, getDocumentChecklist, ProgramDocuments } from "@/lib/documents";
 import { checkEligibility, BenefitResult, UserProfile } from "@/lib/eligibility";
+import { checkIndiaEligibility } from "@/lib/indiaEligibility";
 
 const programApplyUrls: Record<string, string> = {
   "snap": "https://www.fns.usda.gov/snap/applicant-recipient",
@@ -123,6 +124,7 @@ const programSimpleExplanations: Record<string, { en: string; es: string }> = {
 function parseFreeFormProfile(text: string): Record<string, string> {
   const lowercase = text.toLowerCase();
   const facts: Record<string, string> = {
+    country: "usa",
     state: "CA",
     household_size: "1",
     monthly_income: "0",
@@ -630,6 +632,11 @@ export default function Home() {
     if (!isSimulationActive) return null;
     
     const simulatedProfile: UserProfile = {
+      country: (profileFacts.country as any) || "usa",
+      category: (profileFacts.category as any) || "general",
+      is_farmer: profileFacts.is_farmer === "true",
+      age: parseInt(profileFacts.age) || undefined,
+      gender: (profileFacts.gender as any) || undefined,
       state: profileFacts.state || "CA",
       household_size: simulationHouseholdSize,
       monthly_income: simulationIncome,
@@ -641,7 +648,7 @@ export default function Home() {
       language: (profileFacts.language as any) || "english",
     };
 
-    const results = checkEligibility(simulatedProfile);
+    const results = simulatedProfile.country === "india" ? checkIndiaEligibility(simulatedProfile) : checkEligibility(simulatedProfile);
     let simulatedMonthlySum = 0;
     let simulatedCount = 0;
 
@@ -693,6 +700,11 @@ export default function Home() {
     }
 
     const userProfile: UserProfile = {
+      country: (facts.country as any) || "usa",
+      category: (facts.category as any) || "general",
+      is_farmer: facts.is_farmer === "true",
+      age: parseInt(facts.age) || undefined,
+      gender: (facts.gender as any) || undefined,
       state: facts.state || "",
       household_size: parseInt(facts.household_size) || 1,
       monthly_income: parseFloat(facts.monthly_income) || 0,
@@ -704,7 +716,7 @@ export default function Home() {
       language: (facts.language as any) || "english",
     };
 
-    const results = checkEligibility(userProfile);
+    const results = userProfile.country === "india" ? checkIndiaEligibility(userProfile) : checkEligibility(userProfile);
     const localProgramResults: EligibilityProgramResult[] = [];
     results.forEach((benefit) => {
       let programId = "snap";
@@ -742,6 +754,11 @@ export default function Home() {
   function recomputeEligibilityFromFacts(facts: Record<string, string>) {
     if (!facts.state && !facts.monthly_income) return;
     const userProfile: UserProfile = {
+      country: (facts.country as any) || "usa",
+      category: (facts.category as any) || "general",
+      is_farmer: facts.is_farmer === "true",
+      age: parseInt(facts.age) || undefined,
+      gender: (facts.gender as any) || undefined,
       state: facts.state || "",
       household_size: parseInt(facts.household_size) || 1,
       monthly_income: parseFloat(facts.monthly_income) || 0,
@@ -752,7 +769,7 @@ export default function Home() {
       immigration_status: (facts.immigration_status as any) || "citizen",
       language: (facts.language as any) || "english",
     };
-    const results = checkEligibility(userProfile);
+    const results = userProfile.country === "india" ? checkIndiaEligibility(userProfile) : checkEligibility(userProfile);
     const localProgramResults: EligibilityProgramResult[] = [];
     results.forEach((benefit) => {
       let programId = "snap";
@@ -1021,6 +1038,11 @@ export default function Home() {
 
     // Run eligibility recalculation
     const userProfile: UserProfile = {
+      country: (editProfileFacts.country as any) || "usa",
+      category: (editProfileFacts.category as any) || "general",
+      is_farmer: editProfileFacts.is_farmer === "true",
+      age: parseInt(editProfileFacts.age) || undefined,
+      gender: (editProfileFacts.gender as any) || undefined,
       state: editProfileFacts.state || "",
       household_size: parseInt(editProfileFacts.household_size) || 1,
       monthly_income: parseFloat(editProfileFacts.monthly_income) || 0,
@@ -1031,7 +1053,7 @@ export default function Home() {
       immigration_status: (editProfileFacts.immigration_status as any) || "citizen",
       language: (editProfileFacts.language as any) || "english",
     };
-    const results = checkEligibility(userProfile);
+    const results = userProfile.country === "india" ? checkIndiaEligibility(userProfile) : checkEligibility(userProfile);
     
     const localProgramResults: EligibilityProgramResult[] = [];
     results.forEach((benefit) => {
@@ -1177,6 +1199,11 @@ export default function Home() {
       // 3. Unconditionally calculate/reset eligibility results
       if (Object.keys(finalFacts).length > 0) {
         const userProfile: UserProfile = {
+          country: (finalFacts.country as any) || "usa",
+          category: (finalFacts.category as any) || "general",
+          is_farmer: finalFacts.is_farmer === "true",
+          age: parseInt(finalFacts.age) || undefined,
+          gender: (finalFacts.gender as any) || undefined,
           state: finalFacts.state || "",
           household_size: parseInt(finalFacts.household_size) || 1,
           monthly_income: parseFloat(finalFacts.monthly_income) || 0,
@@ -1187,7 +1214,7 @@ export default function Home() {
           immigration_status: (finalFacts.immigration_status as any) || "citizen",
           language: (finalFacts.language as any) || "english",
         };
-        const results = checkEligibility(userProfile);
+        const results = userProfile.country === "india" ? checkIndiaEligibility(userProfile) : checkEligibility(userProfile);
         const localProgramResults: EligibilityProgramResult[] = [];
         results.forEach((benefit) => {
           let programId = "snap";
@@ -2244,9 +2271,9 @@ export default function Home() {
     setProfileFacts({});
     
     let welcomeMsg =
-      lang === "en"
-        ? "Hi! I'm FormZero 👋 I help people find US government benefits they may qualify for — completely free.\n\nWhat US state do you live in?"
-        : "¡Hola! Soy FormZero 👋 Ayudo a las personas a encontrar beneficios del gobierno de EE. UU. para los que califican, completamente gratis.\n\n¿En qué estado de EE. UU. vive?";
+  lang === "en"
+    ? "Hi! I'm FormZero 👋 I help people find government benefits you may qualify for — completely free.\n\nWhich country do you live in?\n\nIndia\nUnited States"
+    : "¡Hola! Soy FormZero 👋 Ayudo a las personas a encontrar beneficios gubernamentales para los que califican, completamente gratis.\n\n¿En qué país vive?\n\nIndia\nEstados Unidos";
 
     const initialMessages: ChatMessage[] = [
       { role: "assistant", content: welcomeMsg, timestamp: new Date().toLocaleTimeString() },
@@ -2278,16 +2305,111 @@ export default function Home() {
   }
 
   // Conversational questions map
-  const questionsList = [
-    { key: "state", q: "What US state do you live in?", q_es: "¿En qué estado de EE. UU. vive?" },
-    { key: "household_size", q: "How many people are in your household?", q_es: "¿Cuántas personas viven en su hogar?" },
-    { key: "monthly_income", q: "What is your total monthly household income in dollars?", q_es: "¿Cuál es el ingreso mensual total de su hogar en dólares?" },
-    { key: "has_children", q: "Do you have children under 18? (yes or no)", q_es: "¿Tiene hijos menores de 18 años? (sí o no)" },
-    { key: "has_pregnant", q: "Is anyone in your household pregnant? (yes or no)", q_es: "¿Hay alguien en su hogar embarazada? (sí o no)" },
-    { key: "has_elderly_or_disabled", q: "Is anyone elderly (65+) or disabled? (yes or no)", q_es: "¿Hay alguien de la tercera edad (65+) o con discapacidad? (sí o no)" },
-    { key: "is_student", q: "Are you a student? (yes or no)", q_es: "¿Es usted estudiante? (sí o no)" },
-    { key: "immigration_status", q: "Are you a US citizen, permanent resident, or would you prefer not to say?", q_es: "¿Es ciudadano de EE. UU., residente permanente, o prefiere no decirlo?" }
-  ];
+  const questionsList = useMemo(() => {
+    const isIndia = profileFacts.country === "india" || profileFacts.country === "India";
+    if (isIndia) {
+      return [
+        {
+          key: "country",
+          q: "Which country do you live in? (India or United States)",
+          q_es: "¿En qué país vive? (India o Estados Unidos)"
+        },
+        {
+          key: "state",
+          q: "Which state/territory do you live in?",
+          q_es: "¿En qué estado/territorio vive?"
+        },
+        {
+          key: "age",
+          q: "What is your age?",
+          q_es: "¿Cuál es su edad?"
+        },
+        {
+          key: "gender",
+          q: "What is your gender? (Male, Female, Other)",
+          q_es: "¿Cuál es su género? (Masculino, Femenino, Otro)"
+        },
+        {
+          key: "household_size",
+          q: "How many people are in your household?",
+          q_es: "¿Cuántas personas viven en su hogar?"
+        },
+        {
+          key: "monthly_income",
+          q: "What is your total monthly household income?",
+          q_es: "¿Cuál es el ingreso mensual total de su hogar?"
+        },
+        {
+          key: "category",
+          q: "What is your category? (General, OBC, SC, ST)",
+          q_es: "¿Cuál es su categoría? (General, OBC, SC, ST)"
+        },
+        {
+          key: "is_student",
+          q: "Are you a student? (yes or no)",
+          q_es: "¿Es estudiante? (sí o no)"
+        },
+        {
+          key: "is_farmer",
+          q: "Are you a farmer? (yes or no)",
+          q_es: "¿Es usted agricultor? (sí o no)"
+        },
+        {
+          key: "has_elderly_or_disabled",
+          q: "Is anyone elderly or disabled? (yes or no)",
+          q_es: "¿Hay alguien mayor o discapacitado? (sí o no)"
+        }
+      ];
+    }
+
+    return [
+      {
+        key: "country",
+        q: "Which country do you live in? (India or United States)",
+        q_es: "¿En qué país vive? (India o Estados Unidos)"
+      },
+      {
+        key: "state",
+        q: "Which state do you live in?",
+        q_es: "¿En qué estado vive?"
+      },
+      {
+        key: "household_size",
+        q: "How many people are in your household?",
+        q_es: "¿Cuántas personas viven en su hogar?"
+      },
+      {
+        key: "monthly_income",
+        q: "What is your total monthly household income?",
+        q_es: "¿Cuál es el ingreso mensual total de su hogar?"
+      },
+      {
+        key: "has_children",
+        q: "Do you have children under 18? (yes or no)",
+        q_es: "¿Tiene hijos menores de 18 años? (sí o no)"
+      },
+      {
+        key: "has_pregnant",
+        q: "Is anyone in your household pregnant? (yes or no)",
+        q_es: "¿Hay alguien en su hogar embarazada? (sí o no)"
+      },
+      {
+        key: "has_elderly_or_disabled",
+        q: "Is anyone elderly or disabled? (yes or no)",
+        q_es: "¿Hay alguien mayor o discapacitado? (sí o no)"
+      },
+      {
+        key: "is_student",
+        q: "Are you a student? (yes or no)",
+        q_es: "¿Es estudiante? (sí o no)"
+      },
+      {
+        key: "immigration_status",
+        q: "What is your immigration status? (Citizen, Permanent Resident, Not Disclosed)",
+        q_es: "¿Cuál es su estado migratorio? (Ciudadano, Residente Permanente, No decir)"
+      }
+    ];
+  }, [profileFacts.country]);
 
   // Process user chat inputs and ask next questions
   function handleIncomingUserMessage(msg: string, index: number, currentFacts: Record<string, string>) {
@@ -2302,6 +2424,27 @@ export default function Home() {
     if (normalizedVal.includes("citizen") || normalizedVal.includes("ciudadano")) normalizedVal = "citizen";
     if (normalizedVal.includes("permanent") || normalizedVal.includes("residente") || normalizedVal.includes("green")) normalizedVal = "permanent_resident";
     if (normalizedVal.includes("prefer not") || normalizedVal.includes("no decir") || normalizedVal.includes("say")) normalizedVal = "not_disclosed";
+
+    // Map gender
+    if (key === "gender") {
+      if (normalizedVal.includes("male") || normalizedVal.includes("masculino") || normalizedVal.includes("hombre")) normalizedVal = "male";
+      if (normalizedVal.includes("female") || normalizedVal.includes("femenino") || normalizedVal.includes("mujer")) normalizedVal = "female";
+      if (normalizedVal.includes("other") || normalizedVal.includes("otro")) normalizedVal = "other";
+    }
+
+    // Map category
+    if (key === "category") {
+      if (normalizedVal.includes("general")) normalizedVal = "general";
+      if (normalizedVal.includes("obc")) normalizedVal = "obc";
+      if (normalizedVal.includes("sc")) normalizedVal = "sc";
+      if (normalizedVal.includes("st")) normalizedVal = "st";
+    }
+
+    // Map country
+    if (key === "country") {
+      if (normalizedVal.includes("india")) normalizedVal = "india";
+      if (normalizedVal.includes("united states") || normalizedVal.includes("us") || normalizedVal.includes("usa") || normalizedVal.includes("estados unidos")) normalizedVal = "usa";
+    }
 
     // Adversarial Check: Household size
     if (key === "household_size") {
@@ -2614,7 +2757,12 @@ export default function Home() {
   // Client-side fallback calculator
   function runLocalCalculationFallback(profileData: Record<string, string>, scanInterval: NodeJS.Timeout) {
     const userProfile: UserProfile = {
-      state: profileData.state || "",
+      country: (profileData.country as any) || "usa",
+      category: (profileData.category as any) || "general",
+      is_farmer: profileData.is_farmer === "true",
+      age: parseInt(profileData.age) || undefined,
+      gender: (profileData.gender as any) || undefined,
+      state: profileData.state || "CA",
       household_size: parseInt(profileData.household_size) || 1,
       monthly_income: parseFloat(profileData.monthly_income) || 0,
       has_children: profileData.has_children === "true",
@@ -2625,7 +2773,7 @@ export default function Home() {
       language: (profileData.language as any) || "english",
     };
 
-    const results = checkEligibility(userProfile);
+    const results = userProfile.country === "india" ? checkIndiaEligibility(userProfile) : checkEligibility(userProfile);
     
     // Map local results to dashboard states
     const localProgramResults: EligibilityProgramResult[] = [];
@@ -3592,6 +3740,33 @@ export default function Home() {
               ) : (
                 currentQuestionIndex > 1 && !isTyping && (
                   <div className="flex flex-wrap gap-2 justify-center mb-4">
+                    {questionsList[currentQuestionIndex - 1].key === "country" && (
+                      <>
+                        <button onClick={() => handleIncomingUserMessage("United States", currentQuestionIndex, profileFacts)} className="px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container transition-colors text-xs font-semibold">United States</button>
+                        <button onClick={() => handleIncomingUserMessage("India", currentQuestionIndex, profileFacts)} className="px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container transition-colors text-xs font-semibold">India</button>
+                      </>
+                    )}
+                    {questionsList[currentQuestionIndex - 1].key === "gender" && (
+                      <>
+                        <button onClick={() => handleIncomingUserMessage("Male", currentQuestionIndex, profileFacts)} className="px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container transition-colors text-xs font-semibold">Male</button>
+                        <button onClick={() => handleIncomingUserMessage("Female", currentQuestionIndex, profileFacts)} className="px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container transition-colors text-xs font-semibold">Female</button>
+                        <button onClick={() => handleIncomingUserMessage("Other", currentQuestionIndex, profileFacts)} className="px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container transition-colors text-xs font-semibold">Other</button>
+                      </>
+                    )}
+                    {questionsList[currentQuestionIndex - 1].key === "category" && (
+                      <>
+                        <button onClick={() => handleIncomingUserMessage("General", currentQuestionIndex, profileFacts)} className="px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container transition-colors text-xs font-semibold">General</button>
+                        <button onClick={() => handleIncomingUserMessage("OBC", currentQuestionIndex, profileFacts)} className="px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container transition-colors text-xs font-semibold">OBC</button>
+                        <button onClick={() => handleIncomingUserMessage("SC", currentQuestionIndex, profileFacts)} className="px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container transition-colors text-xs font-semibold">SC</button>
+                        <button onClick={() => handleIncomingUserMessage("ST", currentQuestionIndex, profileFacts)} className="px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container transition-colors text-xs font-semibold">ST</button>
+                      </>
+                    )}
+                    {questionsList[currentQuestionIndex - 1].key === "is_farmer" && (
+                      <>
+                        <button onClick={() => handleIncomingUserMessage("yes", currentQuestionIndex, profileFacts)} className="px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container transition-colors text-xs font-semibold">Yes / Sí</button>
+                        <button onClick={() => handleIncomingUserMessage("no", currentQuestionIndex, profileFacts)} className="px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container transition-colors text-xs font-semibold">No</button>
+                      </>
+                    )}
                     {questionsList[currentQuestionIndex - 1].key === "has_children" && (
                       <>
                         <button onClick={() => handleIncomingUserMessage("yes", currentQuestionIndex, profileFacts)} className="px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container transition-colors text-xs font-semibold">Yes / Sí</button>
