@@ -86,7 +86,7 @@ def create_user(email: str, password: str, name: str) -> bool:
             return True
         except Exception as e:
             print("Supabase create_user error:", e)
-            return False
+            raise Exception(f"Supabase error: {e}")
 
     # Local SQLite Fallback
     try:
