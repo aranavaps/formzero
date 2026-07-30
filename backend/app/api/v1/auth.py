@@ -137,6 +137,15 @@ def verify_otp(req: OTPVerifyRequest, settings: Settings = Depends(get_settings)
         "session_token": f"mock-token-{email}"
     }
 
+@router.post("/debug-supabase")
+def debug_supabase(email: str):
+    email_clean = email.strip().lower()
+    try:
+        res = supabase_repository.client.table("users").select("email").eq("email", email_clean).execute()
+        return {"status": "success", "data": res.data}
+    except Exception as e:
+        return {"status": "error", "error_message": str(e)}
+
 @router.post("/signup")
 def signup(auth: AuthRequest, settings: Settings = Depends(get_settings)):
     email = auth.email.strip().lower()
