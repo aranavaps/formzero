@@ -296,7 +296,7 @@ function checkAdversarial(text: string, lang: "en" | "es" | "hi", parsedFacts?: 
     if (inc > 200000) {
       return { 
         isAdversarial: true, 
-        reason: lang === "es" ? `ingreso mensual de $${inc.toLocaleString()} supera los límites reales` : lang === "hi" ? "monthly income of $${inc.toLocaleString()} exceeds realistic limits" : `monthly income of $${inc.toLocaleString()} exceeds realistic limits` 
+        reason: lang === "es" ? `ingreso mensual de ${parsedFacts?.country === "india" ? "₹" : "$"}${inc.toLocaleString()} supera los límites reales` : lang === "hi" ? `monthly income of ${parsedFacts?.country === "india" ? "₹" : "$"}${inc.toLocaleString()} exceeds realistic limits` : `monthly income of ${parsedFacts?.country === "india" ? "₹" : "$"}${inc.toLocaleString()} exceeds realistic limits` 
       };
     }
   }
@@ -318,7 +318,7 @@ function checkAdversarial(text: string, lang: "en" | "es" | "hi", parsedFacts?: 
     if (val > 200000) {
       return { 
         isAdversarial: true, 
-        reason: lang === "es" ? `ingreso de $${val.toLocaleString()} es poco plausible` : lang === "hi" ? "income of $${val.toLocaleString()} is implausibly large" : `income of $${val.toLocaleString()} is implausibly large` 
+        reason: lang === "es" ? `ingreso de ${parsedFacts?.country === "india" ? "₹" : "$"}${val.toLocaleString()} es poco plausible` : lang === "hi" ? `income of ${parsedFacts?.country === "india" ? "₹" : "$"}${val.toLocaleString()} is implausibly large` : `income of ${parsedFacts?.country === "india" ? "₹" : "$"}${val.toLocaleString()} is implausibly large` 
       };
     }
   }
@@ -347,14 +347,14 @@ function checkForContradictions(facts: Record<string, string>, queryText: string
     const rentVal = parseFloat(rentMatch[1]);
     if (income > 0 && rentVal > income) {
       contradictions.push(
-        lang === "es" ? `⚠️ **Inconsistencia de Gastos**: Reportó ingresos de $${income}/mes, pero menciona un alquiler de $${rentVal}/mes. SNAP permite deducir costos de vivienda excesivos, pero Medicaid mide ingresos brutos sin deducciones. Hemos registrado este matiz.` : lang === "hi" ? "⚠️ **Expense Inconsistency**: You reported $${income}/mo income, but mentioned rent of $${rentVal}/mo. SNAP allows shelter expense deductions, while Medicaid uses gross income. We have documented this mismatch to optimize your analysis." : `⚠️ **Expense Inconsistency**: You reported $${income}/mo income, but mentioned rent of $${rentVal}/mo. SNAP allows shelter expense deductions, while Medicaid uses gross income. We have documented this mismatch to optimize your analysis.`
+        lang === "es" ? `⚠️ **Inconsistencia de Gastos**: Reportó ingresos de ${facts.country === "india" ? "₹" : "$"}${income}/mes, pero menciona un alquiler de ${facts.country === "india" ? "₹" : "$"}${rentVal}/mes. Hemos registrado este matiz.` : lang === "hi" ? `⚠️ **Expense Inconsistency**: You reported ${facts.country === "india" ? "₹" : "$"}${income}/mo income, but mentioned rent of ${facts.country === "india" ? "₹" : "$"}${rentVal}/mo. We have documented this mismatch to optimize your analysis.` : `⚠️ **Expense Inconsistency**: You reported ${facts.country === "india" ? "₹" : "$"}${income}/mo income, but mentioned rent of ${facts.country === "india" ? "₹" : "$"}${rentVal}/mo. We have documented this mismatch to optimize your analysis.`
       );
     }
   }
 
   if (isStudent && income > 4500) {
     contradictions.push(
-      lang === "es" ? `⚠️ **Matiz de Estudiante**: Registró ingresos de $${income}/mes siendo estudiante. SNAP tiene límites estrictos de horas de trabajo para estudiantes de altos ingresos.` : lang === "hi" ? "⚠️ **Student Income Nuance**: You reported student status with high income ($${income}/mo). SNAP student eligibility rules enforce a minimum 20 hours/week work requirement for higher earners." : `⚠️ **Student Income Nuance**: You reported student status with high income ($${income}/mo). SNAP student eligibility rules enforce a minimum 20 hours/week work requirement for higher earners.`
+      lang === "es" ? `⚠️ **Matiz de Estudiante**: Registró ingresos de ${facts.country === "india" ? "₹" : "$"}${income}/mes siendo estudiante.` : lang === "hi" ? `⚠️ **Student Income Nuance**: You reported student status with high income (${facts.country === "india" ? "₹" : "$"}${income}/mo).` : `⚠️ **Student Income Nuance**: You reported student status with high income (${facts.country === "india" ? "₹" : "$"}${income}/mo).`
     );
   }
 
