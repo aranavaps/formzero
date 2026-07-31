@@ -278,6 +278,12 @@ function parseFreeFormProfile(text: string): Record<string, string> {
     facts.language = "hindi";
   }
 
+  if (lowercase.includes("farm") || lowercase.includes("agricultur") || lowercase.includes("kisan") || lowercase.includes("granja") || lowercase.includes("agricultor")) {
+    facts.is_farmer = "true";
+  } else {
+    facts.is_farmer = "false";
+  }
+
   return facts;
 }
 
@@ -1873,6 +1879,11 @@ export default function Home() {
     "eitc": "EITC (Earned Income Tax Credit)",
     "lifeline": "Lifeline (Phone & Internet)",
     "ssi_ssdi": "SSI / SSDI (Supplemental Security & Disability)",
+    "pm_kisan": "PM-KISAN (Farmer Support)",
+    "ayushman_bharat": "Ayushman Bharat (PM-JAY)",
+    "pmay": "PM Awas Yojana (Housing)",
+    "nsp": "National Scholarship Portal",
+    "ignoaps": "IGNOAPS (Old Age Pension)"
   };
 
   // Translations
@@ -2428,7 +2439,7 @@ export default function Home() {
     setProfileFacts(profileData);
     
     // Construct search query string
-    const query = `I am a household of ${profileData.household_size} in ${profileData.state} with monthly income of ${(profileData as any).country === 'india' ? '₹' : '$'}${profileData.monthly_income}. Student: ${profileData.is_student}, Children: ${profileData.has_children}, Pregnant: ${profileData.has_pregnant}, Elderly/Disabled: ${profileData.has_elderly_or_disabled}, Immigration: ${profileData.immigration_status}.`;
+    const query = `I am a household of ${profileData.household_size} in ${profileData.state} with monthly income of ${(profileData as any).country === 'india' ? '₹' : '$'}${profileData.monthly_income}. Student: ${profileData.is_student}, Children: ${profileData.has_children}, Pregnant: ${profileData.has_pregnant}, Elderly/Disabled: ${profileData.has_elderly_or_disabled}, Immigration: ${profileData.immigration_status}, Farmer: ${(profileData as any).is_farmer}.`;
     
     runRAGScan(query, profileData);
   }
@@ -2652,7 +2663,7 @@ export default function Home() {
       // Complete profile & Ask for confirmation
       setIsTyping(true);
       setTimeout(() => {
-        const query = `I am a household of ${updatedFacts.household_size} in ${updatedFacts.state} with monthly income of ${updatedFacts.country === 'india' ? '₹' : '$'}${updatedFacts.monthly_income}. Student: ${updatedFacts.is_student}, Children: ${updatedFacts.has_children}, Pregnant: ${updatedFacts.has_pregnant}, Elderly/Disabled: ${updatedFacts.has_elderly_or_disabled}, Immigration: ${updatedFacts.immigration_status}.`;
+        const query = `I am a household of ${updatedFacts.household_size} in ${updatedFacts.state} with monthly income of ${updatedFacts.country === 'india' ? '₹' : '$'}${updatedFacts.monthly_income}. Student: ${updatedFacts.is_student}, Children: ${updatedFacts.has_children}, Pregnant: ${updatedFacts.has_pregnant}, Elderly/Disabled: ${updatedFacts.has_elderly_or_disabled}, Immigration: ${updatedFacts.immigration_status}, Farmer: ${(updatedFacts as any).is_farmer}.`;
         
         const contradictions = checkForContradictions(updatedFacts, `income is ${updatedFacts.monthly_income}, household size is ${updatedFacts.household_size}, student: ${updatedFacts.is_student}, children: ${updatedFacts.has_children}`, lang);
         setContradictionAlerts(contradictions);
@@ -2731,7 +2742,11 @@ export default function Home() {
     
     // Set initial scan states
     const initialStatuses: Record<string, any> = {};
-    Object.keys(programIdMapping).forEach((id) => {
+    const programsToScan = profileData.country === "india" 
+      ? ["pm_kisan", "ayushman_bharat", "pmay", "nsp", "ignoaps"] 
+      : ["snap", "medicaid", "liheap", "wic", "pell_grant", "tanf", "eitc", "lifeline", "ssi_ssdi"];
+      
+    programsToScan.forEach((id) => {
       initialStatuses[id] = "scanning";
     });
     setScanStatuses(initialStatuses);
@@ -2747,7 +2762,16 @@ export default function Home() {
         setRulesCheckedCount((prev) => prev + Math.floor(Math.random() * 120) + 40);
         
         // Add log sentences
-        const logText = scanningSentences[logCounter % scanningSentences.length];
+        const scanSentences = profileData.country === "india" 
+            ? [
+                "Scanning SECC databases for PM-JAY matches...",
+                "Verifying landholding status for PM-KISAN...",
+                "Cross-referencing Awas Yojana subsidy limits...",
+                "Reading guidelines for NSP scholarships...",
+                "Analyzing state-wise Ayushman Bharat limits..."
+              ]
+            : scanningSentences;
+        const logText = scanSentences[logCounter % scanSentences.length];
         setScanLogs((prev) => [
           ...prev,
           { id: Math.random(), text: `> ${logText}` },
@@ -4175,11 +4199,11 @@ export default function Home() {
                       </span>
                     </div>
                     <h1 className="font-display-lg text-display-lg-mobile md:text-6xl font-bold tracking-tight text-primary">
-                      ${tickingValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      {profileFacts?.country === "india" ? "₹" : "$"}{tickingValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </h1>
                     <div className="text-xs bg-primary/10 border border-primary/20 px-3 py-1.5 rounded-full w-max text-primary font-medium flex items-center gap-1.5 mt-2">
                       <span className="material-symbols-outlined text-sm">calculate</span>
-                      {lang === "es" ? `Fórmula: $${totalMonthlyValue.toLocaleString()}/mes × 41 meses de ventana retroactiva` : lang === "hi" ? "Formula: $${totalMonthlyValue.toLocaleString()}/mo × 41 months retroactive eligibility window" : `Formula: $${totalMonthlyValue.toLocaleString()}/mo × 41 months retroactive eligibility window`}
+                      {lang === "es" ? `Fórmula: ${profileFacts?.country === "india" ? "₹" : "$"}${totalMonthlyValue.toLocaleString()}/mes × 41 meses de ventana retroactiva` : lang === "hi" ? `Formula: ${profileFacts?.country === "india" ? "₹" : "$"}${totalMonthlyValue.toLocaleString()}/mo × 41 months retroactive eligibility window` : `Formula: ${profileFacts?.country === "india" ? "₹" : "$"}${totalMonthlyValue.toLocaleString()}/mo × 41 months retroactive eligibility window`}
                     </div>
                     <p className="font-body-lg text-body-md text-on-surface-variant leading-relaxed mt-2">
                       {activeTranslations.retroactiveSince}
@@ -4291,7 +4315,7 @@ export default function Home() {
                               {activeTranslations.valueLabel}
                             </span>
                             <div className={`text-3xl font-display-lg tracking-tight font-bold ${styles.text}`}>
-                              ${Math.round(b.monthly_value_local * 12).toLocaleString()}
+                              {profileFacts?.country === "india" ? "₹" : "$"}{Math.round(b.monthly_value_local * 12).toLocaleString()}
                               <span className={`text-xs font-sans ml-1 font-medium ${styles.textMuted}`}>/yr</span>
                             </div>
                           </div>
@@ -4429,7 +4453,7 @@ export default function Home() {
                               <span>{b.program_name}</span>
                               <span>
                                 {eligible
-                                  ? `${profileFacts.country === "india" ? "₹" : "$"}${Math.round(b.monthly_value_local * 12).toLocaleString()}`
+                                  ? `${profileFacts.country === "india" ? "₹" : "$"}{profileFacts?.country === "india" ? "₹" : "$"}{Math.round(b.monthly_value_local * 12).toLocaleString()}`
                                   : "Ineligible"}
                               </span>
                             </div>
@@ -4528,7 +4552,7 @@ export default function Home() {
                       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-outline-variant/15 pb-4">
                         <div>
                           <h3 className="font-headline-md text-headline-md text-primary font-bold">
-                            {lang === "es" ? "Mapa de Tasa de Reclamaciones Locales" : lang === "hi" ? "County-Level Underclaim Heatmap" : "County-Level Underclaim Heatmap"}
+                            {lang === "es" ? "Mapa de Tasa de Reclamaciones Locales" : lang === "hi" ? (profileFacts?.country === "india" ? "State-Level Underclaim Heatmap" : "County-Level Underclaim Heatmap") : (profileFacts?.country === "india" ? "State-Level Underclaim Heatmap" : "County-Level Underclaim Heatmap")}
                           </h3>
                           <p className="text-xs text-on-surface-variant mt-1">
                             {lang === "es" ? "Tasa de personas elegibles que no reclaman sus beneficios en su ubicación." : lang === "hi" ? "Tracking the rate of eligible residents who fail to claim their benefits locally." : "Tracking the rate of eligible residents who fail to claim their benefits locally."}
@@ -4536,7 +4560,7 @@ export default function Home() {
                         </div>
                         <div className="flex items-center gap-3">
                           <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">
-                            {lang === "es" ? "Condado:" : lang === "hi" ? "Select County:" : "Select County:"}
+                            {lang === "es" ? "Condado:" : lang === "hi" ? (profileFacts?.country === "india" ? "Select State/Region:" : "Select County:") : (profileFacts?.country === "india" ? "Select State/Region:" : "Select County:")}
                           </label>
                           <select
                             value={currentCountyName}
@@ -4597,7 +4621,7 @@ export default function Home() {
                               </div>
                               <div>
                                 <span className="block text-[10px] uppercase font-bold text-on-surface-variant/60">{lang === "es" ? "Pérdida Total del Condado" : lang === "hi" ? "Total County Loss" : "Total County Loss"}</span>
-                                <span className="text-primary font-bold font-mono">${(data.totalUnclaimedUsd / 1000000).toFixed(1)}M / year</span>
+                                <span className="text-primary font-bold font-mono">{profileFacts?.country === "india" ? "₹" : "$"}{(data.totalUnclaimedUsd / 1000000).toFixed(1)}M / year</span>
                               </div>
                             </div>
                           </div>
@@ -5470,9 +5494,9 @@ export default function Home() {
             </nav>
 
             {/* Split layout content */}
-            <div className="flex-grow flex flex-col md:flex-row overflow-hidden">
+            <div className="flex-grow flex flex-col md:flex-row overflow-y-auto md:overflow-hidden">
               {/* Left Panel: Audit Statement */}
-              <section className="w-full md:w-1/2 p-6 md:p-10 border-r border-outline-variant/15 overflow-y-auto custom-scrollbar flex flex-col justify-between gap-6">
+              <section className="w-full md:w-1/2 p-6 md:p-10 md:border-r border-b md:border-b-0 border-outline-variant/15 md:overflow-y-auto custom-scrollbar flex flex-col justify-between gap-6 shrink-0">
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
                     <span className="w-6 h-[1.5px] bg-primary"></span>
@@ -5650,7 +5674,7 @@ export default function Home() {
               </section>
 
               {/* Right Panel: Simulated PDF Archive */}
-              <section className="w-full md:w-1/2 bg-surface-container-low p-6 md:p-10 flex flex-col gap-6 overflow-hidden">
+              <section className="w-full md:w-1/2 bg-surface-container-low p-6 md:p-10 flex flex-col gap-6 md:overflow-hidden shrink-0">
                 <div className="flex items-center justify-between shrink-0">
                   <div className="flex items-center gap-2 font-bold text-[10px] tracking-wider uppercase text-on-surface">
                     <span className="material-symbols-outlined text-primary text-lg">menu_book</span>

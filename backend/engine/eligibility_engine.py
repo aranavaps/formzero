@@ -156,12 +156,28 @@ class EligibilityEngine:
         context_chunks: List[Document],
     ) -> str:
         context = self._format_context(citations, context_chunks)
+        country_directive = (
+            "CRITICAL DIRECTIVE: You are an eligibility analyst exclusively for the country of " + profile.country.upper() + ". "
+            "You MUST ONLY output eligibility results for programs belonging to " + profile.country.upper() + ". "
+            "STRICTLY filter results: If you are an Indian eligibility analyst, ignore any context that pertains to the United States (like SNAP, Medicaid, TANF) and vice versa. DO NOT mix them up under any circumstances. "
+            "Any results from the wrong country are HALLUCINATIONS and will be severely penalized."
+        )
         return (
-            "USER CONTEXT (retrieved documents):\n"
-            f"{context}\n\n"
-            "USER PROFILE:\n"
-            f"{profile.natural_language_query}\n\n"
-            "Analyze eligibility for ALL programs whose context appears above.\n"
+            f"{country_directive}
+
+"
+            "USER CONTEXT (retrieved documents):
+"
+            f"{context}
+
+"
+            "USER PROFILE:
+"
+            f"{profile.natural_language_query}
+
+"
+            "Analyze eligibility for ALL programs whose context appears above (provided they belong to the correct country).
+"
             "Stream your thinking first, then provide the structured "
             "<RESULTS> block."
         )
