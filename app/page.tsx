@@ -1613,7 +1613,7 @@ export default function Home() {
               ? `He completado tus datos según tu grabación:\n\n` +
                 `• Estado: ${accumulatedFacts.state || "CA"}\n` +
                 `• Personas en el hogar: ${accumulatedFacts.household_size || "1"}\n` +
-                `• Ingresos mensuales: $${accumulatedFacts.monthly_income || "0"}\n` +
+                `• Ingresos mensuales: ${accumulatedFacts.country === 'india' ? '₹' : '$'}${accumulatedFacts.monthly_income || "0"}\n` +
                 `• Hijos menores de 18: ${accumulatedFacts.has_children === "true" ? "Sí" : "No"}\n` +
                 `• Embarazo en el hogar: ${accumulatedFacts.has_pregnant === "true" ? "Sí" : "No"}\n` +
                 `• Adultos mayores / Discapacidad: ${accumulatedFacts.has_elderly_or_disabled === "true" ? "Sí" : "No"}\n` +
@@ -1624,7 +1624,7 @@ export default function Home() {
               : `I've filled out your details based on your recording:\n\n` +
                 `• State: ${accumulatedFacts.state || "CA"}\n` +
                 `• Household Size: ${accumulatedFacts.household_size || "1"}\n` +
-                `• Monthly Income: $${accumulatedFacts.monthly_income || "0"}\n` +
+                `• Monthly Income: ${accumulatedFacts.country === 'india' ? '₹' : '$'}${accumulatedFacts.monthly_income || "0"}\n` +
                 `• Children Under 18: ${accumulatedFacts.has_children === "true" ? "Yes" : "No"}\n` +
                 `• Pregnant in Household: ${accumulatedFacts.has_pregnant === "true" ? "Yes" : "No"}\n` +
                 `• Elderly (65+) / Disabled: ${accumulatedFacts.has_elderly_or_disabled === "true" ? "Yes" : "No"}\n` +
@@ -2666,7 +2666,7 @@ export default function Home() {
           ? `He recopilado sus datos:\n\n` +
             `• Estado: ${updatedFacts.state || "CA"}\n` +
             `• Personas en el hogar: ${updatedFacts.household_size || "1"}\n` +
-            `• Ingresos mensuales: $${updatedFacts.monthly_income || "0"}\n` +
+            `• Ingresos mensuales: ${updatedFacts.country === 'india' ? '₹' : '$'}${updatedFacts.monthly_income || "0"}\n` +
             `• Hijos menores de 18: ${updatedFacts.has_children === "true" ? "Sí" : "No"}\n` +
             `• Embarazo en el hogar: ${updatedFacts.has_pregnant === "true" ? "Sí" : "No"}\n` +
             `• Adultos mayores / Discapacidad: ${updatedFacts.has_elderly_or_disabled === "true" ? "Sí" : "No"}\n` +
@@ -2677,7 +2677,7 @@ export default function Home() {
           : `I've compiled your details:\n\n` +
             `• State: ${updatedFacts.state || "CA"}\n` +
             `• Household Size: ${updatedFacts.household_size || "1"}\n` +
-            `• Monthly Income: $${updatedFacts.monthly_income || "0"}\n` +
+            `• Monthly Income: ${updatedFacts.country === 'india' ? '₹' : '$'}${updatedFacts.monthly_income || "0"}\n` +
             `• Children Under 18: ${updatedFacts.has_children === "true" ? "Yes" : "No"}\n` +
             `• Pregnant in Household: ${updatedFacts.has_pregnant === "true" ? "Yes" : "No"}\n` +
             `• Elderly (65+) / Disabled: ${updatedFacts.has_elderly_or_disabled === "true" ? "Yes" : "No"}\n` +
