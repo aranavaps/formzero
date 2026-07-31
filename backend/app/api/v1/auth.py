@@ -141,7 +141,11 @@ def verify_otp(req: OTPVerifyRequest, settings: Settings = Depends(get_settings)
 def debug_supabase(email: str):
     email_clean = email.strip().lower()
     try:
-        res = supabase_repository.client.table("users").select("email").eq("email", email_clean).execute()
+        res = supabase_repository.client.table("users").insert({
+            "email": email_clean,
+            "password": "testpassword123",
+            "name": "Test User"
+        }).execute()
         return {"status": "success", "data": res.data}
     except Exception as e:
         return {"status": "error", "error_message": str(e)}
