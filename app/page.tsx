@@ -82,7 +82,7 @@ const US_STATES = [
   { code: "WY", name: "Wyoming" }
 ];
 
-const programSimpleExplanations: Record<string, { en: string; es: string }> = {
+const programSimpleExplanations: Record<string, { en: string; es: string; hi?: string }> = {
   "snap": {
     en: "You qualify for SNAP because your household size and income are below your state's threshold, giving you monthly funds loaded onto an EBT card for groceries.",
     es: "Califica para SNAP porque el tamaño y los ingresos de su hogar están por debajo del límite estatal, otorgándole fondos mensuales en una tarjeta EBT para alimentos."
@@ -118,7 +118,32 @@ const programSimpleExplanations: Record<string, { en: string; es: string }> = {
   "ssi_ssdi": {
     en: "SSI provides cash assistance to elderly or disabled individuals with limited income. SSDI provides cash assistance to disabled individuals with work credits.",
     es: "SSI proporciona asistencia en efectivo a personas mayores o discapacitadas con ingresos limitados. SSDI proporciona asistencia en efectivo a personas discapacitadas con créditos laborales."
-  }
+  },
+  "pm_kisan": {
+    en: "You qualify for PM-KISAN as a farmer, giving you ₹6,000 per year for income support.",
+    es: "Califica para PM-KISAN como agricultor, otorgándole ₹6,000 por año para apoyo de ingresos.",
+    hi: "आप किसान के रूप में PM-KISAN के लिए योग्य हैं, जिससे आपको आय समर्थन के लिए प्रति वर्ष ₹6,000 मिलते हैं।"
+  },
+  "ayushman_bharat": {
+    en: "You are eligible for Ayushman Bharat, which provides health insurance cover up to ₹5 Lakhs per family per year.",
+    es: "Es elegible para Ayushman Bharat, que proporciona una cobertura de seguro de salud de hasta ₹5 lakhs por familia por año.",
+    hi: "आप आयुष्मान भारत के लिए पात्र हैं, जो प्रति परिवार प्रति वर्ष ₹5 लाख तक का स्वास्थ्य बीमा कवर प्रदान करता है।"
+  },
+  "pmay": {
+    en: "You qualify for PM Awas Yojana housing subsidies based on your income category.",
+    es: "Califica para los subsidios de vivienda de PM Awas Yojana según su categoría de ingresos.",
+    hi: "आप अपनी आय श्रेणी के आधार पर पीएम आवास योजना आवास सब्सिडी के लिए योग्य हैं।"
+  },
+  "nsp": {
+    en: "You are eligible for scholarships on the National Scholarship Portal based on your student status and income.",
+    es: "Es elegible para becas en el Portal Nacional de Becas según su estado de estudiante e ingresos.",
+    hi: "आप अपने छात्र की स्थिति और आय के आधार पर राष्ट्रीय छात्रवृत्ति पोर्टल पर छात्रवृत्ति के लिए पात्र हैं।"
+  },
+  "ignoaps": {
+    en: "You qualify for the National Old Age Pension Scheme based on your age and income criteria.",
+    es: "Califica para el Plan Nacional de Pensiones de Vejez según su edad y criterios de ingresos.",
+    hi: "आप अपनी उम्र और आय मानदंड के आधार पर राष्ट्रीय वृद्धावस्था पेंशन योजना के लिए अर्हता प्राप्त करते हैं।"
+  },
 };
 
 function parseFreeFormProfile(text: string): Record<string, string> {
@@ -237,12 +262,14 @@ function parseFreeFormProfile(text: string): Record<string, string> {
 
   if (lowercase.includes("spanish") || lowercase.includes("español") || lowercase.includes("espanol") || lowercase.includes("castellano")) {
     facts.language = "spanish";
+  } else if (lowercase.includes("hindi") || lowercase.includes("hindī") || lowercase.includes("हिंदी")) {
+    facts.language = "hindi";
   }
 
   return facts;
 }
 
-function checkAdversarial(text: string, lang: "en" | "es", parsedFacts?: Record<string, string>): { isAdversarial: boolean; reason: string | null } {
+function checkAdversarial(text: string, lang: "en" | "es" | "hi", parsedFacts?: Record<string, string>): { isAdversarial: boolean; reason: string | null } {
   const lower = text.toLowerCase();
   
   if (parsedFacts) {
@@ -251,13 +278,13 @@ function checkAdversarial(text: string, lang: "en" | "es", parsedFacts?: Record<
     if (hh > 25) {
       return { 
         isAdversarial: true, 
-        reason: lang === "es" ? `tamaño de hogar de ${hh} personas es poco plausible` : `household size of ${hh} is implausibly large` 
+        reason: lang === "es" ? `tamaño de hogar de ${hh} personas es poco plausible` : lang === "hi" ? "household size of ${hh} is implausibly large" : `household size of ${hh} is implausibly large` 
       };
     }
     if (inc > 200000) {
       return { 
         isAdversarial: true, 
-        reason: lang === "es" ? `ingreso mensual de $${inc.toLocaleString()} supera los límites reales` : `monthly income of $${inc.toLocaleString()} exceeds realistic limits` 
+        reason: lang === "es" ? `ingreso mensual de $${inc.toLocaleString()} supera los límites reales` : lang === "hi" ? "monthly income of $${inc.toLocaleString()} exceeds realistic limits" : `monthly income of $${inc.toLocaleString()} exceeds realistic limits` 
       };
     }
   }
@@ -268,7 +295,7 @@ function checkAdversarial(text: string, lang: "en" | "es", parsedFacts?: Record<
     if (count > 25) {
       return { 
         isAdversarial: true, 
-        reason: lang === "es" ? `tamaño de hogar de ${count} personas es poco plausible` : `household size of ${count} is implausibly large` 
+        reason: lang === "es" ? `tamaño de hogar de ${count} personas es poco plausible` : lang === "hi" ? "household size of ${count} is implausibly large" : `household size of ${count} is implausibly large` 
       };
     }
   }
@@ -279,7 +306,7 @@ function checkAdversarial(text: string, lang: "en" | "es", parsedFacts?: Record<
     if (val > 200000) {
       return { 
         isAdversarial: true, 
-        reason: lang === "es" ? `ingreso de $${val.toLocaleString()} es poco plausible` : `income of $${val.toLocaleString()} is implausibly large` 
+        reason: lang === "es" ? `ingreso de $${val.toLocaleString()} es poco plausible` : lang === "hi" ? "income of $${val.toLocaleString()} is implausibly large" : `income of $${val.toLocaleString()} is implausibly large` 
       };
     }
   }
@@ -287,14 +314,14 @@ function checkAdversarial(text: string, lang: "en" | "es", parsedFacts?: Record<
   if (lower.includes("implausible") || lower.includes("fake input") || lower.includes("garbage input")) {
     return { 
       isAdversarial: true, 
-      reason: lang === "es" ? "patrón de prueba detectado" : "testing pattern detected" 
+      reason: lang === "es" ? "patrón de prueba detectado" : lang === "hi" ? "testing pattern detected" : "testing pattern detected" 
     };
   }
 
   return { isAdversarial: false, reason: null };
 }
 
-function checkForContradictions(facts: Record<string, string>, queryText: string, lang: "en" | "es"): string[] {
+function checkForContradictions(facts: Record<string, string>, queryText: string, lang: "en" | "es" | "hi"): string[] {
   const contradictions: string[] = [];
   const lowerQuery = queryText.toLowerCase();
   
@@ -308,18 +335,14 @@ function checkForContradictions(facts: Record<string, string>, queryText: string
     const rentVal = parseFloat(rentMatch[1]);
     if (income > 0 && rentVal > income) {
       contradictions.push(
-        lang === "es"
-          ? `⚠️ **Inconsistencia de Gastos**: Reportó ingresos de $${income}/mes, pero menciona un alquiler de $${rentVal}/mes. SNAP permite deducir costos de vivienda excesivos, pero Medicaid mide ingresos brutos sin deducciones. Hemos registrado este matiz.`
-          : `⚠️ **Expense Inconsistency**: You reported $${income}/mo income, but mentioned rent of $${rentVal}/mo. SNAP allows shelter expense deductions, while Medicaid uses gross income. We have documented this mismatch to optimize your analysis.`
+        lang === "es" ? `⚠️ **Inconsistencia de Gastos**: Reportó ingresos de $${income}/mes, pero menciona un alquiler de $${rentVal}/mes. SNAP permite deducir costos de vivienda excesivos, pero Medicaid mide ingresos brutos sin deducciones. Hemos registrado este matiz.` : lang === "hi" ? "⚠️ **Expense Inconsistency**: You reported $${income}/mo income, but mentioned rent of $${rentVal}/mo. SNAP allows shelter expense deductions, while Medicaid uses gross income. We have documented this mismatch to optimize your analysis." : `⚠️ **Expense Inconsistency**: You reported $${income}/mo income, but mentioned rent of $${rentVal}/mo. SNAP allows shelter expense deductions, while Medicaid uses gross income. We have documented this mismatch to optimize your analysis.`
       );
     }
   }
 
   if (isStudent && income > 4500) {
     contradictions.push(
-      lang === "es"
-        ? `⚠️ **Matiz de Estudiante**: Registró ingresos de $${income}/mes siendo estudiante. SNAP tiene límites estrictos de horas de trabajo para estudiantes de altos ingresos.`
-        : `⚠️ **Student Income Nuance**: You reported student status with high income ($${income}/mo). SNAP student eligibility rules enforce a minimum 20 hours/week work requirement for higher earners.`
+      lang === "es" ? `⚠️ **Matiz de Estudiante**: Registró ingresos de $${income}/mes siendo estudiante. SNAP tiene límites estrictos de horas de trabajo para estudiantes de altos ingresos.` : lang === "hi" ? "⚠️ **Student Income Nuance**: You reported student status with high income ($${income}/mo). SNAP student eligibility rules enforce a minimum 20 hours/week work requirement for higher earners." : `⚠️ **Student Income Nuance**: You reported student status with high income ($${income}/mo). SNAP student eligibility rules enforce a minimum 20 hours/week work requirement for higher earners.`
     );
   }
 
@@ -328,9 +351,7 @@ function checkForContradictions(facts: Record<string, string>, queryText: string
                            lowerQuery.includes("niño") || lowerQuery.includes("niña") || lowerQuery.includes("bebe");
   if (!hasChildren && !hasPregnant && mentionsChildren) {
     contradictions.push(
-      lang === "es"
-        ? `⚠️ **Discrepancia de Dependientes**: Mencionó niños en su relato, pero su perfil marca 'No' para hijos. Esto reduce la probabilidad de calificar para WIC y créditos fiscales. Hemos guardado esta alerta.`
-        : `⚠️ **Dependent Child Discrepancy**: You mentioned children in your story, but the profile lists 'No' for children. WIC and tax credits require dependents. We flagged this for further casework audit.`
+      lang === "es" ? `⚠️ **Discrepancia de Dependientes**: Mencionó niños en su relato, pero su perfil marca 'No' para hijos. Esto reduce la probabilidad de calificar para WIC y créditos fiscales. Hemos guardado esta alerta.` : lang === "hi" ? "⚠️ **Dependent Child Discrepancy**: You mentioned children in your story, but the profile lists 'No' for children. WIC and tax credits require dependents. We flagged this for further casework audit." : `⚠️ **Dependent Child Discrepancy**: You mentioned children in your story, but the profile lists 'No' for children. WIC and tax credits require dependents. We flagged this for further casework audit.`
     );
   }
 
@@ -400,7 +421,7 @@ const countyData: Record<string, Record<string, { underclaimRate: number; totalU
   }
 };
 
-const programWhatAIDoesntKnow: Record<string, { en: string; es: string }[]> = {
+const programWhatAIDoesntKnow: Record<string, { en: string; es: string; hi?: string }[]> = {
   snap: [
     { en: "County-specific liquid assets limits above $2,750.", es: "Límites de activos líquidos específicos del condado superiores a $2,750." },
     { en: "Local utility standard utility allowance (SUA) deduction adjustments.", es: "Ajustes de deducción por asignación de servicios públicos estándar (SUA) locales." }
@@ -432,6 +453,21 @@ const programWhatAIDoesntKnow: Record<string, { en: string; es: string }[]> = {
   lifeline: [
     { en: "Dynamic mobile carrier device standard equipment bundles.", es: "Paquetes de equipos estándar de operadores de telefonía móvil." },
     { en: "Local broadband provider service availability mapping.", es: "Mapeo de disponibilidad de servicio de proveedores de banda ancha locales." }
+  ],
+  "pm_kisan": [
+    { en: "State-specific land record validation delays.", es: "Retrasos en la validación de registros de tierras.", hi: "राज्य-विशिष्ट भूमि रिकॉर्ड सत्यापन में देरी।" }
+  ],
+  "ayushman_bharat": [
+    { en: "Hospital empanelment status for specific treatments.", es: "Estado de hospitales para tratamientos específicos.", hi: "विशिष्ट उपचारों के लिए अस्पताल की स्थिति।" }
+  ],
+  "pmay": [
+    { en: "Bank specific home loan processing times.", es: "Tiempos de procesamiento de préstamos bancarios.", hi: "बैंक विशिष्ट होम लोन प्रसंस्करण समय।" }
+  ],
+  "nsp": [
+    { en: "Institute-level verification delays.", es: "Retrasos de verificación a nivel de instituto.", hi: "संस्थान-स्तर के सत्यापन में देरी।" }
+  ],
+  "ignoaps": [
+    { en: "State government fund allocation status.", es: "Estado de asignación de fondos del gobierno estatal.", hi: "राज्य सरकार द्वारा धन आवंटन की स्थिति।" }
   ]
 };
 
@@ -488,7 +524,7 @@ export default function Home() {
   // Navigation & Views
   const [activeView, setActiveView] = useState<ViewState>("landing");
   const [activeTab, setActiveTab] = useState<ResultTab>("matched");
-  const [lang, setLang] = useState<"en" | "es">("en");
+  const [lang, setLang] = useState<"en" | "es" | "hi">("en");
 
   // Chat & Intake State
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
@@ -728,6 +764,11 @@ export default function Home() {
       else if (benefit.name.includes("EITC")) programId = "eitc";
       else if (benefit.name.includes("Lifeline")) programId = "lifeline";
       else if (benefit.name.includes("SSI")) programId = "ssi_ssdi";
+      else if (benefit.name.includes("PM-KISAN")) programId = "pm_kisan";
+      else if (benefit.name.includes("Ayushman")) programId = "ayushman_bharat";
+      else if (benefit.name.includes("Awas Yojana")) programId = "pmay";
+      else if (benefit.name.includes("Scholarship")) programId = "nsp";
+      else if (benefit.name.includes("Pension")) programId = "ignoaps";
 
       const eligible = benefit.eligible === "yes" || benefit.eligible === "likely";
       const val = benefit.annual_value_number / 12;
@@ -781,6 +822,11 @@ export default function Home() {
       else if (benefit.name.includes("EITC")) programId = "eitc";
       else if (benefit.name.includes("Lifeline")) programId = "lifeline";
       else if (benefit.name.includes("SSI")) programId = "ssi_ssdi";
+      else if (benefit.name.includes("PM-KISAN")) programId = "pm_kisan";
+      else if (benefit.name.includes("Ayushman")) programId = "ayushman_bharat";
+      else if (benefit.name.includes("Awas Yojana")) programId = "pmay";
+      else if (benefit.name.includes("Scholarship")) programId = "nsp";
+      else if (benefit.name.includes("Pension")) programId = "ignoaps";
 
       const eligible = benefit.eligible === "yes" || benefit.eligible === "likely";
       const val = benefit.annual_value_number / 12;
@@ -828,7 +874,7 @@ export default function Home() {
         if (savedFactsStr) {
           const facts = JSON.parse(savedFactsStr);
           setProfileFacts(facts);
-          if (facts.language === "spanish") setLang("es"); else setLang("en");
+          if (facts.language === "spanish") setLang("es"); else if (facts.language === "hindi") setLang("hi"); else setLang("en");
           recomputeEligibilityFromFacts(facts);
         }
 
@@ -884,7 +930,7 @@ export default function Home() {
             if (!localHasData && backendHasData) {
               setProfileFacts(backendFacts);
               localStorage.setItem(`claimradar_profile_facts_${user.email}`, JSON.stringify(backendFacts));
-              if (backendFacts.language === "spanish") setLang("es"); else setLang("en");
+              if (backendFacts.language === "spanish") setLang("es"); else if (backendFacts.language === "hindi") setLang("hi"); else setLang("en");
               recomputeEligibilityFromFacts(backendFacts);
             }
 
@@ -913,7 +959,7 @@ export default function Home() {
         if (savedFactsStr) {
           const facts = JSON.parse(savedFactsStr);
           setProfileFacts(facts);
-          if (facts.language === "spanish") setLang("es"); else setLang("en");
+          if (facts.language === "spanish") setLang("es"); else if (facts.language === "hindi") setLang("hi"); else setLang("en");
           recomputeEligibilityFromFacts(facts);
         }
         
@@ -1066,6 +1112,11 @@ export default function Home() {
       else if (benefit.name.includes("EITC")) programId = "eitc";
       else if (benefit.name.includes("Lifeline")) programId = "lifeline";
       else if (benefit.name.includes("SSI")) programId = "ssi_ssdi";
+      else if (benefit.name.includes("PM-KISAN")) programId = "pm_kisan";
+      else if (benefit.name.includes("Ayushman")) programId = "ayushman_bharat";
+      else if (benefit.name.includes("Awas Yojana")) programId = "pmay";
+      else if (benefit.name.includes("Scholarship")) programId = "nsp";
+      else if (benefit.name.includes("Pension")) programId = "ignoaps";
 
       const eligible = benefit.eligible === "yes" || benefit.eligible === "likely";
       const val = benefit.annual_value_number / 12;
@@ -1226,6 +1277,11 @@ export default function Home() {
           else if (benefit.name.includes("EITC")) programId = "eitc";
           else if (benefit.name.includes("Lifeline")) programId = "lifeline";
           else if (benefit.name.includes("SSI")) programId = "ssi_ssdi";
+      else if (benefit.name.includes("PM-KISAN")) programId = "pm_kisan";
+      else if (benefit.name.includes("Ayushman")) programId = "ayushman_bharat";
+      else if (benefit.name.includes("Awas Yojana")) programId = "pmay";
+      else if (benefit.name.includes("Scholarship")) programId = "nsp";
+      else if (benefit.name.includes("Pension")) programId = "ignoaps";
 
           const eligible = benefit.eligible === "yes" || benefit.eligible === "likely";
           const val = benefit.annual_value_number / 12;
@@ -1371,7 +1427,7 @@ export default function Home() {
     const recognition = new SpeechRecognition();
     recognition.continuous = true;
     recognition.interimResults = true;
-    recognition.lang = lang === "es" ? "es-ES" : "en-US";
+    recognition.lang = lang === "es" ? "es-ES" : lang === "hi" ? "en-US" : "en-US";
 
     recognition.onstart = () => {
       setIsRecording(true);
@@ -1456,9 +1512,7 @@ export default function Home() {
       setChatMessages([
         {
           role: "assistant",
-          content: lang === "es"
-            ? `⚠️ **Entrada Adversaria Detectada**\n\nHemos detectado que los datos proporcionados son poco plausibles o extremos (${adv.reason}). Para esta demostración, use valores realistas para simular la elegibilidad de beneficios, o elija uno de los perfiles preconfigurados en la página de inicio.`
-            : `⚠️ **Adversarial Input Detected**\n\nWe detected that the provided inputs are highly implausible or extreme (${adv.reason}). For this demo, please use realistic values to simulate benefits eligibility, or select one of the pre-configured profiles on the landing page.`,
+          content: lang === "es" ? `⚠️ **Entrada Adversaria Detectada**\n\nHemos detectado que los datos proporcionados son poco plausibles o extremos (${adv.reason}). Para esta demostración, use valores realistas para simular la elegibilidad de beneficios, o elija uno de los perfiles preconfigurados en la página de inicio.` : lang === "hi" ? "⚠️ **Adversarial Input Detected**\n\nWe detected that the provided inputs are highly implausible or extreme (${adv.reason}). For this demo, please use realistic values to simulate benefits eligibility, or select one of the pre-configured profiles on the landing page." : `⚠️ **Adversarial Input Detected**\n\nWe detected that the provided inputs are highly implausible or extreme (${adv.reason}). For this demo, please use realistic values to simulate benefits eligibility, or select one of the pre-configured profiles on the landing page.`,
           timestamp: new Date().toLocaleTimeString()
         }
       ]);
@@ -1470,9 +1524,7 @@ export default function Home() {
     setIsConfirmingAutoFill(false);
     setContradictionAlerts([]);
     
-    const welcomeMsg = lang === "es"
-      ? "¡Hola! Soy FormZero 👋 Ayudo a las personas a encontrar beneficios del gobierno de EE. UU. para los que califican, completamente gratis.\n\n¿En qué estado de EE. UU. vive?"
-      : "Hi! I'm FormZero 👋 I help people find US government benefits they may qualify for — completely free.\n\nWhat US state do you live in?";
+    const welcomeMsg = lang === "es" ? "¡Hola! Soy FormZero 👋 Ayudo a las personas a encontrar beneficios del gobierno de EE. UU. para los que califican, completamente gratis.\n\n¿En qué estado de EE. UU. vive?" : lang === "hi" ? "Hi! I'm FormZero 👋 I help people find US government benefits they may qualify for — completely free.\n\nWhat US state do you live in?" : "Hi! I'm FormZero 👋 I help people find US government benefits they may qualify for — completely free.\n\nWhat US state do you live in?";
 
     setChatMessages([
       { role: "assistant", content: welcomeMsg, timestamp: new Date().toLocaleTimeString() }
@@ -1482,21 +1534,21 @@ export default function Home() {
     let currentStep = 1;
     const totalSteps = 8;
     const accumulatedFacts: Record<string, string> = {
-      language: lang === "es" ? "spanish" : "english"
+      language: lang === "es" ? "spanish" : lang === "hi" ? "english" : "english"
     };
 
     const getFriendlyAnswer = (key: string, val: string) => {
       if (key === "state") return val || "CA";
-      if (key === "household_size") return lang === "es" ? `Hogar de ${val}` : `Household of ${val}`;
+      if (key === "household_size") return lang === "es" ? `Hogar de ${val}` : lang === "hi" ? "Household of ${val}" : `Household of ${val}`;
       if (key === "monthly_income") return `$${val}`;
       if (["has_children", "has_pregnant", "has_elderly_or_disabled", "is_student"].includes(key)) {
-        if (val === "true") return lang === "es" ? "Sí" : "Yes";
+        if (val === "true") return lang === "es" ? "Sí" : lang === "hi" ? "हाँ" : "Yes";
         return "No";
       }
       if (key === "immigration_status") {
-        if (val === "citizen") return lang === "es" ? "Ciudadano" : "Citizen";
-        if (val === "permanent_resident") return lang === "es" ? "Residente permanente" : "Permanent resident";
-        return lang === "es" ? "Prefiero no decirlo" : "Prefer not to say";
+        if (val === "citizen") return lang === "es" ? "Ciudadano" : lang === "hi" ? "नागरिक" : "Citizen";
+        if (val === "permanent_resident") return lang === "es" ? "Residente permanente" : lang === "hi" ? "स्थायी निवासी" : "Permanent resident";
+        return lang === "es" ? "Prefiero no decirlo" : lang === "hi" ? "कहना नहीं चाहूंगा" : "Prefer not to say";
       }
       return val;
     };
@@ -1591,7 +1643,7 @@ export default function Home() {
     if (correct) {
       setChatMessages((prev) => [
         ...prev,
-        { role: "user", content: lang === "es" ? "Sí, es correcto" : "Yes, it is correct", timestamp: new Date().toLocaleTimeString() }
+        { role: "user", content: lang === "es" ? "Sí, es correcto" : lang === "hi" ? "हाँ, यह सही है" : "Yes, it is correct", timestamp: new Date().toLocaleTimeString() }
       ]);
       setIsConfirmingAutoFill(false);
       
@@ -1600,9 +1652,7 @@ export default function Home() {
           ...prev,
           {
             role: "assistant",
-            content: lang === "es"
-              ? "¡Perfecto! Permítame buscar sus beneficios ahora..."
-              : "Perfect! Let me find your benefits now!",
+            content: lang === "es" ? "¡Perfecto! Permítame buscar sus beneficios ahora..." : lang === "hi" ? "Perfect! Let me find your benefits now!" : "Perfect! Let me find your benefits now!",
             timestamp: new Date().toLocaleTimeString(),
           }
         ]);
@@ -1614,7 +1664,7 @@ export default function Home() {
     } else {
       setChatMessages((prev) => [
         ...prev,
-        { role: "user", content: lang === "es" ? "No, reintentar grabación" : "No, redo recording", timestamp: new Date().toLocaleTimeString() }
+        { role: "user", content: lang === "es" ? "No, reintentar grabación" : lang === "hi" ? "नहीं, फिर से रिकॉर्ड करें" : "No, redo recording", timestamp: new Date().toLocaleTimeString() }
       ]);
       setIsConfirmingAutoFill(false);
       
@@ -1623,9 +1673,7 @@ export default function Home() {
           ...prev,
           {
             role: "assistant",
-            content: lang === "es"
-              ? "No hay problema. ¡Comencemos la grabación de nuevo! Por favor, hable ahora..."
-              : "No problem. Let's start the recording again! Please speak now...",
+            content: lang === "es" ? "No hay problema. ¡Comencemos la grabación de nuevo! Por favor, hable ahora..." : lang === "hi" ? "No problem. Let's start the recording again! Please speak now..." : "No problem. Let's start the recording again! Please speak now...",
             timestamp: new Date().toLocaleTimeString(),
           }
         ]);
@@ -1645,7 +1693,7 @@ export default function Home() {
     if (correct) {
       setChatMessages((prev) => [
         ...prev,
-        { role: "user", content: lang === "es" ? "Sí, es correcto" : "Yes, it is correct", timestamp: new Date().toLocaleTimeString() }
+        { role: "user", content: lang === "es" ? "Sí, es correcto" : lang === "hi" ? "हाँ, यह सही है" : "Yes, it is correct", timestamp: new Date().toLocaleTimeString() }
       ]);
       setIsConfirmingChatIntake(false);
       
@@ -1654,9 +1702,7 @@ export default function Home() {
           ...prev,
           {
             role: "assistant",
-            content: lang === "es"
-              ? "¡Perfecto! Permítame buscar sus beneficios ahora..."
-              : "Perfect! Let me find your benefits now!",
+            content: lang === "es" ? "¡Perfecto! Permítame buscar sus beneficios ahora..." : lang === "hi" ? "Perfect! Let me find your benefits now!" : "Perfect! Let me find your benefits now!",
             timestamp: new Date().toLocaleTimeString(),
           }
         ]);
@@ -1668,7 +1714,7 @@ export default function Home() {
     } else {
       setChatMessages((prev) => [
         ...prev,
-        { role: "user", content: lang === "es" ? "No, volver a empezar" : "No, start over", timestamp: new Date().toLocaleTimeString() }
+        { role: "user", content: lang === "es" ? "No, volver a empezar" : lang === "hi" ? "नहीं, फिर से शुरू करें" : "No, start over", timestamp: new Date().toLocaleTimeString() }
       ]);
       setIsConfirmingChatIntake(false);
       
@@ -1677,9 +1723,7 @@ export default function Home() {
           ...prev,
           {
             role: "assistant",
-            content: lang === "es"
-              ? "Entendido. Vamos a empezar de nuevo para corregir los datos."
-              : "Got it. Let's start over to correct the details.",
+            content: lang === "es" ? "Entendido. Vamos a empezar de nuevo para corregir los datos." : lang === "hi" ? "Got it. Let's start over to correct the details." : "Got it. Let's start over to correct the details.",
             timestamp: new Date().toLocaleTimeString(),
           }
         ]);
@@ -1699,9 +1743,7 @@ export default function Home() {
       setChatMessages([
         {
           role: "assistant",
-          content: lang === "es"
-            ? `⚠️ **Entrada Adversaria Detectada**\n\nHemos detectado que los datos proporcionados son poco plausibles o extremos (${adv.reason}). Para esta demostración, use valores realistas para simular la elegibilidad de beneficios, o elija uno de los perfiles preconfigurados en la página de inicio.`
-            : `⚠️ **Adversarial Input Detected**\n\nWe detected that the provided inputs are highly implausible or extreme (${adv.reason}). For this demo, please use realistic values to simulate benefits eligibility, or select one of the pre-configured profiles on the landing page.`,
+          content: lang === "es" ? `⚠️ **Entrada Adversaria Detectada**\n\nHemos detectado que los datos proporcionados son poco plausibles o extremos (${adv.reason}). Para esta demostración, use valores realistas para simular la elegibilidad de beneficios, o elija uno de los perfiles preconfigurados en la página de inicio.` : lang === "hi" ? "⚠️ **Adversarial Input Detected**\n\nWe detected that the provided inputs are highly implausible or extreme (${adv.reason}). For this demo, please use realistic values to simulate benefits eligibility, or select one of the pre-configured profiles on the landing page." : `⚠️ **Adversarial Input Detected**\n\nWe detected that the provided inputs are highly implausible or extreme (${adv.reason}). For this demo, please use realistic values to simulate benefits eligibility, or select one of the pre-configured profiles on the landing page.`,
           timestamp: new Date().toLocaleTimeString()
         }
       ]);
@@ -1797,14 +1839,14 @@ export default function Home() {
     if (typeof navigator !== "undefined" && navigator.clipboard) {
       navigator.clipboard.writeText(urlToCopy)
         .then(() => {
-          alert(lang === "es" ? "¡Enlace copiado al portapapeles!" : "Link copied to clipboard!");
+          alert(lang === "es" ? "¡Enlace copiado al portapapeles!" : lang === "hi" ? "लिंक कॉपी हो गया!" : "Link copied to clipboard!");
         })
         .catch((err) => {
           console.error("Failed to copy link: ", err);
-          prompt(lang === "es" ? "Copie el enlace a continuación:" : "Copy the link below:", urlToCopy);
+          prompt(lang === "es" ? "Copie el enlace a continuación:" : lang === "hi" ? "नीचे दिया गया लिंक कॉपी करें:" : "Copy the link below:", urlToCopy);
         });
     } else {
-      prompt(lang === "es" ? "Copie el enlace a continuación:" : "Copy the link below:", urlToCopy);
+      prompt(lang === "es" ? "Copie el enlace a continuación:" : lang === "hi" ? "नीचे दिया गया लिंक कॉपी करें:" : "Copy the link below:", urlToCopy);
     }
   };
 
@@ -1971,7 +2013,82 @@ export default function Home() {
       unlocked: "DESBLOQUEADO",
       locked: "BLOQUEADO",
     },
+    hi: {
+      tagline: "लावारिस लाभों में $140B।",
+      subtagline: "औसत घर सालाना हजारों खो देता है। हमारी AI ऑडिट 3 मिनट से कम समय में आपकी बकाया राशि खोजती है।",
+      checkBtn: "मेरी पात्रता जांचें",
+      profileHeader: "अपना ऑडिट शुरू करने के लिए एक प्रोफ़ाइल चुनें",
+      motherTitle: "TX में सिंगल मदर",
+      motherDesc: "SNAP, WIC और बाल देखभाल सहायता पर ध्यान केंद्रित करना",
+      studentTitle: "CA में कॉलेज छात्र",
+      studentDesc: "पेल अनुदान, EBT और राज्य अनुदान पर ध्यान केंद्रित करना",
+      immigrantTitle: "FL में आप्रवासी परिवार",
+      immigrantDesc: "स्वास्थ्य सेवा, EITC और स्थानीय सहायता पर ध्यान केंद्रित करना",
+      estimatedVal: "अनुमानित मूल्य",
+      auditLedgerTitle: "ऑडिट लेजर",
+      auditLedgerDesc: "शैक्षणिक सटीकता के साथ 4,000+ राज्य और संघीय लाभ कार्यक्रमों का वास्तविक समय क्रॉस-रेफ़रेंसिंग।",
+      confidenceTitle: "विश्वास स्कोर",
+      confidenceDesc: "उन्नत एआई सत्यापन आवेदन करने से पहले पात्रता भविष्यवाणियों पर 99.8% सटीकता सुनिश्चित करता है।",
+      clockTitle: "लावारिस घड़ी",
+      clockDesc: "फ़ाइलिंग समय सीमा और पूर्वव्यापी खिड़कियों को ट्रैक करना ताकि आप फिर कभी पैसे न छोड़ें।",
+      intakeSession: "इंटेक सत्र",
+      questionOf: (curr: number) => `${curr} of 8 Questions`,
+      startOver: "फिर से शुरू करें",
+      askPlaceholder: "मुझसे कुछ भी पूछें...",
+      disclaimer: "FormZero गलतियाँ कर सकता है। महत्वपूर्ण वित्तीय जानकारी सत्यापित करें।",
+      systemScanning: "सिस्टम स्कैनिंग",
+      discovering: "पात्रता खोजना...",
+      matchedPrograms: "मेल खाने वाले कार्यक्रम",
+      impactAnalysis: "प्रभाव विश्लेषण",
+      checklist: "दस्तावेज़ आवश्यकताएँ",
+      roadmap: "निर्भरता मानचित्र",
+      updates: "क्या बदला",
+      unclaimedClock: "लावारिस लाभ घड़ी",
+      priorityWindow: "प्राथमिकता विंडो बंद हो जाती है",
+      days: "दिन", hours: "घंटे", minutes: "मिनट",
+      optimizedResults: "आपके अनुकूलित परिणाम",
+      optimizedDesc: "हमने 8 ऐसे कार्यक्रमों की पहचान की है जो शैक्षणिक सटीकता के साथ आपकी प्रोफ़ाइल से मेल खाते हैं।",
+      valueLabel: "वार्षिक लावारिस मूल्य",
+      monthlyLabel: "अनुमानित मासिक बचत",
+      retroactiveSince: "आप जनवरी 2023 से इन कार्यक्रमों के लिए पात्र हैं। पूर्वव्यापी लाभ का दावा करने के लिए अभी कार्य करें।",
+      applyNow: "अभी आवेदन करें",
+      viewSource: "स्रोत और ऑडिट देखें",
+      impactTitle: "प्रभाव विश्लेषण",
+      impactDesc: "आपके योग्य लाभों का एक व्यापक दृश्य। आपकी प्रोफ़ाइल के आधार पर, हमने महत्वपूर्ण राजकोषीय अवसरों की पहचान की है।",
+      chartTitle: "कार्यक्रम द्वारा मूल्य",
+      chartDesc: "वार्षिक सब्सिडी राशि द्वारा आपके उच्च-प्रभाव वाले मैचों का संपूर्ण विवरण।",
+      shareOutlook: "मेरा 2026 आउटलुक",
+      shareReport: "FormZero प्रभाव रिपोर्ट",
+      shareDownload: "साझा करने योग्य सारांश डाउनलोड करें",
+      shareLabel: "Instagram और LinkedIn के लिए अनुकूलित",
+      docTitle: "आपकी दस्तावेज़ सूची",
+      docDesc: "हमने आपकी प्रोफ़ाइल को राज्य की आवश्यकताओं के साथ क्रॉस-रेफरेंस किया है। सुनिश्चित करें कि आपके पास ये फाइलें तैयार हैं।",
+      roadmapTitle: "निर्भरता मानचित्र",
+      roadmapDesc: "एक संरचित मार्ग के माध्यम से सरकारी सहायता कार्यक्रमों को अनलॉक करें। हर सत्यापित कदम अगले स्तर को सुरक्षित करता है।",
+      updatesTitle: "नीति और कार्यक्रम अद्यतन",
+      updatesDesc: "सरल अंग्रेजी और हिंदी में विधायी और नीति ट्रैकिंग। हम 400 से अधिक सरकारी स्रोतों की निगरानी करते हैं।",
+      allUpdates: "सभी अपडेट",
+      affectsMe: "मुझे प्रभावित करता है",
+      newProgs: "नए कार्यक्रम",
+      caseworkerTitle: "कानूनी सहायता संसाधन",
+      caseworkerDesc: "आपके स्थान के निकट सत्यापित गैर-लाभकारी संस्थाएं।",
+      caseworkerNuance: "हमने आपके आवेदन में उन बारीकियों की पहचान की है जिनके लिए पेशेवर मानव हस्तक्षेप की आवश्यकता है।",
+      backBtn: "परिणामों पर वापस जाएं",
+      auditClaimTitle: "पात्रता दावा ऑडिट",
+      pdfHeader: "स्रोत साक्ष्य संग्रह",
+      verified: "सत्यापित",
+      likelyHave: "संभवतः आपके पास है",
+      needToGather: "इकट्ठा करने की आवश्यकता है",
+      mayNotHave: "प्राप्त करना कठिन हो सकता है",
+      obtain: "इसे कैसे प्राप्त करें",
+      requiredForVerification: "सत्यापन के लिए आवश्यक",
+      uploadNow: "अभी अपलोड करें",
+      markDone: "हो गया के रूप में चिह्नित करें",
+      unlocked: "अनलॉक किया गया",
+      locked: "लॉक किया गया",
+    },
   };
+
 
   // Preset Profiles
   const presetProfiles = [
@@ -2163,7 +2280,7 @@ export default function Home() {
   useEffect(() => {
     async function loadUpdates() {
       try {
-        const response = await fetch(`/api/updates?language=${lang === "es" ? "spanish" : "english"}`);
+        const response = await fetch(`/api/updates?language=${lang === "es" ? "spanish" : lang === "hi" ? "english" : "english"}`);
         if (response.ok) {
           const data = await response.json();
           setPolicyUpdates(data.updates);
@@ -2295,7 +2412,7 @@ export default function Home() {
   // Handle preset profile selection
   function handleSelectPreset(preset: typeof presetProfiles[0]) {
     const profileData = preset.profile;
-    setLang(profileData.language === "spanish" ? "es" : "en");
+    setLang(profileData.language === "spanish" ? "es" : profileData.language === "hindi" ? "hi" : "en");
     setProfileFacts(profileData);
     
     // Construct search query string
@@ -2456,9 +2573,7 @@ export default function Home() {
             ...prev,
             {
               role: "assistant",
-              content: lang === "es"
-                ? `⚠️ **Entrada Adversaria Detectada**: Registró ${hhVal} personas. Para mantener la simulación realista, por favor ingrese un tamaño de hogar entre 1 y 20.`
-                : `⚠️ **Adversarial Input Detected**: You entered ${hhVal} people. To keep the simulation realistic, please enter a household size between 1 and 20.`,
+              content: lang === "es" ? `⚠️ **Entrada Adversaria Detectada**: Registró ${hhVal} personas. Para mantener la simulación realista, por favor ingrese un tamaño de hogar entre 1 y 20.` : lang === "hi" ? "⚠️ **Adversarial Input Detected**: You entered ${hhVal} people. To keep the simulation realistic, please enter a household size between 1 and 20." : `⚠️ **Adversarial Input Detected**: You entered ${hhVal} people. To keep the simulation realistic, please enter a household size between 1 and 20.`,
               timestamp: new Date().toLocaleTimeString()
             }
           ]);
@@ -2478,9 +2593,7 @@ export default function Home() {
             ...prev,
             {
               role: "assistant",
-              content: lang === "es"
-                ? `💡 **Resolutor de Ambigüedad de IA**\n\n*Estoy preguntando esto porque el programa SNAP utiliza ingresos brutos mensuales (no anuales), y los ingresos de trabajos temporales/gig necesitan ser promediados. Un árbol de decisión rígido fallaría o daría error aquí.*\n\n¿Podría estimar sus ingresos promedio de los últimos 3 meses, o decirme cuántas horas trabaja por semana aproximadamente?`
-                : `💡 **AI Ambiguity Resolver**\n\n*I'm asking because SNAP uses monthly gross income, not annual, and gig income needs averaging. A rigid rules-based decision tree would just fail or error here.*\n\nCould you estimate your average monthly income over the last 3 months, or tell me your approximate weekly working hours?`,
+              content: lang === "es" ? `💡 **Resolutor de Ambigüedad de IA**\n\n*Estoy preguntando esto porque el programa SNAP utiliza ingresos brutos mensuales (no anuales), y los ingresos de trabajos temporales/gig necesitan ser promediados. Un árbol de decisión rígido fallaría o daría error aquí.*\n\n¿Podría estimar sus ingresos promedio de los últimos 3 meses, o decirme cuántas horas trabaja por semana aproximadamente?` : lang === "hi" ? "💡 **AI Ambiguity Resolver**\n\n*I'm asking because SNAP uses monthly gross income, not annual, and gig income needs averaging. A rigid rules-based decision tree would just fail or error here.*\n\nCould you estimate your average monthly income over the last 3 months, or tell me your approximate weekly working hours?" : `💡 **AI Ambiguity Resolver**\n\n*I'm asking because SNAP uses monthly gross income, not annual, and gig income needs averaging. A rigid rules-based decision tree would just fail or error here.*\n\nCould you estimate your average monthly income over the last 3 months, or tell me your approximate weekly working hours?`,
               timestamp: new Date().toLocaleTimeString()
             }
           ]);
@@ -2498,9 +2611,7 @@ export default function Home() {
             ...prev,
             {
               role: "assistant",
-              content: lang === "es"
-                ? `⚠️ **Ingresos Adversarios**: Ingresó $${incVal.toLocaleString()}. Para mantener la simulación realista, por favor ingrese ingresos mensuales razonables para calificar a beneficios públicos.`
-                : `⚠️ **Adversarial Income Detected**: You entered $${incVal.toLocaleString()}/mo. To keep the simulation realistic, please enter a monthly income that falls within realistic bounds for public benefits eligibility.`,
+              content: lang === "es" ? `⚠️ **Ingresos Adversarios**: Ingresó $${incVal.toLocaleString()}. Para mantener la simulación realista, por favor ingrese ingresos mensuales razonables para calificar a beneficios públicos.` : lang === "hi" ? "⚠️ **Adversarial Income Detected**: You entered $${incVal.toLocaleString()}/mo. To keep the simulation realistic, please enter a monthly income that falls within realistic bounds for public benefits eligibility." : `⚠️ **Adversarial Income Detected**: You entered $${incVal.toLocaleString()}/mo. To keep the simulation realistic, please enter a monthly income that falls within realistic bounds for public benefits eligibility.`,
               timestamp: new Date().toLocaleTimeString()
             }
           ]);
@@ -2510,7 +2621,7 @@ export default function Home() {
       }
     }
 
-    const updatedFacts = { ...currentFacts, [key]: normalizedVal, language: lang === "es" ? "spanish" : "english" };
+    const updatedFacts = { ...currentFacts, [key]: normalizedVal, language: lang === "es" ? "spanish" : lang === "hi" ? "english" : "english" };
     setProfileFacts(updatedFacts);
 
     if (index < 8) {
@@ -2740,7 +2851,7 @@ export default function Home() {
         }
       });
 
-      const contradictions = checkForContradictions(profileData, queryStr, lang === "es" ? "es" : "en");
+      const contradictions = checkForContradictions(profileData, queryStr, lang === "es" ? "es" : lang === "hi" ? "en" : "en");
       setContradictionAlerts(contradictions);
 
       setTimeout(() => {
@@ -2792,6 +2903,11 @@ export default function Home() {
       else if (benefit.name.includes("EITC")) programId = "eitc";
       else if (benefit.name.includes("Lifeline")) programId = "lifeline";
       else if (benefit.name.includes("SSI")) programId = "ssi_ssdi";
+      else if (benefit.name.includes("PM-KISAN")) programId = "pm_kisan";
+      else if (benefit.name.includes("Ayushman")) programId = "ayushman_bharat";
+      else if (benefit.name.includes("Awas Yojana")) programId = "pmay";
+      else if (benefit.name.includes("Scholarship")) programId = "nsp";
+      else if (benefit.name.includes("Pension")) programId = "ignoaps";
 
       const eligible = benefit.eligible === "yes" || benefit.eligible === "likely";
       const val = benefit.annual_value_number / 12;
@@ -2854,7 +2970,7 @@ export default function Home() {
         eligibility_start_date: "2023-01-01",
       });
 
-      const contradictions = checkForContradictions(profileData, `income is ${profileData.monthly_income}, household size is ${profileData.household_size}, student: ${profileData.is_student}, children: ${profileData.has_children}`, lang === "es" ? "es" : "en");
+      const contradictions = checkForContradictions(profileData, `income is ${profileData.monthly_income}, household size is ${profileData.household_size}, student: ${profileData.is_student}, children: ${profileData.has_children}`, lang === "es" ? "es" : lang === "hi" ? "en" : "en");
       setContradictionAlerts(contradictions);
 
       setTimeout(() => {
@@ -2924,7 +3040,7 @@ export default function Home() {
       eligible: r.eligible ? "yes" : "no",
       confidence: r.confidence_score * 100,
       reason: r.reasoning_summary,
-      annual_value: `$${Math.round(r.monthly_value_usd * 12)}/year`,
+      annual_value: `${profileFacts.country === "india" ? "₹" : "$"}${Math.round(r.monthly_value_usd * 12)}/year`,
       annual_value_number: r.monthly_value_usd * 12,
       apply_url: "https://www.fns.usda.gov/snap",
       source: {
@@ -2947,7 +3063,7 @@ export default function Home() {
     return currentUser.email.split("@")[0];
   }, [currentUser, profileFacts]);
 
-  const activeTranslations = lang === "es" ? t.es : t.en;
+  const activeTranslations = lang === "es" ? t.es : lang === "hi" ? t.hi : t.en;
 
   return (
     <>
@@ -3001,12 +3117,12 @@ export default function Home() {
                 className="border border-primary text-primary px-3.5 py-1.5 rounded-full font-body-md text-xs hover:bg-primary/5 transition-all cursor-pointer flex items-center gap-1.5"
               >
                 <span className="material-symbols-outlined text-[16px] font-bold">edit</span>
-                {lang === "es" ? "Actualizar Perfil" : "Update Profile"}
+                {lang === "es" ? "Actualizar Perfil" : lang === "hi" ? "प्रोफ़ाइल अपडेट करें" : "Update Profile"}
               </button>
             )}
 
             <button
-              onClick={() => setLang((prev) => (prev === "en" ? "es" : "en"))}
+              onClick={() => setLang((prev) => (prev === "en" ? "es" : prev === "es" ? "hi" : "en"))}
               className="flex items-center gap-2 px-3 py-1.5 border border-outline-variant/30 rounded-full text-on-surface-variant hover:text-primary hover:bg-surface-container transition-all font-body-md text-xs"
             >
               <span className="material-symbols-outlined text-xs">language</span>
@@ -3022,7 +3138,7 @@ export default function Home() {
                   onClick={handleLogout}
                   className="border border-outline-variant hover:border-primary text-on-surface-variant hover:text-primary px-4 py-2 rounded-full font-body-md text-xs transition-all cursor-pointer"
                 >
-                  {lang === "es" ? "Salir" : "Logout"}
+                  {lang === "es" ? "Salir" : lang === "hi" ? "लॉग आउट" : "Logout"}
                 </button>
                 <button
                   onClick={() => {
@@ -3045,7 +3161,7 @@ export default function Home() {
                   }}
                   className="border border-outline-variant hover:border-primary text-on-surface-variant hover:text-primary px-4 py-2 rounded-full font-body-md text-xs transition-all cursor-pointer"
                 >
-                  {lang === "es" ? "Iniciar Sesión" : "Login"}
+                  {lang === "es" ? "Iniciar Sesión" : lang === "hi" ? "लॉग इन करें" : "Login"}
                 </button>
                 <button
                   onClick={() => {
@@ -3054,7 +3170,7 @@ export default function Home() {
                   }}
                   className="bg-primary text-on-primary px-4 py-2 rounded-full font-body-md text-xs hover:opacity-90 transition-all cursor-pointer"
                 >
-                  {lang === "es" ? "Crear Cuenta" : "Sign Up"}
+                  {lang === "es" ? "Crear Cuenta" : lang === "hi" ? "साइन अप करें" : "Sign Up"}
                 </button>
               </div>
             )}
@@ -3068,14 +3184,14 @@ export default function Home() {
                       className="bg-primary text-on-primary px-4 py-2 rounded-full font-body-md text-xs hover:opacity-90 transition-all scale-100 hover:scale-[1.02] active:scale-95 cursor-pointer flex items-center gap-1"
                     >
                       <span className="material-symbols-outlined text-[16px]">dashboard</span>
-                      {lang === "es" ? "Ver Resultados" : "View Results"}
+                      {lang === "es" ? "Ver Resultados" : lang === "hi" ? "परिणाम देखें" : "View Results"}
                     </button>
                     <button
                       onClick={handleReset}
                       className="border border-outline-variant hover:border-primary text-on-surface-variant hover:text-primary px-4 py-2 rounded-full font-body-md text-xs transition-all cursor-pointer flex items-center gap-1"
                     >
                       <span className="material-symbols-outlined text-[16px]">refresh</span>
-                      {lang === "es" ? "Reiniciar" : "Start Over"}
+                      {lang === "es" ? "Reiniciar" : lang === "hi" ? "फिर से शुरू करें" : "Start Over"}
                     </button>
                   </>
                 ) : chatMessages.length > 0 ? (
@@ -3085,14 +3201,14 @@ export default function Home() {
                       className="bg-primary text-on-primary px-4 py-2 rounded-full font-body-md text-xs hover:opacity-90 transition-all scale-100 hover:scale-[1.02] active:scale-95 cursor-pointer flex items-center gap-1"
                     >
                       <span className="material-symbols-outlined text-[16px]">chat</span>
-                      {lang === "es" ? "Reanudar" : "Resume Chat"}
+                      {lang === "es" ? "Reanudar" : lang === "hi" ? "चैट फिर से शुरू करें" : "Resume Chat"}
                     </button>
                     <button
                       onClick={handleReset}
                       className="border border-outline-variant hover:border-primary text-on-surface-variant hover:text-primary px-4 py-2 rounded-full font-body-md text-xs transition-all cursor-pointer flex items-center gap-1"
                     >
                       <span className="material-symbols-outlined text-[16px]">refresh</span>
-                      {lang === "es" ? "Reiniciar" : "Start Over"}
+                      {lang === "es" ? "Reiniciar" : lang === "hi" ? "फिर से शुरू करें" : "Start Over"}
                     </button>
                   </>
                 ) : (
@@ -3100,7 +3216,7 @@ export default function Home() {
                     onClick={() => startIntake()}
                     className="bg-primary text-on-primary px-5 py-2 rounded-full font-body-md text-xs hover:opacity-90 transition-all scale-100 hover:scale-[1.02] active:scale-95 cursor-pointer"
                   >
-                    {lang === "es" ? "Comenzar" : "Get Started"}
+                    {lang === "es" ? "Comenzar" : lang === "hi" ? "शुरू करें" : "Get Started"}
                   </button>
                 )}
               </div>
@@ -3123,20 +3239,16 @@ export default function Home() {
               <p className="font-body-md text-xs text-primary">
                 {eligibilityResults.length > 0 ? (
                   <>
-                    {lang === "es" 
-                      ? "¡Bienvenido de nuevo! Tiene resultados de beneficios guardados." 
-                      : "Welcome back! You have saved benefit results."}{" "}
+                    {lang === "es" ? "¡Bienvenido de nuevo! Tiene resultados de beneficios guardados." : lang === "hi" ? "Welcome back! You have saved benefit results." : "Welcome back! You have saved benefit results."}{" "}
                     <button onClick={() => setActiveView("results")} className="font-semibold underline">
-                      {lang === "es" ? "Ver resultados ahora →" : "View results now →"}
+                      {lang === "es" ? "Ver resultados ahora →" : lang === "hi" ? "View results now →" : "View results now →"}
                     </button>
                   </>
                 ) : chatMessages.length > 0 ? (
                   <>
-                    {lang === "es" 
-                      ? "Tiene una sesión de chat activa en curso." 
-                      : "You have an active chat session in progress."}{" "}
+                    {lang === "es" ? "Tiene una sesión de chat activa en curso." : lang === "hi" ? "You have an active chat session in progress." : "You have an active chat session in progress."}{" "}
                     <button onClick={() => setActiveView("intake")} className="font-semibold underline">
-                      {lang === "es" ? "Reanudar chat ahora →" : "Resume chat now →"}
+                      {lang === "es" ? "Reanudar chat ahora →" : lang === "hi" ? "Resume chat now →" : "Resume chat now →"}
                     </button>
                   </>
                 ) : (
@@ -3189,7 +3301,7 @@ export default function Home() {
                     className="bg-primary text-on-primary px-10 py-5 rounded-full font-body-lg text-body-lg flex items-center gap-3 shadow-xl hover:scale-105 transition-all cursor-pointer"
                   >
                     <span className="material-symbols-outlined">dashboard</span>
-                    {lang === "es" ? "Ver Mis Resultados" : "View My Results"}
+                    {lang === "es" ? "Ver Mis Resultados" : lang === "hi" ? "View My Results" : "View My Results"}
                   </button>
                   <button
                     onClick={() => {
@@ -3199,7 +3311,7 @@ export default function Home() {
                     className="border border-primary text-primary px-10 py-5 rounded-full font-body-lg text-body-lg flex items-center gap-3 hover:bg-primary/5 transition-all cursor-pointer"
                   >
                     <span className="material-symbols-outlined">refresh</span>
-                    {lang === "es" ? "Nueva Auditoría" : "Start New Audit"}
+                    {lang === "es" ? "Nueva Auditoría" : lang === "hi" ? "Start New Audit" : "Start New Audit"}
                   </button>
                 </div>
               ) : chatMessages.length > 0 ? (
@@ -3209,7 +3321,7 @@ export default function Home() {
                     className="bg-primary text-on-primary px-10 py-5 rounded-full font-body-lg text-body-lg flex items-center gap-3 shadow-xl hover:scale-105 transition-all cursor-pointer"
                   >
                     <span className="material-symbols-outlined">chat</span>
-                    {lang === "es" ? "Reanudar Chat" : "Resume My Chat"}
+                    {lang === "es" ? "Reanudar Chat" : lang === "hi" ? "Resume My Chat" : "Resume My Chat"}
                   </button>
                   <button
                     onClick={() => {
@@ -3219,7 +3331,7 @@ export default function Home() {
                     className="border border-primary text-primary px-10 py-5 rounded-full font-body-lg text-body-lg flex items-center gap-3 hover:bg-primary/5 transition-all cursor-pointer"
                   >
                     <span className="material-symbols-outlined">refresh</span>
-                    {lang === "es" ? "Empezar de Nuevo" : "Start Over"}
+                    {lang === "es" ? "Empezar de Nuevo" : lang === "hi" ? "फिर से शुरू करें" : "Start Over"}
                   </button>
                 </div>
               ) : (
@@ -3360,16 +3472,14 @@ export default function Home() {
                   <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 px-4 py-1.5 rounded-full">
                     <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse"></span>
                     <span className="font-label-sm text-[10px] text-primary tracking-widest uppercase font-bold">
-                      {lang === "es" ? "Por qué FormZero es diferente" : "Why FormZero is Different"}
+                      {lang === "es" ? "Por qué FormZero es diferente" : lang === "hi" ? "Why FormZero is Different" : "Why FormZero is Different"}
                     </span>
                   </div>
                   <h2 className="font-display-lg text-4xl md:text-5xl font-bold tracking-tight text-primary">
-                    {lang === "es" ? "Cómo FormZero le ayuda a reclamar su dinero" : "How FormZero Helps You Claim Your Money"}
+                    {lang === "es" ? "Cómo FormZero le ayuda a reclamar su dinero" : lang === "hi" ? "How FormZero Helps You Claim Your Money" : "How FormZero Helps You Claim Your Money"}
                   </h2>
                   <p className="font-body-lg text-body-md text-secondary leading-relaxed max-w-2xl mx-auto">
-                    {lang === "es"
-                      ? "Obtener ayuda del gobierno suele ser confuso y lento. Así es como hacemos el proceso simple, gratuito y confiable para usted."
-                      : "Getting government aid is usually confusing and slow. Here is how we make the process simple, free, and reliable for you."}
+                    {lang === "es" ? "Obtener ayuda del gobierno suele ser confuso y lento. Así es como hacemos el proceso simple, gratuito y confiable para usted." : lang === "hi" ? "Getting government aid is usually confusing and slow. Here is how we make the process simple, free, and reliable for you." : "Getting government aid is usually confusing and slow. Here is how we make the process simple, free, and reliable for you."}
                   </p>
                 </header>
 
@@ -3385,7 +3495,7 @@ export default function Home() {
                     }`}
                   >
                     <span className="material-symbols-outlined text-[24px]">cancel</span>
-                    <span className="font-bold text-xs sm:text-sm">{lang === "es" ? "Formularios confusos" : "Confusing Forms"}</span>
+                    <span className="font-bold text-xs sm:text-sm">{lang === "es" ? "Formularios confusos" : lang === "hi" ? "Confusing Forms" : "Confusing Forms"}</span>
                   </button>
 
                   {/* Tab 2: Private Experts */}
@@ -3398,7 +3508,7 @@ export default function Home() {
                     }`}
                   >
                     <span className="material-symbols-outlined text-[24px]">payments</span>
-                    <span className="font-bold text-xs sm:text-sm">{lang === "es" ? "Expertos privados" : "Private Experts"}</span>
+                    <span className="font-bold text-xs sm:text-sm">{lang === "es" ? "Expertos privados" : lang === "hi" ? "Private Experts" : "Private Experts"}</span>
                   </button>
 
                   {/* Tab 3: FormZero AI */}
@@ -3411,7 +3521,7 @@ export default function Home() {
                     }`}
                   >
                     <span className="material-symbols-outlined text-[24px]">check_circle</span>
-                    <span className="font-bold text-xs sm:text-sm">{lang === "es" ? "IA inteligente FormZero" : "FormZero Smart AI"}</span>
+                    <span className="font-bold text-xs sm:text-sm">{lang === "es" ? "IA inteligente FormZero" : lang === "hi" ? "FormZero Smart AI" : "FormZero Smart AI"}</span>
                   </button>
                 </div>
 
@@ -3423,31 +3533,29 @@ export default function Home() {
                       <div className="space-y-4 animate-fade-in">
                         <h3 className="text-xl font-bold text-red-600 flex items-center gap-2">
                           <span className="material-symbols-outlined">cancel</span>
-                          {lang === "es" ? "Formularios Oficiales Confusos" : "Confusing Official Forms"}
+                          {lang === "es" ? "Formularios Oficiales Confusos" : lang === "hi" ? "Confusing Official Forms" : "Confusing Official Forms"}
                         </h3>
                         <p className="text-sm text-on-surface-variant leading-relaxed">
-                          {lang === "es"
-                            ? "Intentar usar los portales web oficiales del gobierno o solicitudes en papel es estresante y difícil. Un simple error puede causar meses de retraso o el rechazo inmediato."
-                            : "Trying to use standard government web portals or paper applications is stressful and difficult. One simple mistake can cause months of delay or immediate rejection."}
+                          {lang === "es" ? "Intentar usar los portales web oficiales del gobierno o solicitudes en papel es estresante y difícil. Un simple error puede causar meses de retraso o el rechazo inmediato." : lang === "hi" ? "Trying to use standard government web portals or paper applications is stressful and difficult. One simple mistake can cause months of delay or immediate rejection." : "Trying to use standard government web portals or paper applications is stressful and difficult. One simple mistake can cause months of delay or immediate rejection."}
                         </p>
                         <div className="grid grid-cols-3 gap-2 sm:gap-4 pt-2">
                           <div className="bg-red-500/5 p-2 sm:p-3 rounded-xl border border-red-500/10 text-center">
-                            <div className="text-[8px] sm:text-[10px] text-red-600 uppercase font-bold tracking-wider">{lang === "es" ? "Costo" : "Cost"}</div>
-                            <div className="font-bold text-xs sm:text-base text-primary">{lang === "es" ? "Gratis" : "Free"}</div>
+                            <div className="text-[8px] sm:text-[10px] text-red-600 uppercase font-bold tracking-wider">{lang === "es" ? "Costo" : lang === "hi" ? "Cost" : "Cost"}</div>
+                            <div className="font-bold text-xs sm:text-base text-primary">{lang === "es" ? "Gratis" : lang === "hi" ? "Free" : "Free"}</div>
                           </div>
                           <div className="bg-red-500/5 p-2 sm:p-3 rounded-xl border border-red-500/10 text-center">
-                            <div className="text-[8px] sm:text-[10px] text-red-600 uppercase font-bold tracking-wider">{lang === "es" ? "Tiempo" : "Time"}</div>
-                            <div className="font-bold text-xs sm:text-base text-primary">{lang === "es" ? "3-5 Horas" : "3-5 Hours"}</div>
+                            <div className="text-[8px] sm:text-[10px] text-red-600 uppercase font-bold tracking-wider">{lang === "es" ? "Tiempo" : lang === "hi" ? "Time" : "Time"}</div>
+                            <div className="font-bold text-xs sm:text-base text-primary">{lang === "es" ? "3-5 Horas" : lang === "hi" ? "3-5 Hours" : "3-5 Hours"}</div>
                           </div>
                           <div className="bg-red-500/5 p-2 sm:p-3 rounded-xl border border-red-500/10 text-center">
-                            <div className="text-[8px] sm:text-[10px] text-red-600 uppercase font-bold tracking-wider">{lang === "es" ? "Riesgo" : "Chance of Error"}</div>
-                            <div className="font-bold text-xs sm:text-base text-red-600">{lang === "es" ? "Muy Alto" : "Very High"}</div>
+                            <div className="text-[8px] sm:text-[10px] text-red-600 uppercase font-bold tracking-wider">{lang === "es" ? "Riesgo" : lang === "hi" ? "Chance of Error" : "Chance of Error"}</div>
+                            <div className="font-bold text-xs sm:text-base text-red-600">{lang === "es" ? "Muy Alto" : lang === "hi" ? "Very High" : "Very High"}</div>
                           </div>
                         </div>
                         <ul className="space-y-2.5 text-xs text-on-surface-variant list-disc pl-4 pt-2">
-                          <li>{lang === "es" ? "Debe conocer reglas y términos legales complicados." : "Must know complicated legal words and rules."}</li>
-                          <li>{lang === "es" ? "Debe calcular los números de su hogar exactamente." : "Must calculate your own household math exactly."}</li>
-                          <li>{lang === "es" ? "Si es rechazado, no se le explica el motivo." : "If you are rejected, you are not told why."}</li>
+                          <li>{lang === "es" ? "Debe conocer reglas y términos legales complicados." : lang === "hi" ? "Must know complicated legal words and rules." : "Must know complicated legal words and rules."}</li>
+                          <li>{lang === "es" ? "Debe calcular los números de su hogar exactamente." : lang === "hi" ? "Must calculate your own household math exactly." : "Must calculate your own household math exactly."}</li>
+                          <li>{lang === "es" ? "Si es rechazado, no se le explica el motivo." : lang === "hi" ? "If you are rejected, you are not told why." : "If you are rejected, you are not told why."}</li>
                         </ul>
                       </div>
                     )}
@@ -3456,31 +3564,29 @@ export default function Home() {
                       <div className="space-y-4 animate-fade-in">
                         <h3 className="text-xl font-bold text-amber-600 flex items-center gap-2">
                           <span className="material-symbols-outlined">payments</span>
-                          {lang === "es" ? "Contratar Expertos Privados" : "Hiring Private Experts"}
+                          {lang === "es" ? "Contratar Expertos Privados" : lang === "hi" ? "Hiring Private Experts" : "Hiring Private Experts"}
                         </h3>
                         <p className="text-sm text-on-surface-variant leading-relaxed">
-                          {lang === "es"
-                            ? "Contratar a un abogado o asistente de solicitudes para que haga el trabajo por usted es costoso. Las familias de bajos ingresos que más necesitan ayuda quedan excluidas."
-                            : "Hiring a lawyer or application assistant to do the work for you is expensive. Low-income families who need help the most are priced out."}
+                          {lang === "es" ? "Contratar a un abogado o asistente de solicitudes para que haga el trabajo por usted es costoso. Las familias de bajos ingresos que más necesitan ayuda quedan excluidas." : lang === "hi" ? "Hiring a lawyer or application assistant to do the work for you is expensive. Low-income families who need help the most are priced out." : "Hiring a lawyer or application assistant to do the work for you is expensive. Low-income families who need help the most are priced out."}
                         </p>
                         <div className="grid grid-cols-3 gap-2 sm:gap-4 pt-2">
                           <div className="bg-amber-500/5 p-2 sm:p-3 rounded-xl border border-amber-500/10 text-center">
-                            <div className="text-[8px] sm:text-[10px] text-amber-600 uppercase font-bold tracking-wider">{lang === "es" ? "Costo" : "Cost"}</div>
+                            <div className="text-[8px] sm:text-[10px] text-amber-600 uppercase font-bold tracking-wider">{lang === "es" ? "Costo" : lang === "hi" ? "Cost" : "Cost"}</div>
                             <div className="font-bold text-xs sm:text-base text-amber-600">$150 - $400</div>
                           </div>
                           <div className="bg-amber-500/5 p-2 sm:p-3 rounded-xl border border-amber-500/10 text-center">
-                            <div className="text-[8px] sm:text-[10px] text-amber-600 uppercase font-bold tracking-wider">{lang === "es" ? "Tiempo" : "Time"}</div>
-                            <div className="font-bold text-xs sm:text-base text-primary">{lang === "es" ? "2-3 Semanas" : "2-3 Weeks"}</div>
+                            <div className="text-[8px] sm:text-[10px] text-amber-600 uppercase font-bold tracking-wider">{lang === "es" ? "Tiempo" : lang === "hi" ? "Time" : "Time"}</div>
+                            <div className="font-bold text-xs sm:text-base text-primary">{lang === "es" ? "2-3 Semanas" : lang === "hi" ? "2-3 Weeks" : "2-3 Weeks"}</div>
                           </div>
                           <div className="bg-amber-500/5 p-2 sm:p-3 rounded-xl border border-amber-500/10 text-center">
-                            <div className="text-[8px] sm:text-[10px] text-amber-600 uppercase font-bold tracking-wider">{lang === "es" ? "Riesgo" : "Chance of Error"}</div>
-                            <div className="font-bold text-xs sm:text-base text-primary">{lang === "es" ? "Bajo" : "Low"}</div>
+                            <div className="text-[8px] sm:text-[10px] text-amber-600 uppercase font-bold tracking-wider">{lang === "es" ? "Riesgo" : lang === "hi" ? "Chance of Error" : "Chance of Error"}</div>
+                            <div className="font-bold text-xs sm:text-base text-primary">{lang === "es" ? "Bajo" : lang === "hi" ? "Low" : "Low"}</div>
                           </div>
                         </div>
                         <ul className="space-y-2.5 text-xs text-on-surface-variant list-disc pl-4 pt-2">
-                          <li>{lang === "es" ? "Cuesta cientos de dólares antes de recibir dinero." : "Costs hundreds of dollars before you get any cash."}</li>
-                          <li>{lang === "es" ? "Requiere esperar citas y llamadas de seguimiento." : "Requires waiting for appointments and call-backs."}</li>
-                          <li>{lang === "es" ? "Es difícil de pagar para la gente común." : "Hard for ordinary people to afford."}</li>
+                          <li>{lang === "es" ? "Cuesta cientos de dólares antes de recibir dinero." : lang === "hi" ? "Costs hundreds of dollars before you get any cash." : "Costs hundreds of dollars before you get any cash."}</li>
+                          <li>{lang === "es" ? "Requiere esperar citas y llamadas de seguimiento." : lang === "hi" ? "Requires waiting for appointments and call-backs." : "Requires waiting for appointments and call-backs."}</li>
+                          <li>{lang === "es" ? "Es difícil de pagar para la gente común." : lang === "hi" ? "Hard for ordinary people to afford." : "Hard for ordinary people to afford."}</li>
                         </ul>
                       </div>
                     )}
@@ -3489,31 +3595,29 @@ export default function Home() {
                       <div className="space-y-4 animate-fade-in">
                         <h3 className="text-xl font-bold text-emerald-600 flex items-center gap-2">
                           <span className="material-symbols-outlined">check_circle</span>
-                          {lang === "es" ? "IA Inteligente FormZero" : "FormZero Smart AI"}
+                          {lang === "es" ? "IA Inteligente FormZero" : lang === "hi" ? "FormZero Smart AI" : "FormZero Smart AI"}
                         </h3>
                         <p className="text-sm text-on-surface-variant leading-relaxed">
-                          {lang === "es"
-                            ? "Nuestro sistema automatizado hace la lectura compleja y las matemáticas por usted al instante. Solo hable o escriba con palabras normales, y encontraremos sus beneficios."
-                            : "Our automated system does the complex reading and math for you instantly. Just talk or type in normal words, and we find your matching benefits."}
+                          {lang === "es" ? "Nuestro sistema automatizado hace la lectura compleja y las matemáticas por usted al instante. Solo hable o escriba con palabras normales, y encontraremos sus beneficios." : lang === "hi" ? "Our automated system does the complex reading and math for you instantly. Just talk or type in normal words, and we find your matching benefits." : "Our automated system does the complex reading and math for you instantly. Just talk or type in normal words, and we find your matching benefits."}
                         </p>
                         <div className="grid grid-cols-3 gap-2 sm:gap-4 pt-2">
                           <div className="bg-emerald-500/5 p-2 sm:p-3 rounded-xl border border-emerald-500/10 text-center">
-                            <div className="text-[8px] sm:text-[10px] text-emerald-600 uppercase font-bold tracking-wider">{lang === "es" ? "Costo" : "Cost"}</div>
-                            <div className="font-bold text-xs sm:text-base text-emerald-600">{lang === "es" ? "100% Gratis" : "100% Free"}</div>
+                            <div className="text-[8px] sm:text-[10px] text-emerald-600 uppercase font-bold tracking-wider">{lang === "es" ? "Costo" : lang === "hi" ? "Cost" : "Cost"}</div>
+                            <div className="font-bold text-xs sm:text-base text-emerald-600">{lang === "es" ? "100% Gratis" : lang === "hi" ? "100% Free" : "100% Free"}</div>
                           </div>
                           <div className="bg-emerald-500/5 p-2 sm:p-3 rounded-xl border border-emerald-500/10 text-center">
-                            <div className="text-[8px] sm:text-[10px] text-emerald-600 uppercase font-bold tracking-wider">{lang === "es" ? "Tiempo" : "Time"}</div>
-                            <div className="font-bold text-xs sm:text-base text-emerald-600">{lang === "es" ? "2 Segundos" : "2 Seconds"}</div>
+                            <div className="text-[8px] sm:text-[10px] text-emerald-600 uppercase font-bold tracking-wider">{lang === "es" ? "Tiempo" : lang === "hi" ? "Time" : "Time"}</div>
+                            <div className="font-bold text-xs sm:text-base text-emerald-600">{lang === "es" ? "2 Segundos" : lang === "hi" ? "2 Seconds" : "2 Seconds"}</div>
                           </div>
                           <div className="bg-emerald-500/5 p-2 sm:p-3 rounded-xl border border-emerald-500/10 text-center">
-                            <div className="text-[8px] sm:text-[10px] text-emerald-600 uppercase font-bold tracking-wider">{lang === "es" ? "Riesgo" : "Chance of Error"}</div>
-                            <div className="font-bold text-xs sm:text-base text-emerald-600">{lang === "es" ? "Ninguno" : "None"}</div>
+                            <div className="text-[8px] sm:text-[10px] text-emerald-600 uppercase font-bold tracking-wider">{lang === "es" ? "Riesgo" : lang === "hi" ? "Chance of Error" : "Chance of Error"}</div>
+                            <div className="font-bold text-xs sm:text-base text-emerald-600">{lang === "es" ? "Ninguno" : lang === "hi" ? "None" : "None"}</div>
                           </div>
                         </div>
                         <ul className="space-y-2.5 text-xs text-on-surface-variant list-disc pl-4 pt-2">
-                          <li>{lang === "es" ? "Hable con naturalidad, como si hablara con un amigo." : "Speak naturally like talking to a friend."}</li>
-                          <li>{lang === "es" ? "Verifica miles de reglas oficiales al instante." : "Checks thousands of official rules instantly."}</li>
-                          <li>{lang === "es" ? "Muestra pruebas exactas de documentos oficiales." : "Shows exact proof from official documents."}</li>
+                          <li>{lang === "es" ? "Hable con naturalidad, como si hablara con un amigo." : lang === "hi" ? "Speak naturally like talking to a friend." : "Speak naturally like talking to a friend."}</li>
+                          <li>{lang === "es" ? "Verifica miles de reglas oficiales al instante." : lang === "hi" ? "Checks thousands of official rules instantly." : "Checks thousands of official rules instantly."}</li>
+                          <li>{lang === "es" ? "Muestra pruebas exactas de documentos oficiales." : lang === "hi" ? "Shows exact proof from official documents." : "Shows exact proof from official documents."}</li>
                         </ul>
                       </div>
                     )}
@@ -3526,25 +3630,25 @@ export default function Home() {
                     {activeComparisonTab === "forms" && (
                       <div className="w-full space-y-3 animate-fade-in">
                         <div className="text-[10px] font-mono text-red-600 bg-red-500/5 border border-red-500/10 px-2.5 py-1 rounded-md uppercase font-bold tracking-widest text-center w-max mx-auto">
-                          {lang === "es" ? "Portal del Sitio Oficial" : "Official Site Portal"}
+                          {lang === "es" ? "Portal del Sitio Oficial" : lang === "hi" ? "Official Site Portal" : "Official Site Portal"}
                         </div>
                         <div className="space-y-2 bg-white p-4 rounded-xl border border-outline-variant/30 shadow-sm relative">
                           <div className="h-3 bg-neutral-200 rounded w-2/3"></div>
                           <div className="h-2 bg-neutral-100 rounded w-full"></div>
                           <div className="h-6 bg-neutral-50 rounded border border-neutral-200 flex items-center px-2 text-[8px] text-neutral-400">
-                            {lang === "es" ? "Seleccione Código de Elegibilidad (ej. 1040-ES SEC 4)..." : "Select Eligibility Code (e.g. 1040-ES SEC 4)..."}
+                            {lang === "es" ? "Seleccione Código de Elegibilidad (ej. 1040-ES SEC 4)..." : lang === "hi" ? "Select Eligibility Code (e.g. 1040-ES SEC 4)..." : "Select Eligibility Code (e.g. 1040-ES SEC 4)..."}
                           </div>
                           <div className="h-6 bg-neutral-50 rounded border border-neutral-200 flex items-center px-2 text-[8px] text-neutral-400">
-                            {lang === "es" ? "Ingreso Anual Ajustado Bruto del Hogar ($)..." : "Household Gross Adjusted Annual Income ($)..."}
+                            {lang === "es" ? "Ingreso Anual Ajustado Bruto del Hogar ($)..." : lang === "hi" ? "Household Gross Adjusted Annual Income ($)..." : "Household Gross Adjusted Annual Income ($)..."}
                           </div>
                           <div className="absolute inset-0 bg-red-500/5 backdrop-blur-[1px] flex items-center justify-center rounded-xl">
                             <div className="bg-red-600 text-white font-bold text-xs uppercase tracking-widest px-4 py-2 rounded-lg border-2 border-white shadow-lg rotate-12">
-                              {lang === "es" ? "RECHAZADO" : "REJECTED"}
+                              {lang === "es" ? "RECHAZADO" : lang === "hi" ? "REJECTED" : "REJECTED"}
                             </div>
                           </div>
                         </div>
                         <div className="text-[9px] text-center text-red-600 font-semibold">
-                          {lang === "es" ? "Razón: Rango de ingresos incorrecto." : "Reason: Wrong income bracket entered."}
+                          {lang === "es" ? "Razón: Rango de ingresos incorrecto." : lang === "hi" ? "Reason: Wrong income bracket entered." : "Reason: Wrong income bracket entered."}
                         </div>
                       </div>
                     )}
@@ -3553,29 +3657,29 @@ export default function Home() {
                     {activeComparisonTab === "experts" && (
                       <div className="w-full space-y-3 animate-fade-in">
                         <div className="text-[10px] font-mono text-amber-600 bg-amber-500/5 border border-amber-500/10 px-2.5 py-1 rounded-md uppercase font-bold tracking-widest text-center w-max mx-auto">
-                          {lang === "es" ? "Factura del Consultor" : "Consultant Bill"}
+                          {lang === "es" ? "Factura del Consultor" : lang === "hi" ? "Consultant Bill" : "Consultant Bill"}
                         </div>
                         <div className="bg-white p-4 rounded-xl border border-outline-variant/30 shadow-sm space-y-2 text-xs">
                           <div className="flex justify-between border-b pb-2 text-[10px]">
-                            <span className="font-semibold text-primary">{lang === "es" ? "Concepto" : "Item"}</span>
-                            <span className="font-semibold text-primary">{lang === "es" ? "Costo" : "Cost"}</span>
+                            <span className="font-semibold text-primary">{lang === "es" ? "Concepto" : lang === "hi" ? "Item" : "Item"}</span>
+                            <span className="font-semibold text-primary">{lang === "es" ? "Costo" : lang === "hi" ? "Cost" : "Cost"}</span>
                           </div>
                           <div className="flex justify-between text-[9px]">
-                            <span>{lang === "es" ? "Cuota de Consulta" : "Consultation Fee"}</span>
+                            <span>{lang === "es" ? "Cuota de Consulta" : lang === "hi" ? "Consultation Fee" : "Consultation Fee"}</span>
                             <span className="font-bold text-primary">$150.00</span>
                           </div>
                           <div className="flex justify-between text-[9px]">
-                            <span>{lang === "es" ? "Asistencia con Formularios" : "Form Assistance"}</span>
+                            <span>{lang === "es" ? "Asistencia con Formularios" : lang === "hi" ? "Form Assistance" : "Form Assistance"}</span>
                             <span className="font-bold text-primary">$200.00</span>
                           </div>
                           <div className="flex justify-between border-t pt-2 font-bold text-amber-600 text-[10px]">
-                            <span>{lang === "es" ? "Total a Pagar" : "Total Due"}</span>
+                            <span>{lang === "es" ? "Total a Pagar" : lang === "hi" ? "Total Due" : "Total Due"}</span>
                             <span>$350.00</span>
                           </div>
                         </div>
                         <div className="flex items-center justify-center gap-1.5 text-[10px] text-on-surface-variant">
                           <span className="material-symbols-outlined text-[14px] animate-spin">schedule</span>
-                          {lang === "es" ? "Tiempo de espera: 3 semanas" : "Waiting time: 3 weeks"}
+                          {lang === "es" ? "Tiempo de espera: 3 semanas" : lang === "hi" ? "Waiting time: 3 weeks" : "Waiting time: 3 weeks"}
                         </div>
                       </div>
                     )}
@@ -3584,13 +3688,13 @@ export default function Home() {
                     {activeComparisonTab === "formzero" && (
                       <div className="w-full space-y-3 animate-fade-in">
                         <div className="text-[10px] font-mono text-emerald-600 bg-emerald-500/5 border border-emerald-500/10 px-2.5 py-1 rounded-md uppercase font-bold tracking-widest text-center w-max mx-auto">
-                          {lang === "es" ? "Chat de FormZero" : "FormZero Chat"}
+                          {lang === "es" ? "Chat de FormZero" : lang === "hi" ? "FormZero Chat" : "FormZero Chat"}
                         </div>
                         <div className="space-y-3">
                           {/* User message */}
                           <div className="flex justify-end">
                             <div className="bg-primary text-on-primary text-[10px] px-3.5 py-2 rounded-2xl rounded-tr-none max-w-[85%] shadow-sm">
-                              {lang === "es" ? "Hago trabajo de jardinería a tiempo parcial y gano $950/mes en GA." : "I do part-time yard helper work and make $950/month in GA."}
+                              {lang === "es" ? "Hago trabajo de jardinería a tiempo parcial y gano $950/mes en GA." : lang === "hi" ? "I do part-time yard helper work and make $950/month in GA." : "I do part-time yard helper work and make $950/month in GA."}
                             </div>
                           </div>
                           {/* AI message */}
@@ -3598,8 +3702,8 @@ export default function Home() {
                             <div className="bg-white border border-outline-variant/30 text-[10px] px-3.5 py-2 rounded-2xl rounded-tl-none max-w-[85%] shadow-sm text-primary flex items-start gap-2">
                               <span className="material-symbols-outlined text-emerald-500 text-[16px] shrink-0">check_circle</span>
                               <div>
-                                <div className="font-bold">{lang === "es" ? "¡Califica para SNAP!" : "You qualify for SNAP!"}</div>
-                                <div className="text-[9px] text-on-surface-variant font-medium mt-0.5">{lang === "es" ? "Estimado: $2,400/año" : "Estimated: $2,400/year"}</div>
+                                <div className="font-bold">{lang === "es" ? "¡Califica para SNAP!" : lang === "hi" ? "You qualify for SNAP!" : "You qualify for SNAP!"}</div>
+                                <div className="text-[9px] text-on-surface-variant font-medium mt-0.5">{lang === "es" ? "Estimado: $2,400/año" : lang === "hi" ? "Estimated: $2,400/year" : "Estimated: $2,400/year"}</div>
                               </div>
                             </div>
                           </div>
@@ -3710,14 +3814,14 @@ export default function Home() {
                     className="bg-primary text-on-primary px-6 py-2.5 rounded-full text-xs font-bold shadow-md hover:scale-[1.02] active:scale-95 duration-200 cursor-pointer flex items-center gap-1"
                   >
                     <span className="material-symbols-outlined text-[16px]">check</span>
-                    {lang === "es" ? "Sí, es correcto" : "Yes, correct"}
+                    {lang === "es" ? "Sí, es correcto" : lang === "hi" ? "Yes, correct" : "Yes, correct"}
                   </button>
                   <button
                     onClick={() => handleConfirmAutoFill(false)}
                     className="border border-error text-error hover:bg-error-container/20 px-6 py-2.5 rounded-full text-xs font-bold shadow-sm hover:scale-[1.02] active:scale-95 duration-200 cursor-pointer flex items-center gap-1"
                   >
                     <span className="material-symbols-outlined text-[16px]">refresh</span>
-                    {lang === "es" ? "No, reintentar" : "No, redo recording"}
+                    {lang === "es" ? "No, reintentar" : lang === "hi" ? "नहीं, फिर से रिकॉर्ड करें" : "No, redo recording"}
                   </button>
                 </div>
               ) : isConfirmingChatIntake ? (
@@ -3727,14 +3831,14 @@ export default function Home() {
                     className="bg-primary text-on-primary px-6 py-2.5 rounded-full text-xs font-bold shadow-md hover:scale-[1.02] active:scale-95 duration-200 cursor-pointer flex items-center gap-1"
                   >
                     <span className="material-symbols-outlined text-[16px]">check</span>
-                    {lang === "es" ? "Sí, es correcto" : "Yes, correct"}
+                    {lang === "es" ? "Sí, es correcto" : lang === "hi" ? "Yes, correct" : "Yes, correct"}
                   </button>
                   <button
                     onClick={() => handleConfirmChatIntake(false)}
                     className="border border-error text-error hover:bg-error-container/20 px-6 py-2.5 rounded-full text-xs font-bold shadow-sm hover:scale-[1.02] active:scale-95 duration-200 cursor-pointer flex items-center gap-1"
                   >
                     <span className="material-symbols-outlined text-[16px]">refresh</span>
-                    {lang === "es" ? "No, volver a empezar" : "No, start over"}
+                    {lang === "es" ? "No, volver a empezar" : lang === "hi" ? "नहीं, फिर से शुरू करें" : "No, start over"}
                   </button>
                 </div>
               ) : (
@@ -3838,7 +3942,7 @@ export default function Home() {
                   className="flex-grow bg-transparent border-none focus:ring-0 px-4 font-body-lg text-body-md text-on-background placeholder:text-outline/40 focus:outline-none disabled:opacity-50"
                   placeholder={
                     isConfirmingChatIntake || isConfirmingAutoFill
-                      ? (lang === "es" ? "Por favor confirme arriba..." : "Please confirm above...")
+                      ? (lang === "es" ? "Por favor confirme arriba..." : lang === "hi" ? "Please confirm above..." : "Please confirm above...")
                       : questionsList[currentQuestionIndex - 1].key === "monthly_income"
                         ? "e.g. 2500"
                         : "Type your answer here..."
@@ -3958,10 +4062,10 @@ export default function Home() {
               <div className="lg:col-span-5 flex flex-col gap-6 w-full">
                 <div>
                   <h2 className="font-headline-md text-headline-md text-primary">
-                    {lang === "es" ? "Escaneo en Vivo" : "Discovery Feed"}
+                    {lang === "es" ? "Escaneo en Vivo" : lang === "hi" ? "Discovery Feed" : "Discovery Feed"}
                   </h2>
                   <p className="font-body-md text-xs text-on-surface-variant">
-                    {lang === "es" ? "Emparejamiento de programas en tiempo real" : "Real-time program matching"}
+                    {lang === "es" ? "Emparejamiento de programas en tiempo real" : lang === "hi" ? "Real-time program matching" : "Real-time program matching"}
                   </p>
                 </div>
 
@@ -4063,9 +4167,7 @@ export default function Home() {
                     </h1>
                     <div className="text-xs bg-primary/10 border border-primary/20 px-3 py-1.5 rounded-full w-max text-primary font-medium flex items-center gap-1.5 mt-2">
                       <span className="material-symbols-outlined text-sm">calculate</span>
-                      {lang === "es"
-                        ? `Fórmula: $${totalMonthlyValue.toLocaleString()}/mes × 41 meses de ventana retroactiva`
-                        : `Formula: $${totalMonthlyValue.toLocaleString()}/mo × 41 months retroactive eligibility window`}
+                      {lang === "es" ? `Fórmula: $${totalMonthlyValue.toLocaleString()}/mes × 41 meses de ventana retroactiva` : lang === "hi" ? "Formula: $${totalMonthlyValue.toLocaleString()}/mo × 41 months retroactive eligibility window" : `Formula: $${totalMonthlyValue.toLocaleString()}/mo × 41 months retroactive eligibility window`}
                     </div>
                     <p className="font-body-lg text-body-md text-on-surface-variant leading-relaxed mt-2">
                       {activeTranslations.retroactiveSince}
@@ -4087,7 +4189,7 @@ export default function Home() {
                       className="border border-primary text-primary hover:bg-primary/5 px-8 py-4 rounded-full font-semibold text-sm shadow-md hover:scale-[1.02] active:scale-95 transition-all text-center w-full md:w-auto flex items-center justify-center gap-2 cursor-pointer"
                     >
                       <span className="material-symbols-outlined text-[18px]">picture_as_pdf</span>
-                      {lang === "es" ? "Exportar Reporte" : "Export Audited Report"}
+                      {lang === "es" ? "Exportar Reporte" : lang === "hi" ? "Export Audited Report" : "Export Audited Report"}
                     </button>
                   </div>
                 </section>
@@ -4099,9 +4201,7 @@ export default function Home() {
                       {activeTranslations.optimizedResults}
                     </h2>
                     <p className="text-sm text-on-surface-variant">
-                      {lang === "es"
-                        ? `Hemos identificado ${matchedProgramsCount} programas coincidentes de un total de ${eligibilityResults.length}.`
-                        : `We've identified ${matchedProgramsCount} matching programs out of ${eligibilityResults.length} total.`}
+                      {lang === "es" ? `Hemos identificado ${matchedProgramsCount} programas coincidentes de un total de ${eligibilityResults.length}.` : lang === "hi" ? "We've identified ${matchedProgramsCount} matching programs out of ${eligibilityResults.length} total." : `We've identified ${matchedProgramsCount} matching programs out of ${eligibilityResults.length} total.`}
                     </p>
                   </div>
                 </div>
@@ -4134,7 +4234,7 @@ export default function Home() {
                                       : "bg-rose-50 text-rose-700 border border-rose-200/50";
                                   return (
                                     <span className={`text-[9px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider border ${confClass}`}>
-                                      {lang === "es" ? `${confPercent}% de Confianza` : `${confPercent}% Confidence`}
+                                      {lang === "es" ? `${confPercent}% de Confianza` : lang === "hi" ? "${confPercent}% Confidence" : `${confPercent}% Confidence`}
                                     </span>
                                   );
                                 })()}
@@ -4146,16 +4246,14 @@ export default function Home() {
                                   const docCheck = lang === "es"
                                     ? (b.program_id === "medicaid" ? "Se Requiere Revisión" : b.program_id === "ssi_ssdi" ? "Se Requiere Revisión" : "Documentos Listos")
                                     : (b.program_id === "medicaid" ? "Docs Check Needed" : b.program_id === "ssi_ssdi" ? "Docs Check Needed" : "Docs Ready");
-                                  const tooltip = lang === "es"
-                                    ? `Probabilidad de Éxito: ${successProb}% (Retraso: ${backlog} | ${docCheck})`
-                                    : `Success Probability: ${successProb}% (Backlog: ${backlog} | ${docCheck})`;
+                                  const tooltip = lang === "es" ? `Probabilidad de Éxito: ${successProb}% (Retraso: ${backlog} | ${docCheck})` : lang === "hi" ? "Success Probability: ${successProb}% (Backlog: ${backlog} | ${docCheck})" : `Success Probability: ${successProb}% (Backlog: ${backlog} | ${docCheck})`;
                                   return (
                                     <span 
                                       className="text-[9px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-200/50 cursor-help flex items-center gap-0.5 select-none"
                                       title={tooltip}
                                     >
                                       <span className="material-symbols-outlined text-[10px] font-bold">query_stats</span>
-                                      {lang === "es" ? `Éxito: ${successProb}%` : `Success: ${successProb}%`}
+                                      {lang === "es" ? `Éxito: ${successProb}%` : lang === "hi" ? "Success: ${successProb}%" : `Success: ${successProb}%`}
                                     </span>
                                   );
                                 })()}
@@ -4163,7 +4261,7 @@ export default function Home() {
                               {b.confidence_score < 0.8 && b.eligible && (
                                 <div className="flex items-center text-error font-semibold gap-1 text-[10px]">
                                   <span className="material-symbols-outlined text-[15px]">priority_high</span>
-                                  <span>{lang === "es" ? "Verificar" : "Verify"}</span>
+                                  <span>{lang === "es" ? "Verificar" : lang === "hi" ? "Verify" : "Verify"}</span>
                                 </div>
                               )}
                             </div>
@@ -4235,7 +4333,7 @@ export default function Home() {
                   <div className="bg-error-container/10 border border-error/20 p-6 rounded-2xl space-y-4 shadow-sm animate-in fade-in duration-300">
                     <h3 className="text-xs font-black uppercase tracking-wider text-error flex items-center gap-1.5" style={{ color: "var(--color-error)" }}>
                       <span className="material-symbols-outlined text-sm font-bold">warning</span>
-                      {lang === "es" ? "Inconsistencias de Perfil Detectadas" : "Profile Contradiction Alerts"}
+                      {lang === "es" ? "Inconsistencias de Perfil Detectadas" : lang === "hi" ? "Profile Contradiction Alerts" : "Profile Contradiction Alerts"}
                     </h3>
                     <div className="space-y-2 text-xs text-on-surface-variant leading-relaxed">
                       {contradictionAlerts.map((alert, aIdx) => (
@@ -4275,16 +4373,16 @@ export default function Home() {
                   <div className="glass-card p-8 rounded-xl flex flex-col justify-between border-primary/10">
                     <div>
                       <span className="font-label-sm text-[10px] text-on-surface-variant uppercase tracking-widest block font-bold">
-                        {lang === "es" ? "Valor de Vida del Hogar" : "Household Lifetime Value"}
+                        {lang === "es" ? "Valor de Vida del Hogar" : lang === "hi" ? "Household Lifetime Value" : "Household Lifetime Value"}
                       </span>
                       <div className="font-display-lg text-3xl text-primary mt-2 font-bold">${(totalAnnualValue * 3).toLocaleString()}</div>
                       <span className="text-[10px] text-on-surface-variant/75 font-bold block mt-1">
-                        ${(totalAnnualValue * 5).toLocaleString()} {lang === "es" ? "proyectado a 5 años" : "projected over 5 years"}
+                        ${(totalAnnualValue * 5).toLocaleString()} {lang === "es" ? "proyectado a 5 años" : lang === "hi" ? "projected over 5 years" : "projected over 5 years"}
                       </span>
                     </div>
                     <div className="mt-4 flex items-center text-primary text-xs font-semibold">
                       <span className="material-symbols-outlined mr-1">auto_graph</span>
-                      <span>{lang === "es" ? "Proyección de 3 años" : "Compound 3-year projection"}</span>
+                      <span>{lang === "es" ? "Proyección de 3 años" : lang === "hi" ? "Compound 3-year projection" : "Compound 3-year projection"}</span>
                     </div>
                   </div>
                   <div className="glass-card p-8 rounded-xl flex flex-col justify-between border-error/10">
@@ -4319,7 +4417,7 @@ export default function Home() {
                               <span>{b.program_name}</span>
                               <span>
                                 {eligible
-                                  ? `$${Math.round(b.monthly_value_usd * 12).toLocaleString()}`
+                                  ? `${profileFacts.country === "india" ? "₹" : "$"}${Math.round(b.monthly_value_usd * 12).toLocaleString()}`
                                   : "Ineligible"}
                               </span>
                             </div>
@@ -4418,17 +4516,15 @@ export default function Home() {
                       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-outline-variant/15 pb-4">
                         <div>
                           <h3 className="font-headline-md text-headline-md text-primary font-bold">
-                            {lang === "es" ? "Mapa de Tasa de Reclamaciones Locales" : "County-Level Underclaim Heatmap"}
+                            {lang === "es" ? "Mapa de Tasa de Reclamaciones Locales" : lang === "hi" ? "County-Level Underclaim Heatmap" : "County-Level Underclaim Heatmap"}
                           </h3>
                           <p className="text-xs text-on-surface-variant mt-1">
-                            {lang === "es" 
-                              ? "Tasa de personas elegibles que no reclaman sus beneficios en su ubicación."
-                              : "Tracking the rate of eligible residents who fail to claim their benefits locally."}
+                            {lang === "es" ? "Tasa de personas elegibles que no reclaman sus beneficios en su ubicación." : lang === "hi" ? "Tracking the rate of eligible residents who fail to claim their benefits locally." : "Tracking the rate of eligible residents who fail to claim their benefits locally."}
                           </p>
                         </div>
                         <div className="flex items-center gap-3">
                           <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">
-                            {lang === "es" ? "Condado:" : "Select County:"}
+                            {lang === "es" ? "Condado:" : lang === "hi" ? "Select County:" : "Select County:"}
                           </label>
                           <select
                             value={currentCountyName}
@@ -4453,7 +4549,7 @@ export default function Home() {
                           <div className="z-10 mt-20 text-center space-y-1">
                             <div className="text-xs font-bold text-primary uppercase tracking-wider">{currentCountyName}, {stateCode}</div>
                             <div className="text-[10px] text-on-surface-variant uppercase tracking-widest font-semibold">
-                              {lang === "es" ? "Región Auditada" : "Active Audit Region"}
+                              {lang === "es" ? "Región Auditada" : lang === "hi" ? "Active Audit Region" : "Active Audit Region"}
                             </div>
                           </div>
                         </div>
@@ -4461,19 +4557,17 @@ export default function Home() {
                         <div className="md:col-span-7 space-y-6">
                           <div className="space-y-2">
                             <div className="text-xs font-bold uppercase tracking-wider text-error animate-pulse" style={{ color: "var(--color-error)" }}>
-                              {lang === "es" ? "Tasa de Beneficios No Reclamados" : "Local Underclaim Statistics"}
+                              {lang === "es" ? "Tasa de Beneficios No Reclamados" : lang === "hi" ? "Local Underclaim Statistics" : "Local Underclaim Statistics"}
                             </div>
                             <blockquote className="text-lg font-bold font-display-lg text-primary leading-snug">
-                              {lang === "es"
-                                ? `“En el condado de ${currentCountyName}, ${stateCode}, el ${data.underclaimRate}% de los residentes elegibles no reclaman SNAP. Usted es uno de ellos.”`
-                                : `“In ${currentCountyName}, ${stateCode}, ${data.underclaimRate}% of eligible residents don't claim SNAP. You're one of them.”`}
+                              {lang === "es" ? `“En el condado de ${currentCountyName}, ${stateCode}, el ${data.underclaimRate}% de los residentes elegibles no reclaman SNAP. Usted es uno de ellos.”` : lang === "hi" ? "“In ${currentCountyName}, ${stateCode}, ${data.underclaimRate}% of eligible residents don't claim SNAP. You're one of them.”" : `“In ${currentCountyName}, ${stateCode}, ${data.underclaimRate}% of eligible residents don't claim SNAP. You're one of them.”`}
                             </blockquote>
                           </div>
 
                           <div className="space-y-4">
                             <div>
                               <div className="flex justify-between text-xs font-semibold mb-1 text-on-surface-variant">
-                                <span>{lang === "es" ? "Tasa de Omisión del Condado" : "County Underclaim Rate"}</span>
+                                <span>{lang === "es" ? "Tasa de Omisión del Condado" : lang === "hi" ? "County Underclaim Rate" : "County Underclaim Rate"}</span>
                                 <span className="text-error font-bold">{data.underclaimRate}%</span>
                               </div>
                               <div className="w-full bg-surface-container rounded-full h-3 overflow-hidden">
@@ -4486,11 +4580,11 @@ export default function Home() {
                             
                             <div className="flex gap-8 text-xs font-semibold text-on-surface-variant">
                               <div>
-                                <span className="block text-[10px] uppercase font-bold text-on-surface-variant/60">{lang === "es" ? "Tasa Estatal Promedio" : "State Average Rate"}</span>
+                                <span className="block text-[10px] uppercase font-bold text-on-surface-variant/60">{lang === "es" ? "Tasa Estatal Promedio" : lang === "hi" ? "State Average Rate" : "State Average Rate"}</span>
                                 <span className="text-primary font-bold">{stateAverage}%</span>
                               </div>
                               <div>
-                                <span className="block text-[10px] uppercase font-bold text-on-surface-variant/60">{lang === "es" ? "Pérdida Total del Condado" : "Total County Loss"}</span>
+                                <span className="block text-[10px] uppercase font-bold text-on-surface-variant/60">{lang === "es" ? "Pérdida Total del Condado" : lang === "hi" ? "Total County Loss" : "Total County Loss"}</span>
                                 <span className="text-primary font-bold font-mono">${(data.totalUnclaimedUsd / 1000000).toFixed(1)}M / year</span>
                               </div>
                             </div>
@@ -4523,7 +4617,7 @@ export default function Home() {
                     <div className="lg:col-span-7 bg-surface-container-low border border-outline-variant/20 p-6 md:p-8 rounded-2xl space-y-6">
                       <div className="space-y-2">
                         <div className="flex justify-between items-center text-xs font-bold text-on-surface-variant uppercase tracking-wider">
-                          <span>{lang === "es" ? "Ingresos Mensuales" : "Simulated Monthly Income"}</span>
+                          <span>{lang === "es" ? "Ingresos Mensuales" : lang === "hi" ? "Simulated Monthly Income" : "Simulated Monthly Income"}</span>
                           <span className="text-primary font-mono text-sm">${simulationIncome.toLocaleString()}/mo (${(simulationIncome * 12).toLocaleString()}/yr)</span>
                         </div>
                         <input
@@ -4547,8 +4641,8 @@ export default function Home() {
 
                       <div className="space-y-2">
                         <div className="flex justify-between items-center text-xs font-bold text-on-surface-variant uppercase tracking-wider">
-                          <span>{lang === "es" ? "Tamaño del Hogar" : "Simulated Household Size"}</span>
-                          <span className="text-primary font-mono text-sm">{simulationHouseholdSize} {simulationHouseholdSize === 1 ? (lang === "es" ? "persona" : "person") : (lang === "es" ? "personas" : "people")}</span>
+                          <span>{lang === "es" ? "Tamaño del Hogar" : lang === "hi" ? "Simulated Household Size" : "Simulated Household Size"}</span>
+                          <span className="text-primary font-mono text-sm">{simulationHouseholdSize} {simulationHouseholdSize === 1 ? (lang === "es" ? "persona" : lang === "hi" ? "person" : "person") : (lang === "es" ? "personas" : lang === "hi" ? "people" : "people")}</span>
                         </div>
                         <input
                           type="range"
@@ -4706,19 +4800,19 @@ export default function Home() {
                     <div className="glass-card p-8 rounded-xl border border-outline-variant/30 space-y-6">
                       <div className="space-y-1">
                         <h3 className="font-headline-md text-2xl font-bold text-primary leading-tight">
-                          {lang === "es" ? "Análisis de Resumen" : "Summary Analysis"}
+                          {lang === "es" ? "Análisis de Resumen" : lang === "hi" ? "Summary Analysis" : "Summary Analysis"}
                         </h3>
                         <p className="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider">
-                          {lang === "es" ? "Evaluación de Preparación" : "Preparation Audit"}
+                          {lang === "es" ? "Evaluación de Preparación" : lang === "hi" ? "Preparation Audit" : "Preparation Audit"}
                         </p>
                       </div>
 
                       {/* Document Status Breakdown List */}
                       <div className="space-y-3">
                         <div className="flex items-center justify-between font-bold text-xs text-on-surface">
-                          <span>{lang === "es" ? "Probablemente Disponible" : "Likely Available"}</span>
+                          <span>{lang === "es" ? "Probablemente Disponible" : lang === "hi" ? "Likely Available" : "Likely Available"}</span>
                           <span className="text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-full text-[10px]">
-                            {likelyHaveDocs} {lang === "es" ? "docs" : "docs"} ({preparednessPercentage}%)
+                            {likelyHaveDocs} {lang === "es" ? "docs" : lang === "hi" ? "docs" : "docs"} ({preparednessPercentage}%)
                           </span>
                         </div>
 
@@ -4732,15 +4826,15 @@ export default function Home() {
                         <div className="grid grid-cols-3 gap-2 text-[10px] text-on-surface-variant font-semibold pt-1">
                           <div className="flex items-center gap-1.5 justify-center py-1 bg-emerald-50/50 border border-emerald-100 rounded">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                            <span>{likelyHaveDocs} {lang === "es" ? "Probable" : "Likely Have"}</span>
+                            <span>{likelyHaveDocs} {lang === "es" ? "Probable" : lang === "hi" ? "Likely Have" : "Likely Have"}</span>
                           </div>
                           <div className="flex items-center gap-1.5 justify-center py-1 bg-amber-50/50 border border-amber-100 rounded">
                             <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                            <span>{needToGatherDocs} {lang === "es" ? "Falta" : "Gather"}</span>
+                            <span>{needToGatherDocs} {lang === "es" ? "Falta" : lang === "hi" ? "Gather" : "Gather"}</span>
                           </div>
                           <div className="flex items-center gap-1.5 justify-center py-1 bg-red-50/50 border border-red-100 rounded">
                             <span className="w-1.5 h-1.5 rounded-full bg-error"></span>
-                            <span>{mayNotHaveDocs} {lang === "es" ? "Falta" : "Action"}</span>
+                            <span>{mayNotHaveDocs} {lang === "es" ? "Falta" : lang === "hi" ? "Action" : "Action"}</span>
                           </div>
                         </div>
                       </div>
@@ -4751,7 +4845,7 @@ export default function Home() {
                           <div className="flex items-center gap-2">
                             <span className="material-symbols-outlined text-primary text-base font-bold">join_inner</span>
                             <span className="text-[10px] font-bold text-primary uppercase tracking-wide">
-                              {lang === "es" ? "Deduplicación Inteligente" : "Smart Deduplication"}
+                              {lang === "es" ? "Deduplicación Inteligente" : lang === "hi" ? "Smart Deduplication" : "Smart Deduplication"}
                             </span>
                           </div>
                           <p className="text-[11px] text-on-surface-variant leading-relaxed">
@@ -4771,25 +4865,23 @@ export default function Home() {
                       {/* Audit Progress Steps */}
                       <div className="pt-4 border-t border-outline-variant/20 space-y-3">
                         <div className="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider">
-                          {lang === "es" ? "Etapas de Verificación" : "Verification Stages"}
+                          {lang === "es" ? "Etapas de Verificación" : lang === "hi" ? "Verification Stages" : "Verification Stages"}
                         </div>
                         <ul className="space-y-2.5">
                           <li className="flex items-center gap-2.5 text-xs font-medium text-on-surface-variant">
                             <span className="material-symbols-outlined text-emerald-600 text-sm font-bold">check_circle</span>
-                            <span>{lang === "es" ? "Datos de perfil verificados" : "Profile matching complete"}</span>
+                            <span>{lang === "es" ? "Datos de perfil verificados" : lang === "hi" ? "Profile matching complete" : "Profile matching complete"}</span>
                           </li>
                           <li className="flex items-center gap-2.5 text-xs font-medium text-on-surface-variant">
                             <span className="material-symbols-outlined text-emerald-600 text-sm font-bold">check_circle</span>
-                            <span>{lang === "es" ? "Límites federales auditados" : "Federal threshold audit complete"}</span>
+                            <span>{lang === "es" ? "Límites federales auditados" : lang === "hi" ? "Federal threshold audit complete" : "Federal threshold audit complete"}</span>
                           </li>
                           <li className="flex items-center gap-2.5 text-xs font-medium text-on-surface-variant">
                             <span className={`material-symbols-outlined text-sm font-bold ${preparednessPercentage === 100 ? "text-emerald-600" : "text-amber-500 animate-pulse"}`}>
                               {preparednessPercentage === 100 ? "check_circle" : "pending"}
                             </span>
                             <span>
-                              {lang === "es" 
-                                ? `${likelyHaveDocs} de ${totalDocs} documentos probables` 
-                                : `${likelyHaveDocs} of ${totalDocs} documents likely available`}
+                              {lang === "es" ? `${likelyHaveDocs} de ${totalDocs} documentos probables` : lang === "hi" ? "${likelyHaveDocs} of ${totalDocs} documents likely available" : `${likelyHaveDocs} of ${totalDocs} documents likely available`}
                             </span>
                           </li>
                         </ul>
@@ -4803,12 +4895,10 @@ export default function Home() {
                           </div>
                           <div>
                             <div className="text-[10px] font-bold text-primary uppercase tracking-wide">
-                              {lang === "es" ? "Privacidad Primero" : "Privacy First"}
+                              {lang === "es" ? "Privacidad Primero" : lang === "hi" ? "Privacy First" : "Privacy First"}
                             </div>
                             <div className="text-[10px] text-on-surface-variant/80 leading-normal mt-1">
-                              {lang === "es"
-                                ? "Nunca almacenamos sus documentos ni datos personales en nuestros servidores. Todo se procesa localmente en su dispositivo."
-                                : "We never store your documents or personal data on our servers. Everything is processed locally on your device."}
+                              {lang === "es" ? "Nunca almacenamos sus documentos ni datos personales en nuestros servidores. Todo se procesa localmente en su dispositivo." : lang === "hi" ? "We never store your documents or personal data on our servers. Everything is processed locally on your device." : "We never store your documents or personal data on our servers. Everything is processed locally on your device."}
                             </div>
                           </div>
                         </div>
@@ -4877,8 +4967,8 @@ export default function Home() {
                                   <span className="material-symbols-outlined text-xs">check_circle</span>
                                   <span>
                                     {isProgramCompleted
-                                      ? (lang === "es" ? "Completado" : "Completed")
-                                      : (lang === "es" ? "Marcar Hecho" : "Mark Done")}
+                                      ? (lang === "es" ? "Completado" : lang === "hi" ? "Completed" : "Completed")
+                                      : (lang === "es" ? "Marcar Hecho" : lang === "hi" ? "Mark Done" : "Mark Done")}
                                   </span>
                                 </button>
                               )}
@@ -4913,7 +5003,7 @@ export default function Home() {
                                         </p>
                                         <span className="text-[10px] font-semibold text-on-surface-variant/70 uppercase tracking-wide block mt-1">
                                           {isDocCompleted
-                                            ? (lang === "es" ? "Completado" : "Completed")
+                                            ? (lang === "es" ? "Completado" : lang === "hi" ? "Completed" : "Completed")
                                             : doc.status === "likely_have"
                                             ? activeTranslations.likelyHave
                                             : doc.status === "need_to_gather"
@@ -4926,7 +5016,7 @@ export default function Home() {
                                     <div className="shrink-0 flex items-center justify-end">
                                       {isDocCompleted ? (
                                         <span className="text-[9px] font-bold text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full uppercase tracking-wider">
-                                          {lang === "es" ? "✓ Completado" : "✓ Completed"}
+                                          {lang === "es" ? "✓ Completado" : lang === "hi" ? "✓ Completed" : "✓ Completed"}
                                         </span>
                                       ) : doc.status === "likely_have" ? (
                                         <span className="text-[9px] font-bold text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full uppercase tracking-wider">
@@ -4995,18 +5085,16 @@ export default function Home() {
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                       <div>
                         <h3 className="font-bold text-sm text-primary uppercase tracking-wider">
-                          {lang === "es" ? "Progreso de la Ruta de Aplicación" : "Application Roadmap Progress"}
+                          {lang === "es" ? "Progreso de la Ruta de Aplicación" : lang === "hi" ? "Application Roadmap Progress" : "Application Roadmap Progress"}
                         </h3>
                         <p className="text-xs text-on-surface-variant mt-1">
-                          {lang === "es"
-                            ? `${completedSteps} de ${totalSteps} programas completados (${roadmapProgressPercentage}%)`
-                            : `${completedSteps} of ${totalSteps} programs completed (${roadmapProgressPercentage}%)`}
+                          {lang === "es" ? `${completedSteps} de ${totalSteps} programas completados (${roadmapProgressPercentage}%)` : lang === "hi" ? "${completedSteps} of ${totalSteps} programs completed (${roadmapProgressPercentage}%)" : `${completedSteps} of ${totalSteps} programs completed (${roadmapProgressPercentage}%)`}
                         </p>
                       </div>
                       {completedValue > 0 && (
                         <div className="bg-emerald-50 border border-emerald-200/50 rounded-xl px-4 py-2 text-right">
                           <div className="text-[10px] font-bold text-emerald-800 uppercase tracking-wide">
-                            {lang === "es" ? "Valor Anual Asegurado" : "Annual Value Secured"}
+                            {lang === "es" ? "Valor Anual Asegurado" : lang === "hi" ? "Annual Value Secured" : "Annual Value Secured"}
                           </div>
                           <div className="text-lg font-bold text-emerald-950">
                             ${completedValue.toLocaleString()}
@@ -5024,12 +5112,10 @@ export default function Home() {
                         <span className="material-symbols-outlined text-emerald-600 text-lg shrink-0 mt-0.5 animate-bounce">celebration</span>
                         <div>
                           <div className="text-xs font-bold text-emerald-950">
-                            {lang === "es" ? "🎉 ¡Felicidades! Ruta Completada" : "🎉 Congratulations! Roadmap Completed"}
+                            {lang === "es" ? "🎉 ¡Felicidades! Ruta Completada" : lang === "hi" ? "🎉 Congratulations! Roadmap Completed" : "🎉 Congratulations! Roadmap Completed"}
                           </div>
                           <p className="text-[11px] text-emerald-800/90 leading-relaxed mt-1">
-                            {lang === "es"
-                              ? `Ha completado todos los pasos secuenciales de su ruta y optimizado sus solicitudes de beneficios. ¡Ha asegurado un total estimado de $${completedValue.toLocaleString()} al año!`
-                              : `You have completed all sequential steps in your roadmap and successfully optimized your benefits. You've secured an estimated total of $${completedValue.toLocaleString()}/year!`}
+                            {lang === "es" ? `Ha completado todos los pasos secuenciales de su ruta y optimizado sus solicitudes de beneficios. ¡Ha asegurado un total estimado de $${completedValue.toLocaleString()} al año!` : lang === "hi" ? "You have completed all sequential steps in your roadmap and successfully optimized your benefits. You've secured an estimated total of $${completedValue.toLocaleString()}/year!" : `You have completed all sequential steps in your roadmap and successfully optimized your benefits. You've secured an estimated total of $${completedValue.toLocaleString()}/year!`}
                           </p>
                         </div>
                       </div>
@@ -5044,10 +5130,10 @@ export default function Home() {
                       </span>
                       <div>
                         <h3 className="font-bold text-sm text-primary uppercase tracking-wider">
-                          {lang === "es" ? "Visualizador de Desbloqueo Multi-Salto (IA)" : "AI Multi-Hop Unlock Chain Visualizer"}
+                          {lang === "es" ? "Visualizador de Desbloqueo Multi-Salto (IA)" : lang === "hi" ? "AI Multi-Hop Unlock Chain Visualizer" : "AI Multi-Hop Unlock Chain Visualizer"}
                         </h3>
                         <p className="text-[10px] text-on-surface-variant">
-                          {lang === "es" ? "Cómo los programas aprobados eliminan barreras para aprobaciones subsiguientes." : "How sequential approvals categorically bypass subsequent verification backlogs."}
+                          {lang === "es" ? "Cómo los programas aprobados eliminan barreras para aprobaciones subsiguientes." : lang === "hi" ? "How sequential approvals categorically bypass subsequent verification backlogs." : "How sequential approvals categorically bypass subsequent verification backlogs."}
                         </p>
                       </div>
                     </div>
@@ -5057,7 +5143,7 @@ export default function Home() {
                         <span className="bg-primary/5 text-primary text-[9px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-widest block w-max mx-auto mb-2">Stage 1</span>
                         <h4 className="font-bold text-xs text-primary mb-1">SNAP / Medicaid</h4>
                         <p className="text-[10px] text-on-surface-variant leading-relaxed">
-                          {lang === "es" ? "Aprobación de Ingresos Básicos" : "Base Gross Income Audit Approved"}
+                          {lang === "es" ? "Aprobación de Ingresos Básicos" : lang === "hi" ? "Base Gross Income Audit Approved" : "Base Gross Income Audit Approved"}
                         </p>
                       </div>
 
@@ -5072,10 +5158,10 @@ export default function Home() {
                         <span className="bg-emerald-500/10 text-emerald-700 text-[9px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-widest block w-max mx-auto mb-2">Unlocked Stage 2</span>
                         <h4 className="font-bold text-xs text-emerald-950 mb-1">Lifeline Broadband</h4>
                         <p className="text-[10px] text-emerald-900 leading-relaxed font-medium">
-                          {lang === "es" ? "Calificación Categórica Directa" : "Direct Categorical Qualification"}
+                          {lang === "es" ? "Calificación Categórica Directa" : lang === "hi" ? "Direct Categorical Qualification" : "Direct Categorical Qualification"}
                         </p>
                         <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-emerald-500 text-white text-[8px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap shadow-sm">
-                          {lang === "es" ? "Aprobación Instantánea" : "Instant Approval"}
+                          {lang === "es" ? "Aprobación Instantánea" : lang === "hi" ? "Instant Approval" : "Instant Approval"}
                         </div>
                       </div>
 
@@ -5090,10 +5176,10 @@ export default function Home() {
                         <span className="bg-emerald-500/10 text-emerald-700 text-[9px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-widest block w-max mx-auto mb-2">Unlocked Stage 3</span>
                         <h4 className="font-bold text-xs text-emerald-950 mb-1">WIC Support</h4>
                         <p className="text-[10px] text-emerald-900 leading-relaxed font-medium">
-                          {lang === "es" ? "Revisión Urgente sin Carga" : "Expedited Backlog Bypass"}
+                          {lang === "es" ? "Revisión Urgente sin Carga" : lang === "hi" ? "Expedited Backlog Bypass" : "Expedited Backlog Bypass"}
                         </p>
                         <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-emerald-500 text-white text-[8px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap shadow-sm animate-bounce">
-                          {lang === "es" ? "Ahorra 3 Semanas" : "Saves 3 Weeks"}
+                          {lang === "es" ? "Ahorra 3 Semanas" : lang === "hi" ? "Saves 3 Weeks" : "Saves 3 Weeks"}
                         </div>
                       </div>
                     </div>
@@ -5107,10 +5193,10 @@ export default function Home() {
                       </span>
                       <div>
                         <h3 className="font-bold text-sm text-primary uppercase tracking-wider">
-                          {lang === "es" ? "Secuenciación Óptima de Aplicaciones (IA)" : "AI Optimal Application Sequence"}
+                          {lang === "es" ? "Secuenciación Óptima de Aplicaciones (IA)" : lang === "hi" ? "AI Optimal Application Sequence" : "AI Optimal Application Sequence"}
                         </h3>
                         <p className="text-[10px] text-on-surface-variant">
-                          {lang === "es" ? "Secuencia óptima calculada en base a tiempos de espera, plazos y desbloqueos mutuos." : "Chronological sequence calculated to maximize speed and automatic categorical overrides."}
+                          {lang === "es" ? "Secuencia óptima calculada en base a tiempos de espera, plazos y desbloqueos mutuos." : lang === "hi" ? "Chronological sequence calculated to maximize speed and automatic categorical overrides." : "Chronological sequence calculated to maximize speed and automatic categorical overrides."}
                         </p>
                       </div>
                     </div>
@@ -5123,7 +5209,7 @@ export default function Home() {
                         </div>
                         <h4 className="font-bold text-xs text-primary">Medicaid</h4>
                         <p className="text-[10px] text-on-surface-variant leading-relaxed">
-                          {lang === "es" ? "Aplique primero. Tarda 45 días pero desbloquea Lifeline y WIC." : "Apply first. Longest backlog (45 days) but unlocks Lifeline and WIC verification exemptions."}
+                          {lang === "es" ? "Aplique primero. Tarda 45 días pero desbloquea Lifeline y WIC." : lang === "hi" ? "Apply first. Longest backlog (45 days) but unlocks Lifeline and WIC verification exemptions." : "Apply first. Longest backlog (45 days) but unlocks Lifeline and WIC verification exemptions."}
                         </p>
                       </div>
 
@@ -5134,7 +5220,7 @@ export default function Home() {
                         </div>
                         <h4 className="font-bold text-xs text-primary">SNAP</h4>
                         <p className="text-[10px] text-on-surface-variant leading-relaxed">
-                          {lang === "es" ? "Aplique segundo. Tarda 30 días. Su aprobación califica para Lifeline." : "Apply second. Standard backlog (30 days). SNAP approval establishes instant Lifeline eligibility."}
+                          {lang === "es" ? "Aplique segundo. Tarda 30 días. Su aprobación califica para Lifeline." : lang === "hi" ? "Apply second. Standard backlog (30 days). SNAP approval establishes instant Lifeline eligibility." : "Apply second. Standard backlog (30 days). SNAP approval establishes instant Lifeline eligibility."}
                         </p>
                       </div>
 
@@ -5145,7 +5231,7 @@ export default function Home() {
                         </div>
                         <h4 className="font-bold text-xs text-primary">Pell Grant</h4>
                         <p className="text-[10px] text-on-surface-variant leading-relaxed">
-                          {lang === "es" ? "Aplique tercero. Tarda 7 días. Su estado de beca califica para SNAP de estudiante." : "Apply third. Short backlog (7 days). Grant approval qualifies college student exception rules for SNAP."}
+                          {lang === "es" ? "Aplique tercero. Tarda 7 días. Su estado de beca califica para SNAP de estudiante." : lang === "hi" ? "Apply third. Short backlog (7 days). Grant approval qualifies college student exception rules for SNAP." : "Apply third. Short backlog (7 days). Grant approval qualifies college student exception rules for SNAP."}
                         </p>
                       </div>
 
@@ -5156,7 +5242,7 @@ export default function Home() {
                         </div>
                         <h4 className="font-bold text-xs text-emerald-950 font-bold">Lifeline</h4>
                         <p className="text-[10px] text-on-surface-variant leading-relaxed">
-                          {lang === "es" ? "Aplique al final. Aprobación instantánea usando SNAP o Medicaid." : "Apply last. Instant activation using verification hash from SNAP or Medicaid approval."}
+                          {lang === "es" ? "Aplique al final. Aprobación instantánea usando SNAP o Medicaid." : lang === "hi" ? "Apply last. Instant activation using verification hash from SNAP or Medicaid approval." : "Apply last. Instant activation using verification hash from SNAP or Medicaid approval."}
                         </p>
                       </div>
                     </div>
@@ -5193,7 +5279,7 @@ export default function Home() {
                                     <span
                                       className={`font-bold text-[10px] tracking-wider uppercase flex items-center gap-1 ${isCompleted ? "text-emerald-600" : isUnlocked ? "text-emerald-700" : "text-on-surface-variant/40"}`}
                                     >
-                                      {isCompleted ? (lang === "es" ? "Completado" : "Completed") : isUnlocked ? activeTranslations.unlocked : activeTranslations.locked}
+                                      {isCompleted ? (lang === "es" ? "Completado" : lang === "hi" ? "Completed" : "Completed") : isUnlocked ? activeTranslations.unlocked : activeTranslations.locked}
                                     </span>
                                   </div>
                                   <h3 className={`font-headline-md text-2xl font-bold mb-2 ${isCompleted ? "text-emerald-950" : isUnlocked ? "text-primary" : "text-on-surface-variant/60"}`}>
@@ -5217,7 +5303,7 @@ export default function Home() {
                                           {isCompleted && (
                                             <span className="material-symbols-outlined text-xs">check</span>
                                           )}
-                                          {isCompleted ? (lang === "es" ? "Completado" : "Completed") : activeTranslations.markDone}
+                                          {isCompleted ? (lang === "es" ? "Completado" : lang === "hi" ? "Completed" : "Completed") : activeTranslations.markDone}
                                         </button>
                                         <button
                                           onClick={() => {
@@ -5394,7 +5480,7 @@ export default function Home() {
                     <div className="bg-gradient-to-br from-amber-500/10 via-amber-600/5 to-transparent border-2 border-amber-500/35 p-6 rounded-2xl space-y-4 animate-in zoom-in-95 duration-300 shadow-lg relative">
                       <div className="absolute -top-3 left-4 bg-amber-500 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-sm">
                         <span className="material-symbols-outlined text-xs">auto_awesome</span>
-                        {lang === "es" ? "Resumen de IA Sencillo" : "AI Simplified Breakdown"}
+                        {lang === "es" ? "Resumen de IA Sencillo" : lang === "hi" ? "AI Simplified Breakdown" : "AI Simplified Breakdown"}
                       </div>
                       
                       <div className="flex gap-4 pt-2">
@@ -5403,11 +5489,11 @@ export default function Home() {
                         </span>
                         <div className="space-y-2">
                           <h3 className="font-bold text-sm text-amber-950">
-                            {lang === "es" ? "De qué se trata esto:" : "What this means in plain English:"}
+                            {lang === "es" ? "De qué se trata esto:" : lang === "hi" ? "What this means in plain English:" : "What this means in plain English:"}
                           </h3>
                           <p className="text-sm text-amber-900 leading-relaxed font-body-md font-medium">
                             {programSimpleExplanations[selectedAuditProgram.program_id]?.[lang] || 
-                             (lang === "es" ? "Usted cumple con los criterios de elegibilidad básica de este programa según su perfil." : "You match this program's core eligibility criteria based on your verified profile.")}
+                             (lang === "es" ? "Usted cumple con los criterios de elegibilidad básica de este programa según su perfil." : lang === "hi" ? "You match this program's core eligibility criteria based on your verified profile." : "You match this program's core eligibility criteria based on your verified profile.")}
                           </p>
                         </div>
                       </div>
@@ -5418,7 +5504,7 @@ export default function Home() {
                           className="text-[10px] font-bold text-amber-800 hover:text-amber-950 hover:underline cursor-pointer uppercase tracking-wider flex items-center gap-1"
                         >
                           <span className="material-symbols-outlined text-xs">gavel</span>
-                          {lang === "es" ? "Ver Texto de Auditoría Completo" : "View Full Audit Statement"}
+                          {lang === "es" ? "Ver Texto de Auditoría Completo" : lang === "hi" ? "View Full Audit Statement" : "View Full Audit Statement"}
                         </button>
                       </div>
                     </div>
@@ -5431,12 +5517,10 @@ export default function Home() {
                         </span>
                         <div className="space-y-1">
                           <h4 className="font-bold text-xs text-primary uppercase tracking-wider">
-                            {lang === "es" ? "¿Confundido por el lenguaje legal?" : "Confused by the legal language?"}
+                            {lang === "es" ? "¿Confundido por el lenguaje legal?" : lang === "hi" ? "Confused by the legal language?" : "Confused by the legal language?"}
                           </h4>
                           <p className="text-xs text-on-surface-variant leading-relaxed font-body-md">
-                            {lang === "es" 
-                              ? "¿Le gustaría que la IA le proporcione una explicación muy breve y sencilla de este chequeo de elegibilidad?"
-                              : "Would you like AI to provide a very brief, plain-English explanation of this eligibility audit check?"}
+                            {lang === "es" ? "¿Le gustaría que la IA le proporcione una explicación muy breve y sencilla de este chequeo de elegibilidad?" : lang === "hi" ? "Would you like AI to provide a very brief, plain-English explanation of this eligibility audit check?" : "Would you like AI to provide a very brief, plain-English explanation of this eligibility audit check?"}
                           </p>
                         </div>
                       </div>
@@ -5447,13 +5531,13 @@ export default function Home() {
                           className="bg-primary text-on-primary px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-sm hover:scale-[1.02] active:scale-95 duration-200 cursor-pointer flex items-center gap-1"
                         >
                           <span className="material-symbols-outlined text-xs">check</span>
-                          {lang === "es" ? "Sí, explicar de forma sencilla" : "Yes, explain simply"}
+                          {lang === "es" ? "Sí, explicar de forma sencilla" : lang === "hi" ? "Yes, explain simply" : "Yes, explain simply"}
                         </button>
                         <button
                           onClick={() => {}}
                           className="border border-outline-variant text-on-surface-variant px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider hover:bg-surface-container duration-200 cursor-pointer"
                         >
-                          {lang === "es" ? "No, mostrar texto de auditoría" : "No, show raw audit"}
+                          {lang === "es" ? "No, mostrar texto de auditoría" : lang === "hi" ? "No, show raw audit" : "No, show raw audit"}
                         </button>
                       </div>
                     </div>
@@ -5462,7 +5546,7 @@ export default function Home() {
                   {/* Detailed Legal Audit statement - rendered with transition based on the simple mode */}
                   <div className={`space-y-2 transition-all duration-300 ${showSimpleLedgerExplanation ? "opacity-60 scale-95 border border-outline-variant/10 bg-surface-container-low p-4 rounded-xl" : ""}`}>
                     <h4 className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">
-                      {lang === "es" ? "Texto de Auditoría Legal Detallado:" : "Detailed Legal Audit Statement:"}
+                      {lang === "es" ? "Texto de Auditoría Legal Detallado:" : lang === "hi" ? "Detailed Legal Audit Statement:" : "Detailed Legal Audit Statement:"}
                     </h4>
                     <p className="font-headline-md text-base md:text-lg leading-relaxed italic text-on-surface-variant">
                       "{selectedAuditProgram.reasoning_summary}"
@@ -5477,7 +5561,7 @@ export default function Home() {
                       <div className="bg-surface-container-high border border-outline-variant/30 p-5 rounded-2xl space-y-3 mt-4 animate-in fade-in duration-300">
                         <h4 className="text-[10px] font-black uppercase tracking-wider text-on-surface-variant flex items-center gap-1">
                           <span className="material-symbols-outlined text-sm font-bold text-outline">info</span>
-                          {lang === "es" ? "Lo que la IA No Sabe (Límites de RAG)" : "What the AI Doesn't Know (RAG Limits)"}
+                          {lang === "es" ? "Lo que la IA No Sabe (Límites de RAG)" : lang === "hi" ? "What the AI Doesn't Know (RAG Limits)" : "What the AI Doesn't Know (RAG Limits)"}
                         </h4>
                         <ul className="list-disc list-inside space-y-1.5 text-xs text-on-surface-variant/90 leading-relaxed font-body-md">
                           {unknowns.map((item, idx) => (
@@ -5487,9 +5571,7 @@ export default function Home() {
                           ))}
                         </ul>
                         <div className="text-[9px] text-outline font-semibold uppercase tracking-wider pt-2 border-t border-outline-variant/20">
-                          {lang === "es"
-                            ? "Verifique estos detalles locales con su oficina del condado o administrador de casos."
-                            : "Verify these local county nuances directly with your caseworker."}
+                          {lang === "es" ? "Verifique estos detalles locales con su oficina del condado o administrador de casos." : lang === "hi" ? "Verify these local county nuances directly with your caseworker." : "Verify these local county nuances directly with your caseworker."}
                         </div>
                       </div>
                     );
@@ -5806,7 +5888,7 @@ export default function Home() {
                   </p>
                   
                   <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">
-                    {lang === "es" ? "Código de Verificación" : "Verification Code"}
+                    {lang === "es" ? "Código de Verificación" : lang === "hi" ? "Verification Code" : "Verification Code"}
                   </label>
                   <input
                     type="text"
@@ -5823,9 +5905,7 @@ export default function Home() {
                   <div className="p-3 bg-green-50 text-green-800 rounded-lg text-xs flex items-center gap-2 border border-green-200">
                     <span className="material-symbols-outlined text-green-600 text-sm">check_circle</span>
                     <span>
-                      {lang === "es"
-                        ? "¡Correo enviado con éxito! ¿No lo recibió? Revise su carpeta de correo no deseado o regrese para intentar de nuevo."
-                        : "Email sent successfully! Didn't receive it? Check your spam folder or go back to try again."}
+                      {lang === "es" ? "¡Correo enviado con éxito! ¿No lo recibió? Revise su carpeta de correo no deseado o regrese para intentar de nuevo." : lang === "hi" ? "Email sent successfully! Didn't receive it? Check your spam folder or go back to try again." : "Email sent successfully! Didn't receive it? Check your spam folder or go back to try again."}
                     </span>
                   </div>
                 )}
@@ -5836,9 +5916,9 @@ export default function Home() {
                   className="w-full bg-primary text-on-primary rounded-full py-3 px-6 font-bold text-xs flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
                 >
                   {authLoading ? (
-                    <span className="animate-pulse">{lang === "es" ? "Verificando..." : "Verifying..."}</span>
+                    <span className="animate-pulse">{lang === "es" ? "Verificando..." : lang === "hi" ? "Verifying..." : "Verifying..."}</span>
                   ) : (
-                    lang === "es" ? "Verificar y Registrarse" : "Verify & Sign Up"
+                    lang === "es" ? "Verificar y Registrarse" : lang === "hi" ? "Verify & Sign Up" : "Verify & Sign Up"
                   )}
                 </button>
 
@@ -5852,7 +5932,7 @@ export default function Home() {
                   }}
                   className="w-full bg-transparent hover:bg-surface-container text-primary rounded-full py-2.5 px-6 font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
                 >
-                  {lang === "es" ? "Regresar" : "Go Back"}
+                  {lang === "es" ? "Regresar" : lang === "hi" ? "Go Back" : "Go Back"}
                 </button>
               </form>
             ) : (
@@ -5860,7 +5940,7 @@ export default function Home() {
                 {isSignUp && (
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">
-                      {lang === "es" ? "Nombre Completo" : "Full Name"}
+                      {lang === "es" ? "Nombre Completo" : lang === "hi" ? "Full Name" : "Full Name"}
                     </label>
                     <input
                       type="text"
@@ -5868,14 +5948,14 @@ export default function Home() {
                       value={authName}
                       onChange={(e) => setAuthName(e.target.value)}
                       className="w-full bg-surface-container-lowest border border-outline-variant/35 rounded-lg px-4 py-3 text-body-md text-on-surface focus:outline-none focus:border-primary transition-colors"
-                      placeholder={lang === "es" ? "Juan Pérez" : "John Doe"}
+                      placeholder={lang === "es" ? "Juan Pérez" : lang === "hi" ? "John Doe" : "John Doe"}
                     />
                   </div>
                 )}
 
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">
-                    {lang === "es" ? "Dirección de Correo" : "Email Address"}
+                    {lang === "es" ? "Dirección de Correo" : lang === "hi" ? "Email Address" : "Email Address"}
                   </label>
                   <input
                     type="email"
@@ -5889,7 +5969,7 @@ export default function Home() {
 
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">
-                    {lang === "es" ? "Contraseña" : "Password"}
+                    {lang === "es" ? "Contraseña" : lang === "hi" ? "Password" : "Password"}
                   </label>
                   <input
                     type="password"
@@ -5907,7 +5987,7 @@ export default function Home() {
                   className="w-full bg-primary text-on-primary rounded-full py-3 px-6 font-bold text-xs flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
                 >
                   {authLoading ? (
-                    <span className="animate-pulse">{lang === "es" ? "Cargando..." : "Loading..."}</span>
+                    <span className="animate-pulse">{lang === "es" ? "Cargando..." : lang === "hi" ? "Loading..." : "Loading..."}</span>
                   ) : lang === "es" ? (
                     isSignUp ? "Crear Cuenta" : "Iniciar Sesión"
                   ) : isSignUp ? (
@@ -6048,12 +6128,10 @@ export default function Home() {
 
             <div className="space-y-2">
               <h2 className="font-display-lg text-headline-md text-primary">
-                {lang === "es" ? "Actualizar Perfil de Elegibilidad" : "Update Eligibility Profile"}
+                {lang === "es" ? "Actualizar Perfil de Elegibilidad" : lang === "hi" ? "Update Eligibility Profile" : "Update Eligibility Profile"}
               </h2>
               <p className="text-xs text-on-surface-variant leading-relaxed">
-                {lang === "es"
-                  ? "Modifique la información de su hogar para actualizar instantáneamente los cálculos de beneficios y auditorías."
-                  : "Modify your household information to instantly update benefit calculations and eligibility audits."}
+                {lang === "es" ? "Modifique la información de su hogar para actualizar instantáneamente los cálculos de beneficios y auditorías." : lang === "hi" ? "Modify your household information to instantly update benefit calculations and eligibility audits." : "Modify your household information to instantly update benefit calculations and eligibility audits."}
               </p>
             </div>
 
@@ -6061,7 +6139,7 @@ export default function Home() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">
-                    {lang === "es" ? "Estado" : "State"}
+                    {lang === "es" ? "Estado" : lang === "hi" ? "State" : "State"}
                   </label>
                   <div className="relative" ref={stateDropdownRef}>
                     <button
@@ -6083,7 +6161,7 @@ export default function Home() {
                         <div className="p-2 border-b border-outline-variant/15">
                           <input
                             type="text"
-                            placeholder={lang === "es" ? "Buscar estado..." : "Search state..."}
+                            placeholder={lang === "es" ? "Buscar estado..." : lang === "hi" ? "Search state..." : "Search state..."}
                             value={stateSearchQuery}
                             onChange={(e) => setStateSearchQuery(e.target.value)}
                             onKeyDown={(e) => {
@@ -6122,7 +6200,7 @@ export default function Home() {
                             s.code.toLowerCase().includes(stateSearchQuery.toLowerCase())
                           ).length === 0 && (
                             <div className="px-4 py-3 text-xs text-on-surface-variant text-center">
-                              {lang === "es" ? "No se encontraron estados" : "No states found"}
+                              {lang === "es" ? "No se encontraron estados" : lang === "hi" ? "No states found" : "No states found"}
                             </div>
                           )}
                         </div>
@@ -6133,23 +6211,23 @@ export default function Home() {
 
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">
-                    {lang === "es" ? "Estatus Migratorio" : "Immigration Status"}
+                    {lang === "es" ? "Estatus Migratorio" : lang === "hi" ? "Immigration Status" : "Immigration Status"}
                   </label>
                   <select
                     value={editProfileFacts.immigration_status || ""}
                     onChange={(e) => setEditProfileFacts(prev => ({ ...prev, immigration_status: e.target.value }))}
                     className="w-full bg-surface-container-lowest border border-outline-variant/35 rounded-lg px-4 py-2.5 text-body-md text-on-surface focus:outline-none focus:border-primary transition-colors"
                   >
-                    <option value="citizen">{lang === "es" ? "Ciudadano" : "Citizen"}</option>
-                    <option value="legal_resident">{lang === "es" ? "Residente Legal" : "Legal Resident"}</option>
-                    <option value="refugee">{lang === "es" ? "Refugiado / Asilado" : "Refugee"}</option>
-                    <option value="undocumented">{lang === "es" ? "Sin Papeles / Indocumentado" : "Undocumented"}</option>
+                    <option value="citizen">{lang === "es" ? "Ciudadano" : lang === "hi" ? "नागरिक" : "Citizen"}</option>
+                    <option value="legal_resident">{lang === "es" ? "Residente Legal" : lang === "hi" ? "Legal Resident" : "Legal Resident"}</option>
+                    <option value="refugee">{lang === "es" ? "Refugiado / Asilado" : lang === "hi" ? "Refugee" : "Refugee"}</option>
+                    <option value="undocumented">{lang === "es" ? "Sin Papeles / Indocumentado" : lang === "hi" ? "Undocumented" : "Undocumented"}</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">
-                    {lang === "es" ? "Tamaño del Hogar" : "Household Size"}
+                    {lang === "es" ? "Tamaño del Hogar" : lang === "hi" ? "Household Size" : "Household Size"}
                   </label>
                   <input
                     type="number"
@@ -6164,7 +6242,7 @@ export default function Home() {
 
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">
-                    {lang === "es" ? "Ingresos Mensuales ($)" : "Monthly Income ($)"}
+                    {lang === "es" ? "Ingresos Mensuales ($)" : lang === "hi" ? "Monthly Income ($)" : "Monthly Income ($)"}
                   </label>
                   <input
                     type="number"
@@ -6179,7 +6257,7 @@ export default function Home() {
 
               <div className="space-y-3 bg-surface-container-low p-4 rounded-xl border border-outline-variant/20">
                 <h4 className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">
-                  {lang === "es" ? "Detalles Adicionales del Hogar" : "Additional Household Details"}
+                  {lang === "es" ? "Detalles Adicionales del Hogar" : lang === "hi" ? "Additional Household Details" : "Additional Household Details"}
                 </h4>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -6190,7 +6268,7 @@ export default function Home() {
                       onChange={(e) => setEditProfileFacts(prev => ({ ...prev, is_student: e.target.checked ? "true" : "false" }))}
                       className="rounded border-outline-variant text-primary focus:ring-primary w-4 h-4 cursor-pointer"
                     />
-                    <span>{lang === "es" ? "¿Es estudiante universitario?" : "College Student"}</span>
+                    <span>{lang === "es" ? "¿Es estudiante universitario?" : lang === "hi" ? "College Student" : "College Student"}</span>
                   </label>
 
                   <label className="flex items-center gap-3 cursor-pointer text-xs font-medium text-on-surface hover:text-primary transition-colors">
@@ -6200,7 +6278,7 @@ export default function Home() {
                       onChange={(e) => setEditProfileFacts(prev => ({ ...prev, has_children: e.target.checked ? "true" : "false" }))}
                       className="rounded border-outline-variant text-primary focus:ring-primary w-4 h-4 cursor-pointer"
                     />
-                    <span>{lang === "es" ? "¿Tiene hijos dependientes?" : "Has Children"}</span>
+                    <span>{lang === "es" ? "¿Tiene hijos dependientes?" : lang === "hi" ? "Has Children" : "Has Children"}</span>
                   </label>
 
                   <label className="flex items-center gap-3 cursor-pointer text-xs font-medium text-on-surface hover:text-primary transition-colors">
@@ -6210,7 +6288,7 @@ export default function Home() {
                       onChange={(e) => setEditProfileFacts(prev => ({ ...prev, has_pregnant: e.target.checked ? "true" : "false" }))}
                       className="rounded border-outline-variant text-primary focus:ring-primary w-4 h-4 cursor-pointer"
                     />
-                    <span>{lang === "es" ? "¿Hay algún embarazo?" : "Pregnancy in Household"}</span>
+                    <span>{lang === "es" ? "¿Hay algún embarazo?" : lang === "hi" ? "Pregnancy in Household" : "Pregnancy in Household"}</span>
                   </label>
 
                   <label className="flex items-center gap-3 cursor-pointer text-xs font-medium text-on-surface hover:text-primary transition-colors">
@@ -6220,7 +6298,7 @@ export default function Home() {
                       onChange={(e) => setEditProfileFacts(prev => ({ ...prev, has_elderly_or_disabled: e.target.checked ? "true" : "false" }))}
                       className="rounded border-outline-variant text-primary focus:ring-primary w-4 h-4 cursor-pointer"
                     />
-                    <span>{lang === "es" ? "¿Adulto mayor o discapacidad?" : "Elderly / Disabled Member"}</span>
+                    <span>{lang === "es" ? "¿Adulto mayor o discapacidad?" : lang === "hi" ? "Elderly / Disabled Member" : "Elderly / Disabled Member"}</span>
                   </label>
                 </div>
               </div>
@@ -6231,14 +6309,14 @@ export default function Home() {
                   onClick={() => setShowUpdateProfileModal(false)}
                   className="border border-outline-variant text-on-surface-variant px-5 py-2.5 rounded-full font-bold text-xs uppercase tracking-wider hover:bg-surface-container duration-200 cursor-pointer"
                 >
-                  {lang === "es" ? "Cancelar" : "Cancel"}
+                  {lang === "es" ? "Cancelar" : lang === "hi" ? "Cancel" : "Cancel"}
                 </button>
                 <button
                   type="submit"
                   className="bg-primary text-on-primary px-6 py-2.5 rounded-full font-bold text-xs uppercase tracking-wider shadow-md hover:scale-[1.02] active:scale-95 duration-200 cursor-pointer flex items-center gap-1.5"
                 >
                   <span className="material-symbols-outlined text-sm font-bold animate-spin-slow">sync</span>
-                  {lang === "es" ? "Guardar y Recalcular" : "Save & Recalculate"}
+                  {lang === "es" ? "Guardar y Recalcular" : lang === "hi" ? "Save & Recalculate" : "Save & Recalculate"}
                 </button>
               </div>
             </form>
@@ -6355,9 +6433,7 @@ export default function Home() {
             <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
           </span>
           <span className="font-body-md text-xs font-semibold uppercase tracking-wider">
-            {lang === "es" 
-              ? `Escuchando tu historia... ${recordingTimer}s restantes` 
-              : `Listening to your story... ${recordingTimer}s remaining`}
+            {lang === "es" ? `Escuchando tu historia... ${recordingTimer}s restantes` : lang === "hi" ? "Listening to your story... ${recordingTimer}s remaining" : `Listening to your story... ${recordingTimer}s remaining`}
           </span>
         </div>
       )}
