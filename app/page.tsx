@@ -148,9 +148,10 @@ const programSimpleExplanations: Record<string, { en: string; es: string; hi?: s
 
 function parseFreeFormProfile(text: string): Record<string, string> {
   const lowercase = text.toLowerCase();
+  const isIndiaContext = lowercase.includes("india") || lowercase.includes("punjab") || lowercase.includes("delhi") || lowercase.includes("mumbai") || lowercase.includes("rupee") || lowercase.includes("₹") || lowercase.includes("rs");
   const facts: Record<string, string> = {
-    country: "usa",
-    state: "CA",
+    country: isIndiaContext ? "india" : "usa",
+    state: isIndiaContext ? "DL" : "CA",
     household_size: "1",
     monthly_income: "0",
     has_children: "false",
@@ -162,6 +163,7 @@ function parseFreeFormProfile(text: string): Record<string, string> {
   };
 
   const states: Record<string, string[]> = {
+    // US States
     al: ["alabama", "al"], ak: ["alaska", "ak"], az: ["arizona", "az"], ar: ["arkansas", "ar"],
     ca: ["california", "ca"], co: ["colorado", "co"], ct: ["connecticut", "ct"], de: ["delaware", "de"],
     fl: ["florida", "fl"], ga: ["georgia", "ga"], hi: ["hawaii", "hi"], id: ["idaho", "id"],
@@ -174,7 +176,17 @@ function parseFreeFormProfile(text: string): Record<string, string> {
     or: ["oregon", "or"], pa: ["pennsylvania", "pa"], ri: ["rhode island", "ri"], sc: ["south carolina", "sc"],
     sd: ["south dakota", "sd"], tn: ["tennessee", "tn"], tx: ["texas", "tx"], ut: ["utah", "ut"],
     vt: ["vermont", "vt"], va: ["virginia", "va"], wa: ["washington", "wa"], wv: ["west virginia", "wv"],
-    wi: ["wisconsin", "wi"], wy: ["wyoming", "wy"]
+    wi: ["wisconsin", "wi"], wy: ["wyoming", "wy"],
+    // Indian States & UTs
+    ap: ["andhra pradesh", "ap"], ar_in: ["arunachal pradesh", "ar"], as: ["assam", "as"], br: ["bihar", "br"],
+    cg: ["chhattisgarh", "cg"], ga_in: ["goa", "ga"], gj: ["gujarat", "gj"], hr: ["haryana", "hr"],
+    hp: ["himachal pradesh", "hp"], jh: ["jharkhand", "jh"], ka: ["karnataka", "ka"], kl: ["kerala", "kl"],
+    mp: ["madhya pradesh", "mp"], mh: ["maharashtra", "mh"], mn_in: ["manipur", "mn"], ml: ["meghalaya", "ml"],
+    mz: ["mizoram", "mz"], nl: ["nagaland", "nl"], or_in: ["odisha", "or", "orissa"], pb: ["punjab", "pb"],
+    rj: ["rajasthan", "rj"], sk: ["sikkim", "sk"], tn_in: ["tamil nadu", "tn"], tg: ["telangana", "tg"],
+    tr: ["tripura", "tr"], up: ["uttar pradesh", "up"], ut_in: ["uttarakhand", "uk", "ut"], wb: ["west bengal", "wb"],
+    an: ["andaman and nicobar", "an"], ch: ["chandigarh", "ch"], dn: ["dadra and nagar haveli", "daman and diu", "dn", "dd"],
+    dl: ["delhi", "dl"], jk: ["jammu and kashmir", "jk"], la_in: ["ladakh", "la"], ld: ["lakshadweep", "ld"], py: ["puducherry", "py", "pondicherry"]
   };
   for (const [code, names] of Object.entries(states)) {
     if (names.some(name => {
@@ -207,8 +219,8 @@ function parseFreeFormProfile(text: string): Record<string, string> {
   }
 
   // English & Spanish income matching
-  const incomeMatch = lowercase.match(/(?:income of|earn|earning|salary of|making|ingresos de|gano|ganando|salario de|hago)\s*\$?\s*([\d,]+)/) ||
-                      lowercase.match(/\$([\d,]+)/);
+  const incomeMatch = lowercase.match(/(?:income of|earn|earning|salary of|making|ingresos de|gano|ganando|salario de|hago)\s*(?:\$|₹|rs\.?|inr)?\s*([\d,]+)/i) ||
+                      lowercase.match(/(?:\$|₹|rs\.?|inr)\s*([\d,]+)/i);
   if (incomeMatch) {
     facts.monthly_income = incomeMatch[1].replace(/,/g, "");
   }
@@ -2416,7 +2428,7 @@ export default function Home() {
     setProfileFacts(profileData);
     
     // Construct search query string
-    const query = `I am a household of ${profileData.household_size} in ${profileData.state} with monthly income of $${profileData.monthly_income}. Student: ${profileData.is_student}, Children: ${profileData.has_children}, Pregnant: ${profileData.has_pregnant}, Elderly/Disabled: ${profileData.has_elderly_or_disabled}, Immigration: ${profileData.immigration_status}.`;
+    const query = `I am a household of ${profileData.household_size} in ${profileData.state} with monthly income of ${(profileData as any).country === 'india' ? '₹' : '$'}${profileData.monthly_income}. Student: ${profileData.is_student}, Children: ${profileData.has_children}, Pregnant: ${profileData.has_pregnant}, Elderly/Disabled: ${profileData.has_elderly_or_disabled}, Immigration: ${profileData.immigration_status}.`;
     
     runRAGScan(query, profileData);
   }
@@ -2640,7 +2652,7 @@ export default function Home() {
       // Complete profile & Ask for confirmation
       setIsTyping(true);
       setTimeout(() => {
-        const query = `I am a household of ${updatedFacts.household_size} in ${updatedFacts.state} with monthly income of $${updatedFacts.monthly_income}. Student: ${updatedFacts.is_student}, Children: ${updatedFacts.has_children}, Pregnant: ${updatedFacts.has_pregnant}, Elderly/Disabled: ${updatedFacts.has_elderly_or_disabled}, Immigration: ${updatedFacts.immigration_status}.`;
+        const query = `I am a household of ${updatedFacts.household_size} in ${updatedFacts.state} with monthly income of ${updatedFacts.country === 'india' ? '₹' : '$'}${updatedFacts.monthly_income}. Student: ${updatedFacts.is_student}, Children: ${updatedFacts.has_children}, Pregnant: ${updatedFacts.has_pregnant}, Elderly/Disabled: ${updatedFacts.has_elderly_or_disabled}, Immigration: ${updatedFacts.immigration_status}.`;
         
         const contradictions = checkForContradictions(updatedFacts, `income is ${updatedFacts.monthly_income}, household size is ${updatedFacts.household_size}, student: ${updatedFacts.is_student}, children: ${updatedFacts.has_children}`, lang);
         setContradictionAlerts(contradictions);
