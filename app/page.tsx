@@ -501,11 +501,11 @@ interface EligibilityProgramResult {
   confidence_score: number;
   reasoning_summary: string;
   citation_ids: string[];
-  monthly_value_usd: number;
+  monthly_value_local: number;
 }
 
 interface ClockData {
-  total_unclaimed_usd: number;
+  total_unclaimed_local: number;
   per_second_loss: number;
   months_unclaimed: number;
   eligibility_start_date: string;
@@ -778,7 +778,7 @@ export default function Home() {
         program_id: programId,
         program_name: benefit.name,
         eligible,
-        monthly_value_usd: val,
+        monthly_value_local: val,
         confidence_score: benefit.confidence / 100,
         reasoning_summary: benefit.reason,
         citation_ids: [citationId],
@@ -836,7 +836,7 @@ export default function Home() {
         program_id: programId,
         program_name: benefit.name,
         eligible,
-        monthly_value_usd: val,
+        monthly_value_local: val,
         confidence_score: benefit.confidence / 100,
         reasoning_summary: benefit.reason,
         citation_ids: [citationId],
@@ -846,13 +846,13 @@ export default function Home() {
 
     const monthlySum = localProgramResults
       .filter((r) => r.eligible)
-      .reduce((sum, r) => sum + r.monthly_value_usd, 0);
+      .reduce((sum, r) => sum + r.monthly_value_local, 0);
     const months = 41;
     const totalUnclaimed = monthlySum * months;
     const perSecondLoss = monthlySum / (30 * 24 * 3600);
 
     setClockData({
-      total_unclaimed_usd: totalUnclaimed,
+      total_unclaimed_local: totalUnclaimed,
       per_second_loss: perSecondLoss,
       months_unclaimed: months,
       eligibility_start_date: "2023-01-01",
@@ -1126,7 +1126,7 @@ export default function Home() {
         program_id: programId,
         program_name: benefit.name,
         eligible,
-        monthly_value_usd: val,
+        monthly_value_local: val,
         confidence_score: benefit.confidence / 100,
         reasoning_summary: benefit.reason,
         citation_ids: [citationId],
@@ -1291,7 +1291,7 @@ export default function Home() {
             program_id: programId,
             program_name: benefit.name,
             eligible,
-            monthly_value_usd: val,
+            monthly_value_local: val,
             confidence_score: benefit.confidence / 100,
             reasoning_summary: benefit.reason,
             citation_ids: [citationId],
@@ -1301,13 +1301,13 @@ export default function Home() {
         
         const monthlySum = localProgramResults
           .filter((r) => r.eligible)
-          .reduce((sum, r) => sum + r.monthly_value_usd, 0);
+          .reduce((sum, r) => sum + r.monthly_value_local, 0);
         const months = 41; // count since Jan 2023
         const totalUnclaimed = monthlySum * months;
         const perSecondLoss = monthlySum / (30 * 24 * 3600);
 
         setClockData({
-          total_unclaimed_usd: totalUnclaimed,
+          total_unclaimed_local: totalUnclaimed,
           per_second_loss: perSecondLoss,
           months_unclaimed: months,
           eligibility_start_date: "2023-01-01",
@@ -1793,13 +1793,13 @@ export default function Home() {
   const totalAnnualValue = useMemo(() => {
     return eligibilityResults
       .filter((r) => r.eligible)
-      .reduce((sum, r) => sum + r.monthly_value_usd * 12, 0);
+      .reduce((sum, r) => sum + r.monthly_value_local * 12, 0);
   }, [eligibilityResults]);
 
   const totalMonthlyValue = useMemo(() => {
     return eligibilityResults
       .filter((r) => r.eligible)
-      .reduce((sum, r) => sum + r.monthly_value_usd, 0);
+      .reduce((sum, r) => sum + r.monthly_value_local, 0);
   }, [eligibilityResults]);
 
   const matchedProgramsCount = useMemo(() => {
@@ -1816,7 +1816,7 @@ export default function Home() {
       `Eligible Programs:\n` +
       eligibilityResults
         .filter((r) => r.eligible)
-        .map((r) => `- ${r.program_name}: $${Math.round(r.monthly_value_usd * 12).toLocaleString()}/year\n  Reasoning: ${r.reasoning_summary}`)
+        .map((r) => `- ${r.program_name}: $${Math.round(r.monthly_value_local * 12).toLocaleString()}/year\n  Reasoning: ${r.reasoning_summary}`)
         .join("\n\n") +
       `\n\nGenerated via FormZero (FormZero)`;
 
@@ -2746,7 +2746,7 @@ export default function Home() {
 
     try {
       // Attempt backend SSE stream call
-      const res = await fetch(`/api/v1/eligibility/stream?query=${encodeURIComponent(queryStr)}&country=usa&session_id=${sessionId}`);
+      const res = await fetch(`/api/v1/eligibility/stream?query=${encodeURIComponent(queryStr)}&country=${encodeURIComponent(profileFacts.country === "india" ? "india" : "usa")}&session_id=${sessionId}`);
       
       if (!res.ok) {
         throw new Error("Backend offline. Fallback to client-side calculations.");
@@ -2802,7 +2802,7 @@ export default function Home() {
                   confidence_score: payload.confidence_score,
                   reasoning_summary: payload.reasoning_summary,
                   citation_ids: payload.citation_ids,
-                  monthly_value_usd: payload.monthly_value_usd || 0.0,
+                  monthly_value_local: payload.monthly_value_local || 0.0,
                 };
                 backendResults.push(programResult);
                 
@@ -2813,7 +2813,7 @@ export default function Home() {
                 }));
               } else if (eventType === "clock") {
                 clockInfo = {
-                  total_unclaimed_usd: payload.total_unclaimed_usd,
+                  total_unclaimed_local: payload.total_unclaimed_local,
                   per_second_loss: payload.per_second_loss,
                   months_unclaimed: payload.months_unclaimed,
                   eligibility_start_date: payload.eligibility_start_date,
@@ -2923,7 +2923,7 @@ export default function Home() {
         confidence_score: benefit.confidence / 100,
         reasoning_summary: benefit.reason,
         citation_ids: [citationId],
-        monthly_value_usd: val,
+        monthly_value_local: val,
       });
 
       localCitations[citationId] = {
@@ -2964,7 +2964,7 @@ export default function Home() {
       const perSecondLoss = monthlySum / (30 * 24 * 3600);
 
       setClockData({
-        total_unclaimed_usd: totalUnclaimed,
+        total_unclaimed_local: totalUnclaimed,
         per_second_loss: perSecondLoss,
         months_unclaimed: months,
         eligibility_start_date: "2023-01-01",
@@ -3040,8 +3040,8 @@ export default function Home() {
       eligible: r.eligible ? "yes" : "no",
       confidence: r.confidence_score * 100,
       reason: r.reasoning_summary,
-      annual_value: `${profileFacts.country === "india" ? "₹" : "$"}${Math.round(r.monthly_value_usd * 12)}/year`,
-      annual_value_number: r.monthly_value_usd * 12,
+      annual_value: `${profileFacts.country === "india" ? "₹" : "$"}${Math.round(r.monthly_value_local * 12)}/year`,
+      annual_value_number: r.monthly_value_local * 12,
       apply_url: "https://www.fns.usda.gov/snap",
       source: {
         document: "",
@@ -4279,7 +4279,7 @@ export default function Home() {
                               {activeTranslations.valueLabel}
                             </span>
                             <div className={`text-3xl font-display-lg tracking-tight font-bold ${styles.text}`}>
-                              ${Math.round(b.monthly_value_usd * 12).toLocaleString()}
+                              ${Math.round(b.monthly_value_local * 12).toLocaleString()}
                               <span className={`text-xs font-sans ml-1 font-medium ${styles.textMuted}`}>/yr</span>
                             </div>
                           </div>
@@ -4400,7 +4400,7 @@ export default function Home() {
                 </div>
 
                 {/* Graph section */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start w-full">
                   <div className="lg:col-span-8 glass-card p-8 rounded-xl space-y-8">
                     <div>
                       <h3 className="font-headline-md text-headline-md text-primary font-bold">{activeTranslations.chartTitle}</h3>
@@ -4410,14 +4410,14 @@ export default function Home() {
                     <div className="space-y-6 pt-4">
                       {eligibilityResults.map((b) => {
                         const eligible = b.eligible;
-                        const pct = totalAnnualValue > 0 ? ((b.monthly_value_usd * 12) / totalAnnualValue) * 100 : 0;
+                        const pct = totalAnnualValue > 0 ? ((b.monthly_value_local * 12) / totalAnnualValue) * 100 : 0;
                         return (
                           <div key={b.program_id} className="group">
                             <div className="flex justify-between text-xs text-on-surface mb-2 font-semibold">
                               <span>{b.program_name}</span>
                               <span>
                                 {eligible
-                                  ? `${profileFacts.country === "india" ? "₹" : "$"}${Math.round(b.monthly_value_usd * 12).toLocaleString()}`
+                                  ? `${profileFacts.country === "india" ? "₹" : "$"}${Math.round(b.monthly_value_local * 12).toLocaleString()}`
                                   : "Ineligible"}
                               </span>
                             </div>
@@ -4445,7 +4445,7 @@ export default function Home() {
                         <h2 className="font-display-lg text-3xl mb-8 italic">{activeTranslations.shareReport}</h2>
                         <div className="space-y-6">
                           <div className="border-l-2 border-white/20 pl-4">
-                            <div className="text-2xl font-bold">${totalAnnualValue.toLocaleString()}</div>
+                            <div className="text-2xl font-bold">{profileFacts.country === "india" ? "₹" : "$"}{totalAnnualValue.toLocaleString()}</div>
                             <div className="text-[10px] opacity-60 font-semibold uppercase tracking-wider">Total Benefit Value</div>
                           </div>
                           <div className="border-l-2 border-white/20 pl-4">
@@ -4794,7 +4794,7 @@ export default function Home() {
               const duplicateSavings = uncondensedCount - totalDocs;
 
               return (
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start w-full">
                   {/* Left Side: Summary Panel */}
                   <div className="lg:col-span-4 lg:sticky lg:top-32 w-full">
                     <div className="glass-card p-8 rounded-xl border border-outline-variant/30 space-y-6">
@@ -5062,7 +5062,7 @@ export default function Home() {
                 if (completedRoadmapSteps[item.name] === true) {
                   const matchedResult = eligibilityResults.find(r => r.program_name === item.name);
                   if (matchedResult) {
-                    return sum + (matchedResult.monthly_value_usd * 12);
+                    return sum + (matchedResult.monthly_value_local * 12);
                   }
                 }
                 return sum;
@@ -6386,7 +6386,7 @@ export default function Home() {
                 <tr key={p.program_id} className="border-b border-black/10">
                   <td className="py-2 font-bold">{p.program_name}</td>
                   <td className="py-2 font-medium">{p.eligible ? "Eligible" : "Ineligible"}</td>
-                  <td className="py-2 font-mono">${p.monthly_value_usd.toLocaleString()}</td>
+                  <td className="py-2 font-mono">{profileFacts.country === "india" ? "₹" : "$"}{p.monthly_value_local.toLocaleString()}</td>
                   <td className="py-2">{Math.round(p.confidence_score * 100)}%</td>
                 </tr>
               ))}

@@ -45,7 +45,7 @@ class ProgramEligibility(BaseModel):
     confidence_score: float
     reasoning_summary: str
     citation_ids: list[str]
-    monthly_value_usd: Optional[float] = None
+    monthly_value_local: Optional[float] = None
 
 
 class AuditCitation(BaseModel):
@@ -59,9 +59,9 @@ class AuditCitation(BaseModel):
 
 class UnclaimedProgramBreakdown(BaseModel):
     program_id: str
-    monthly_value_usd: float
+    monthly_value_local: float
     months_unclaimed: int
-    total_unclaimed_usd: float
+    total_unclaimed_local: float
     non_monetary: bool = False
 
 
@@ -69,7 +69,7 @@ class UnclaimedCalculation(BaseModel):
     profile_id: str
     eligibility_start_date: date
     months_unclaimed: int
-    total_unclaimed_usd: float
+    total_unclaimed_local: float
     per_second_loss: float
     breakdown: list[UnclaimedProgramBreakdown]
 

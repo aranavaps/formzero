@@ -41,7 +41,7 @@ OUTPUT FORMAT for <RESULTS> block:
       "confidence_score": 0.0-1.0,
       "reasoning_summary": "2-3 sentences",
       "citation_ids": ["uuid1", "uuid2"],
-      "monthly_value_usd": number_or_null
+      "monthly_value_local": number_or_null (use local currency from context documents, do not convert to USD)
     }
   ]
 }"""

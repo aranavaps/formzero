@@ -7,7 +7,7 @@ from app.models.schemas import (
 )
 
 
-PROGRAM_MONTHLY_VALUES_USD = {
+PROGRAM_MONTHLY_VALUES_LOCAL = {
     # India (converted to USD at 83 INR/USD)
     "nsp": 120.0,
     "pm_kisan": 20.0,
@@ -39,16 +39,16 @@ class UnclaimedClock:
         monthly_value_sum = 0.0
 
         for program_id in eligible_program_ids:
-            monthly_value = PROGRAM_MONTHLY_VALUES_USD.get(program_id, 0.0)
+            monthly_value = PROGRAM_MONTHLY_VALUES_LOCAL.get(program_id, 0.0)
             program_total = monthly_value * months_unclaimed
             total_unclaimed += program_total
             monthly_value_sum += monthly_value
             breakdown.append(
                 UnclaimedProgramBreakdown(
                     program_id=program_id,
-                    monthly_value_usd=monthly_value,
+                    monthly_value_local=monthly_value,
                     months_unclaimed=months_unclaimed,
-                    total_unclaimed_usd=round(program_total, 2),
+                    total_unclaimed_local=round(program_total, 2),
                     non_monetary=monthly_value == 0.0,
                 )
             )
@@ -58,7 +58,7 @@ class UnclaimedClock:
             profile_id=profile_id,
             eligibility_start_date=eligibility_start_date,
             months_unclaimed=months_unclaimed,
-            total_unclaimed_usd=round(total_unclaimed, 2),
+            total_unclaimed_local=round(total_unclaimed, 2),
             per_second_loss=per_second_loss,
             breakdown=breakdown,
         )
