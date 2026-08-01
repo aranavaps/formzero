@@ -1428,16 +1428,27 @@ export default function Home() {
     }
   }
 
-  const SpeechRecognition = typeof window !== "undefined" && (
-    (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
-  );
+  const getSpeechRecognition = () => {
+    if (typeof window === "undefined") return null;
+    return (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition || null;
+  };
 
   function startVoiceRecording() {
+    const SpeechRecognition = getSpeechRecognition();
     if (!SpeechRecognition) {
-      alert("Speech recognition is not supported in this browser. Please use Chrome, Edge, or Safari.");
+      // Show a non-blocking message in the chat instead of an alert
+      setChatMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: "⚠️ Voice input is not supported in this browser. Please type your response, or try Chrome or Safari on desktop.", timestamp: new Date().toLocaleTimeString() },
+      ]);
       return;
     }
 
+    // Stop any existing recognition instance first
+    if (recognitionRef.current) {
+      try { recognitionRef.current.stop(); } catch (_) {}
+      recognitionRef.current = null;
+    }
     if (timerIntervalRef.current) {
       clearInterval(timerIntervalRef.current);
     }
@@ -1445,7 +1456,8 @@ export default function Home() {
     const recognition = new SpeechRecognition();
     recognition.continuous = true;
     recognition.interimResults = true;
-    recognition.lang = lang === "es" ? "es-ES" : lang === "hi" ? "en-US" : "en-US";
+    // Support English, Spanish, and Hindi
+    recognition.lang = lang === "es" ? "es-ES" : lang === "hi" ? "hi-IN" : "en-US";
 
     recognition.onstart = () => {
       setIsRecording(true);
@@ -1492,6 +1504,20 @@ export default function Home() {
         clearInterval(timerIntervalRef.current);
         timerIntervalRef.current = null;
       }
+      // Show mic error in chat
+      if (event.error === "not-allowed") {
+        setChatMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: "🎤 Microphone access was denied. Please allow microphone permissions in your browser settings and try again.", timestamp: new Date().toLocaleTimeString() },
+        ]);
+      } else if (event.error === "no-speech") {
+        // no-speech is benign – just reset
+      } else {
+        setChatMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: `🎤 Voice error: ${event.error}. Please try typing instead.`, timestamp: new Date().toLocaleTimeString() },
+        ]);
+      }
     };
 
     recognition.onend = () => {
@@ -1502,8 +1528,13 @@ export default function Home() {
       }
     };
 
-    recognition.start();
-    recognitionRef.current = recognition;
+    try {
+      recognition.start();
+      recognitionRef.current = recognition;
+    } catch (err) {
+      console.error("Failed to start speech recognition", err);
+      setIsRecording(false);
+    }
   }
 
   function stopVoiceRecording(shouldSubmit = true) {
@@ -3157,13 +3188,19 @@ export default function Home() {
               </button>
             )}
 
-            <button
-              onClick={() => setLang((prev) => (prev === "en" ? "es" : prev === "es" ? "hi" : "en"))}
-              className="flex items-center gap-2 px-3 py-1.5 border border-outline-variant/30 rounded-full text-on-surface-variant hover:text-primary hover:bg-surface-container transition-all font-body-md text-xs"
-            >
-              <span className="material-symbols-outlined text-xs">language</span>
-              {lang.toUpperCase()}
-            </button>
+            <div className="relative flex items-center">
+              <span className="material-symbols-outlined text-sm absolute left-2.5 text-on-surface-variant pointer-events-none">language</span>
+              <select
+                value={lang}
+                onChange={(e) => setLang(e.target.value as "en" | "es" | "hi")}
+                className="appearance-none pl-8 pr-7 py-1.5 border border-outline-variant/30 rounded-full text-on-surface-variant hover:border-primary bg-transparent text-xs font-semibold cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary/40 transition-all"
+              >
+                <option value="en">English</option>
+                <option value="es">Español</option>
+                <option value="hi">हिंदी</option>
+              </select>
+              <span className="material-symbols-outlined text-[14px] absolute right-2 text-on-surface-variant pointer-events-none">expand_more</span>
+            </div>
             
             {currentUser ? (
               <div className="flex items-center gap-2">
@@ -3298,7 +3335,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-page py-16 md:py-24 w-full flex-grow flex flex-col items-center justify-center relative">
+            <div className="max-w-container-max mx-auto px-4 sm:px-margin-mobile md:px-margin-page py-10 sm:py-16 md:py-24 w-full flex-grow flex flex-col items-center justify-center relative">
               {/* Floating Blueprint Cards */}
               <div className="hidden lg:block absolute inset-0 pointer-events-none">
                 <div className="floating-card top-[10%] left-[5%] -rotate-[3deg]">
@@ -3379,6 +3416,26 @@ export default function Home() {
                   <span className="material-symbols-outlined">arrow_forward</span>
                 </button>
               )}
+
+
+              {/* ── GLOBAL UNCLAIMED BENEFITS STATS BANNER ── */}
+              <div className="w-full max-w-4xl mx-auto mb-12 grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {[
+                  { value: "$1.1T", label: "Unclaimed annually (US)", sublabel: "Source: Urban Institute 2024", icon: "attach_money" },
+                  { value: "₹2.4L Cr", label: "Unclaimed welfare (India)", sublabel: "Source: CAG Report 2023", icon: "currency_rupee" },
+                  { value: "40%", label: "Eligible families miss out", sublabel: "Globally across surveyed nations", icon: "group_off" },
+                  { value: "< 3 min", label: "FormZero audit time", sublabel: "vs. 6 hrs avg traditional process", icon: "bolt" },
+                ].map((stat) => (
+                  <div key={stat.value} className="glass-card rounded-2xl p-4 sm:p-5 flex flex-col gap-2 border border-outline-variant/20 hover:border-primary/30 hover:shadow-lg transition-all duration-300 group">
+                    <div className="flex items-center gap-1.5 text-primary/50 group-hover:text-primary transition-colors">
+                      <span className="material-symbols-outlined text-lg">{stat.icon}</span>
+                    </div>
+                    <div className="font-display-lg text-2xl sm:text-3xl text-primary font-bold tracking-tight">{stat.value}</div>
+                    <div className="text-[11px] font-bold text-on-surface leading-tight">{stat.label}</div>
+                    <div className="text-[9px] text-on-surface-variant/60 uppercase tracking-wide">{stat.sublabel}</div>
+                  </div>
+                ))}
+              </div>
 
               {/* Profile Bento Selector */}
               <div className="w-full max-w-full mb-24 flex flex-col items-center select-none overflow-hidden">
@@ -3489,11 +3546,11 @@ export default function Home() {
             {/* Marquee program ticker */}
             <div className="py-8 bg-white border-y border-outline-variant/20 w-full overflow-hidden">
               <div className="flex whitespace-nowrap animate-marquee">
-                <div className="flex items-center gap-20 px-10 text-body-lg font-bold uppercase tracking-widest text-primary/30">
-                  <span>SNAP</span><span className="italic">Medicaid</span><span>WIC</span><span>TANF</span><span className="underline">EITC</span><span>LIHEAP</span><span>Pell Grant</span><span>Lifeline</span>
+                <div className="flex items-center gap-12 sm:gap-20 px-10 text-sm sm:text-body-lg font-bold uppercase tracking-widest text-primary/30">
+                  <span>SNAP</span><span className="italic">Medicaid</span><span>WIC</span><span>TANF</span><span className="underline">EITC</span><span>LIHEAP</span><span>Pell Grant</span><span>Lifeline</span><span>PM-KISAN</span><span className="italic">Ayushman Bharat</span><span>PM-JAY</span><span>PMAY</span><span>NSP</span>
                 </div>
-                <div className="flex items-center gap-20 px-10 text-body-lg font-bold uppercase tracking-widest text-primary/30">
-                  <span>SNAP</span><span className="italic">Medicaid</span><span>WIC</span><span>TANF</span><span className="underline">EITC</span><span>LIHEAP</span><span>Pell Grant</span><span>Lifeline</span>
+                <div className="flex items-center gap-12 sm:gap-20 px-10 text-sm sm:text-body-lg font-bold uppercase tracking-widest text-primary/30">
+                  <span>SNAP</span><span className="italic">Medicaid</span><span>WIC</span><span>TANF</span><span className="underline">EITC</span><span>LIHEAP</span><span>Pell Grant</span><span>Lifeline</span><span>PM-KISAN</span><span className="italic">Ayushman Bharat</span><span>PM-JAY</span><span>PMAY</span><span>NSP</span>
                 </div>
               </div>
             </div>
@@ -3989,8 +4046,9 @@ export default function Home() {
                   <button
                     disabled={isConfirmingAutoFill || isConfirmingChatIntake || isTyping}
                     type="button"
+                    title={isRecording ? "Stop recording" : "Start voice input"}
                     onClick={isRecording ? () => stopVoiceRecording(true) : startVoiceRecording}
-                    className={`p-3 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-30 ${isRecording ? "bg-error hover:bg-error/80 text-on-error animate-pulse shadow-md shadow-error/20" : "text-outline hover:bg-primary hover:text-on-primary bg-transparent"}`}
+                    className={`p-3 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-30 ${isRecording ? "bg-error text-on-error recording-active shadow-lg" : "text-outline hover:bg-primary hover:text-on-primary bg-transparent"}`}
                   >
                     <span className="material-symbols-outlined">{isRecording ? "mic_off" : "mic"}</span>
                   </button>
@@ -4012,10 +4070,10 @@ export default function Home() {
 
         {/* ── DISCOVERY FEED / SCANNING VIEW ── */}
         {activeView === "discovery" && (
-          <div className="flex-grow flex flex-col py-16 px-margin-mobile md:px-margin-page max-w-container-max mx-auto w-full items-center justify-center">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-center w-full">
+          <div className="flex-grow flex flex-col py-8 sm:py-16 px-4 sm:px-margin-mobile md:px-margin-page max-w-container-max mx-auto w-full items-center justify-center">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-gutter items-start w-full">
               {/* Left Column: Progress Ring & Shimmer */}
-              <div className="lg:col-span-7 flex flex-col items-center justify-center relative min-h-[450px]">
+              <div className="lg:col-span-7 flex flex-col items-center justify-center relative min-h-[350px] sm:min-h-[420px] lg:min-h-[500px]">
                 <div className="absolute inset-0 rounded-2xl bg-surface-container-low overflow-hidden shadow-sm border border-outline-variant/35 flex items-center justify-center p-8">
                   {/* Glowing blobs inside background */}
                   <div className="absolute inset-0 opacity-40">
@@ -4095,7 +4153,7 @@ export default function Home() {
               </div>
 
               {/* Right Column: Live list results builder */}
-              <div className="lg:col-span-5 flex flex-col gap-6 w-full">
+              <div className="lg:col-span-5 flex flex-col gap-4 w-full mt-2 lg:mt-0">
                 <div>
                   <h2 className="font-headline-md text-headline-md text-primary">
                     {lang === "es" ? "Escaneo en Vivo" : lang === "hi" ? "Discovery Feed" : "Discovery Feed"}
@@ -4149,7 +4207,7 @@ export default function Home() {
 
         {/* ── RESULTS DASHBOARD VIEW ── */}
         {activeView === "results" && (
-          <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-page py-10 w-full flex-grow flex flex-col">
+          <div className="max-w-container-max mx-auto px-4 sm:px-margin-mobile md:px-margin-page py-6 sm:py-10 w-full flex-grow flex flex-col">
             
             {/* Mobile Navigation bar */}
             <div className="lg:hidden flex overflow-x-auto gap-2 pb-4 mb-6 scrollbar-none border-b border-outline-variant/20 shrink-0">
@@ -4189,7 +4247,7 @@ export default function Home() {
             {activeTab === "matched" && (
               <div className="space-y-12">
                 {/* Unclaimed clock widget banner */}
-                <section className="glass rounded-3xl p-8 md:p-12 border border-white/60 shadow-2xl relative overflow-hidden flex flex-col md:flex-row justify-between items-center gap-8">
+                <section className="glass rounded-2xl p-5 sm:p-8 md:p-12 border border-white/60 shadow-2xl relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-5 md:gap-8">
                   <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none"></div>
                   <div className="space-y-4 max-w-2xl">
                     <div className="flex items-center gap-2">
@@ -4198,10 +4256,10 @@ export default function Home() {
                         {activeTranslations.unclaimedClock}
                       </span>
                     </div>
-                    <h1 className="font-display-lg text-display-lg-mobile md:text-6xl font-bold tracking-tight text-primary">
+                    <h1 className="font-display-lg text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight text-primary leading-none">
                       {profileFacts?.country === "india" ? "₹" : "$"}{tickingValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </h1>
-                    <div className="text-xs bg-primary/10 border border-primary/20 px-3 py-1.5 rounded-full w-max text-primary font-medium flex items-center gap-1.5 mt-2">
+                    <div className="text-[10px] sm:text-xs bg-primary/10 border border-primary/20 px-3 py-1.5 rounded-xl sm:rounded-full text-primary font-medium flex items-center gap-1.5 mt-2 flex-wrap leading-relaxed">
                       <span className="material-symbols-outlined text-sm">calculate</span>
                       {lang === "es" ? `Fórmula: ${profileFacts?.country === "india" ? "₹" : "$"}${totalMonthlyValue.toLocaleString()}/mes × 41 meses de ventana retroactiva` : lang === "hi" ? `Formula: ${profileFacts?.country === "india" ? "₹" : "$"}${totalMonthlyValue.toLocaleString()}/mo × 41 months retroactive eligibility window` : `Formula: ${profileFacts?.country === "india" ? "₹" : "$"}${totalMonthlyValue.toLocaleString()}/mo × 41 months retroactive eligibility window`}
                     </div>
@@ -4222,7 +4280,7 @@ export default function Home() {
                     </div>
                     <button
                       onClick={() => window.print()}
-                      className="border border-primary text-primary hover:bg-primary/5 px-8 py-4 rounded-full font-semibold text-sm shadow-md hover:scale-[1.02] active:scale-95 transition-all text-center w-full md:w-auto flex items-center justify-center gap-2 cursor-pointer"
+                      className="border border-primary text-primary hover:bg-primary/5 px-5 sm:px-8 py-3 sm:py-4 rounded-full font-semibold text-xs sm:text-sm shadow-md hover:scale-[1.02] active:scale-95 transition-all text-center w-full md:w-auto flex items-center justify-center gap-2 cursor-pointer"
                     >
                       <span className="material-symbols-outlined text-[18px]">picture_as_pdf</span>
                       {lang === "es" ? "Exportar Reporte" : lang === "hi" ? "Export Audited Report" : "Export Audited Report"}
@@ -4243,7 +4301,7 @@ export default function Home() {
                 </div>
 
                 {/* Bento Grid layout */}
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-gutter">
                   {eligibilityResults.map((b, idx) => {
                     const isFirstFeatured = idx === 0;
                     const styles = programCardStyles[b.program_id] || { bg: "bg-white", border: "border-outline-variant/35", text: "text-primary", textMuted: "text-on-surface-variant" };
@@ -5133,7 +5191,7 @@ export default function Home() {
                             {lang === "es" ? "Valor Anual Asegurado" : lang === "hi" ? "Annual Value Secured" : "Annual Value Secured"}
                           </div>
                           <div className="text-lg font-bold text-emerald-950">
-                            ${completedValue.toLocaleString()}
+                            {profileFacts.country === "india" ? "₹" : "$"}{completedValue.toLocaleString()}
                           </div>
                         </div>
                       )}
@@ -5151,7 +5209,7 @@ export default function Home() {
                             {lang === "es" ? "🎉 ¡Felicidades! Ruta Completada" : lang === "hi" ? "🎉 Congratulations! Roadmap Completed" : "🎉 Congratulations! Roadmap Completed"}
                           </div>
                           <p className="text-[11px] text-emerald-800/90 leading-relaxed mt-1">
-                            {lang === "es" ? `Ha completado todos los pasos secuenciales de su ruta y optimizado sus solicitudes de beneficios. ¡Ha asegurado un total estimado de $${completedValue.toLocaleString()} al año!` : lang === "hi" ? "You have completed all sequential steps in your roadmap and successfully optimized your benefits. You've secured an estimated total of $${completedValue.toLocaleString()}/year!" : `You have completed all sequential steps in your roadmap and successfully optimized your benefits. You've secured an estimated total of $${completedValue.toLocaleString()}/year!`}
+                            {lang === "es" ? `Ha completado todos los pasos secuenciales de su ruta y optimizado sus solicitudes de beneficios. ¡Ha asegurado un total estimado de $${completedValue.toLocaleString()} al año!` : lang === "hi" ? "You have completed all sequential steps in your roadmap and successfully optimized your benefits. You've secured an estimated total of ${profileFacts.country === 'india' ? '₹' : '$'}{completedValue.toLocaleString()}/year!" : `You have completed all sequential steps in your roadmap and successfully optimized your benefits. You've secured an estimated total of ${profileFacts.country === 'india' ? '₹' : '$'}{completedValue.toLocaleString()}/year!`}
                           </p>
                         </div>
                       </div>
@@ -6278,7 +6336,7 @@ export default function Home() {
 
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">
-                    {lang === "es" ? "Ingresos Mensuales ($)" : lang === "hi" ? "Monthly Income ($)" : "Monthly Income ($)"}
+                    {lang === "es" ? (profileFacts?.country === "india" ? "Ingresos Mensuales (₹)" : "Ingresos Mensuales ($)") : (profileFacts?.country === "india" ? "Monthly Income (₹)" : "Monthly Income ($)")}
                   </label>
                   <input
                     type="number"
@@ -6381,7 +6439,7 @@ export default function Home() {
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div><strong>State:</strong> {profileFacts.state || "CA"}</div>
             <div><strong>Household Size:</strong> {profileFacts.household_size || "1"} members</div>
-            <div><strong>Monthly Income:</strong> ${parseFloat(profileFacts.monthly_income || "0").toLocaleString()} /month</div>
+            <div><strong>Monthly Income:</strong> {profileFacts.country === "india" ? "₹" : "$"}{parseFloat(profileFacts.monthly_income || "0").toLocaleString()} /month</div>
             <div><strong>Immigration Status:</strong> {profileFacts.immigration_status || "citizen"}</div>
             <div><strong>College Student:</strong> {profileFacts.is_student === "true" ? "Yes" : "No"}</div>
             <div><strong>Children in House:</strong> {profileFacts.has_children === "true" ? "Yes" : "No"}</div>
@@ -6396,11 +6454,11 @@ export default function Home() {
           <div className="grid grid-cols-2 gap-4 text-sm bg-black/5 p-4 rounded-lg">
             <div>
               <div className="text-xs uppercase font-bold opacity-60">Retroactive Claim Sum (41 Months)</div>
-              <div className="text-2xl font-black">${(totalMonthlyValue * 41).toLocaleString()}</div>
+              <div className="text-2xl font-black">{profileFacts.country === "india" ? "₹" : "$"}{(totalMonthlyValue * 41).toLocaleString()}</div>
             </div>
             <div>
               <div className="text-xs uppercase font-bold opacity-60">Total Monthly Benefits Value</div>
-              <div className="text-2xl font-black">${totalMonthlyValue.toLocaleString()} /month</div>
+              <div className="text-2xl font-black">{profileFacts.country === "india" ? "₹" : "$"}{totalMonthlyValue.toLocaleString()} /month</div>
             </div>
           </div>
         </section>
