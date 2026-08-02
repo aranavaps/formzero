@@ -543,6 +543,8 @@ export default function Home() {
   const [activeView, setActiveView] = useState<ViewState>("landing");
   const [activeTab, setActiveTab] = useState<ResultTab>("matched");
   const [lang, setLang] = useState<"en" | "es" | "hi">("en");
+  // Region selector: null means not yet chosen (shows the selector screen)
+  const [selectedRegion, setSelectedRegion] = useState<"india" | "usa" | null>(null);
 
   // Chat & Intake State
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
@@ -881,7 +883,14 @@ export default function Home() {
   }
 
   useEffect(() => {
+    // Load persisted region
     const savedUser = localStorage.getItem("claimradar_user");
+    const regionKey = savedUser
+      ? `claimradar_region_${JSON.parse(savedUser).email}`
+      : "claimradar_region_guest";
+    const savedRegion = localStorage.getItem(regionKey) as "india" | "usa" | null;
+    if (savedRegion) setSelectedRegion(savedRegion);
+
     if (savedUser) {
       try {
         const user = JSON.parse(savedUser);
@@ -893,6 +902,9 @@ export default function Home() {
           const facts = JSON.parse(savedFactsStr);
           setProfileFacts(facts);
           if (facts.language === "spanish") setLang("es"); else if (facts.language === "hindi") setLang("hi"); else setLang("en");
+          // Auto-restore region from saved profile facts
+          if (facts.country === "india") setSelectedRegion("india");
+          else if (facts.country === "usa") setSelectedRegion("usa");
           recomputeEligibilityFromFacts(facts);
         }
 
@@ -978,6 +990,9 @@ export default function Home() {
           const facts = JSON.parse(savedFactsStr);
           setProfileFacts(facts);
           if (facts.language === "spanish") setLang("es"); else if (facts.language === "hindi") setLang("hi"); else setLang("en");
+          // Auto-restore region for guest
+          if (facts.country === "india") setSelectedRegion("india");
+          else if (facts.country === "usa") setSelectedRegion("usa");
           recomputeEligibilityFromFacts(facts);
         }
         
@@ -1181,11 +1196,25 @@ export default function Home() {
         ? { email: authEmail, password: authPassword, name: authName }
         : { email: authEmail, password: authPassword };
 
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(requestBody),
-      });
+      // Add timeout so login doesn't hang indefinitely
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8000);
+      let response: Response;
+      try {
+        response = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(requestBody),
+          signal: controller.signal,
+        });
+      } catch (fetchErr: any) {
+        clearTimeout(timeoutId);
+        if (fetchErr.name === "AbortError") {
+          throw new Error("Login timed out. Please check your connection and try again.");
+        }
+        throw fetchErr;
+      }
+      clearTimeout(timeoutId);
 
       const data = await response.json();
 
@@ -1355,8 +1384,10 @@ export default function Home() {
       setTempDevOtp("");
       setOtpEmailSent(false);
 
-      // 5. Trigger database sync
-      await syncProfileFacts(data.user.email, finalFacts, finalChat);
+      // 5. Trigger database sync in background (non-blocking for UX speed)
+      syncProfileFacts(data.user.email, finalFacts, finalChat).catch((e) => 
+        console.warn("Background profile sync failed:", e)
+      );
     } catch (err: any) {
       setAuthError(err.message || "Something went wrong.");
     } finally {
@@ -2763,6 +2794,9 @@ export default function Home() {
     if (currentUser) {
       syncProfileFacts(currentUser.email, profileData);
     }
+    // Auto-set region overlay based on country in profile data
+    if (profileData.country === "india") setSelectedRegion("india");
+    else if (profileData.country === "usa" || profileData.country) setSelectedRegion("usa");
     setActiveView("discovery");
     setScanProgress(0);
     setScanLogs([]);
@@ -3047,6 +3081,17 @@ export default function Home() {
     }, 5000);
   }
 
+
+  function handleRegionSelect(region: "india" | "usa") {
+    setSelectedRegion(region);
+    setProfileFacts((prev) => ({ ...prev, country: region }));
+    // Persist to localStorage for this session
+    try {
+      const key = currentUser ? `claimradar_region_${currentUser.email}` : "claimradar_region_guest";
+      localStorage.setItem(key, region);
+    } catch (_) {}
+  }
+
   // Clean calculations to start over
   function handleReset(shouldSync: boolean | React.MouseEvent<any> = true) {
     const sync = shouldSync !== false;
@@ -3134,6 +3179,84 @@ export default function Home() {
 
   return (
     <>
+
+      {/* ── REGION SELECTOR SCREEN ── */}
+      {selectedRegion === null && (
+        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background/98 backdrop-blur-xl px-4">
+          {/* Ambient blob */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl pointer-events-none" />
+          
+          <div className="relative z-10 flex flex-col items-center gap-8 max-w-lg w-full text-center animate-fade-in">
+            {/* Logo */}
+            <div className="flex flex-col items-center gap-2">
+              <span className="font-display-lg text-3xl font-bold text-primary">FormZero</span>
+              <span className="text-xs text-on-surface-variant/60 uppercase tracking-widest font-semibold">Benefits Discovery Engine</span>
+            </div>
+
+            {/* Headline */}
+            <div className="space-y-3">
+              <h1 className="font-display-lg text-3xl sm:text-4xl text-primary font-bold leading-tight">
+                Where are you from?
+              </h1>
+              <p className="text-sm text-on-surface-variant leading-relaxed max-w-sm mx-auto">
+                Select your country so we can show you the right government benefits, schemes, and currency for your region.
+              </p>
+            </div>
+
+            {/* Country Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+              {/* India */}
+              <button
+                id="region-india"
+                onClick={() => handleRegionSelect("india")}
+                className="group relative flex flex-col items-center gap-4 p-8 rounded-3xl border-2 border-outline-variant/30 bg-white hover:border-primary hover:shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-orange-50 via-white to-green-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="relative z-10 flex flex-col items-center gap-3">
+                  <div className="text-5xl">🇮🇳</div>
+                  <div className="space-y-1">
+                    <h2 className="font-bold text-lg text-primary">India</h2>
+                    <p className="text-xs text-on-surface-variant">PM-KISAN · Ayushman Bharat · PMAY</p>
+                    <div className="flex items-center justify-center gap-1 mt-2 text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/50">
+                      <span className="font-bold text-primary">₹</span> Indian Rupee
+                    </div>
+                  </div>
+                </div>
+                <div className="relative z-10 w-full mt-2 pt-4 border-t border-outline-variant/20 flex items-center justify-center gap-2 text-xs font-semibold text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                  Select India <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                </div>
+              </button>
+
+              {/* USA */}
+              <button
+                id="region-usa"
+                onClick={() => handleRegionSelect("usa")}
+                className="group relative flex flex-col items-center gap-4 p-8 rounded-3xl border-2 border-outline-variant/30 bg-white hover:border-primary hover:shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-red-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="relative z-10 flex flex-col items-center gap-3">
+                  <div className="text-5xl">🇺🇸</div>
+                  <div className="space-y-1">
+                    <h2 className="font-bold text-lg text-primary">United States</h2>
+                    <p className="text-xs text-on-surface-variant">SNAP · Medicaid · EITC · TANF</p>
+                    <div className="flex items-center justify-center gap-1 mt-2 text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/50">
+                      <span className="font-bold text-primary">$</span> US Dollar
+                    </div>
+                  </div>
+                </div>
+                <div className="relative z-10 w-full mt-2 pt-4 border-t border-outline-variant/20 flex items-center justify-center gap-2 text-xs font-semibold text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                  Select USA <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                </div>
+              </button>
+            </div>
+
+            <p className="text-[10px] text-on-surface-variant/40 uppercase tracking-widest">
+              More countries coming soon
+            </p>
+          </div>
+        </div>
+      )}
+
       <div id="main-app-viewport" className="min-h-screen bg-background text-on-surface font-body-md relative selection:bg-primary-fixed selection:text-primary">
       {/* 1. TOP NAVBAR */}
       <nav className="bg-background/80 backdrop-blur-xl border-b border-outline-variant/20 sticky top-0 z-40">
@@ -3188,6 +3311,16 @@ export default function Home() {
               </button>
             )}
 
+            {selectedRegion !== null && (
+              <button
+                onClick={() => setSelectedRegion(null)}
+                title="Change region"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 border border-outline-variant/30 rounded-full text-on-surface-variant hover:border-primary hover:text-primary bg-transparent text-xs font-semibold cursor-pointer transition-all"
+              >
+                <span className="text-base">{selectedRegion === "india" ? "🇮🇳" : "🇺🇸"}</span>
+                <span className="hidden sm:inline">{selectedRegion === "india" ? "India" : "USA"}</span>
+              </button>
+            )}
             <div className="relative flex items-center">
               <span className="material-symbols-outlined text-sm absolute left-2.5 text-on-surface-variant pointer-events-none">language</span>
               <select
@@ -3448,7 +3581,7 @@ export default function Home() {
                   <div className="marquee-track">
                     {/* Render first group of presets */}
                     <div className="flex gap-6 pr-6">
-                      {presetProfiles.map((p) => (
+                      {presetProfiles.filter((p) => !selectedRegion || (selectedRegion === "india" ? (p.id.includes("india") || p.id.includes("kisan") || p.id.includes("anganwadi") || p.id.includes("farmer") || p.id.includes("bengal") || p.id.includes("punjab")) : !p.id.includes("india") && !p.id.includes("kisan") && !p.id.includes("anganwadi") && !p.id.includes("farmer") && !p.id.includes("bengal") && !p.id.includes("punjab"))).map((p) => (
                         <button
                           key={`group1-${p.id}`}
                           onClick={() => handleSelectPreset(p)}
@@ -3479,7 +3612,7 @@ export default function Home() {
 
                     {/* Render identical second group of presets to create seamless loop */}
                     <div className="flex gap-6 pr-6">
-                      {presetProfiles.map((p) => (
+                      {presetProfiles.filter((p) => !selectedRegion || (selectedRegion === "india" ? (p.id.includes("india") || p.id.includes("kisan") || p.id.includes("anganwadi") || p.id.includes("farmer") || p.id.includes("bengal") || p.id.includes("punjab")) : !p.id.includes("india") && !p.id.includes("kisan") && !p.id.includes("anganwadi") && !p.id.includes("farmer") && !p.id.includes("bengal") && !p.id.includes("punjab"))).map((p) => (
                         <button
                           key={`group2-${p.id}`}
                           onClick={() => handleSelectPreset(p)}
