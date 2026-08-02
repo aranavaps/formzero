@@ -3525,7 +3525,7 @@ export default function Home() {
                 style={{ fontWeight: 700 }}
               >
                 {selectedRegion === "india"
-                  ? (lang === "hi" ? "₹2.4 लाख करोड़ सरकारी लाभ अनक्लेम्ड।" : "₹2.4L Cr in unclaimed government benefits.")
+                  ? (lang === "hi" ? "₹54,282 करोड़ सरकारी योजना खर्च अज्ञात।" : "₹54,282 Cr in unaccounted government scheme spending.")
                   : (lang === "es" ? "140 mil millones en beneficios sin reclamar." : "$140B in unclaimed benefits.")}
               </h1>
               <p className="font-body-lg text-base sm:text-lg text-on-surface-variant text-center max-w-2xl mb-10 leading-relaxed">
@@ -3588,15 +3588,15 @@ export default function Home() {
               {/* ── STATS BANNER — region-aware ── */}
               <div className="w-full max-w-4xl mx-auto mb-14 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
                 {(selectedRegion === "india" ? [
-                  { value: "₹2.4L Cr", label: "Unclaimed welfare (India)", sublabel: "Source: CAG Report 2023", icon: "currency_rupee", accent: "text-orange-500" },
-                  { value: "67%", label: "Schemes reach < 2 of 3 eligible", sublabel: "NITI Aayog Inclusion Report", icon: "group_off", accent: "text-red-500" },
-                  { value: "5+", label: "Central schemes per household", sublabel: "Average potential entitlements", icon: "policy", accent: "text-blue-500" },
+                  { value: "₹54,282 Cr", label: "Unaccounted scheme expenditure", sublabel: "CAG Report tabled in Parliament, Apr 2026", icon: "currency_rupee", accent: "text-orange-500" },
+                  { value: "9.44 Cr", label: "PM-KISAN verified beneficiaries", sublabel: "MoA&FW, 23rd Installment, June 2026", icon: "agriculture", accent: "text-green-600" },
+                  { value: "5+ Cr", label: "Ayushman Bharat coverage gap est.", sublabel: "Implementation tracking, 2023–24", icon: "health_and_safety", accent: "text-blue-500" },
                   { value: "< 3 min", label: "FormZero audit time", sublabel: "vs. weeks at govt. offices", icon: "bolt", accent: "text-emerald-500" },
                 ] : [
-                  { value: "$1.1T", label: "Unclaimed benefits (US)", sublabel: "Source: Urban Institute 2024", icon: "attach_money", accent: "text-blue-500" },
-                  { value: "40%", label: "Eligible families miss out", sublabel: "Across US social programs", icon: "group_off", accent: "text-red-500" },
-                  { value: "$15K+", label: "Avg household annual value", sublabel: "Across matched programs", icon: "savings", accent: "text-emerald-500" },
-                  { value: "< 3 min", label: "FormZero audit time", sublabel: "vs. 6 hrs avg traditional", icon: "bolt", accent: "text-primary" },
+                  { value: "$140B", label: "Federal benefits unclaimed / yr", sublabel: "White House OMB & GSA, 2024", icon: "attach_money", accent: "text-blue-500" },
+                  { value: "1 in 5", label: "SNAP-eligible people don't enroll", sublabel: "USDA FNS Participation Study, 2023", icon: "group_off", accent: "text-red-500" },
+                  { value: "6.4M", label: "Medicaid-eligible but uninsured", sublabel: "Kaiser Family Foundation, 2022", icon: "health_and_safety", accent: "text-emerald-500" },
+                  { value: "< 3 min", label: "FormZero audit time", sublabel: "vs. avg 6+ hrs traditional process", icon: "bolt", accent: "text-primary" },
                 ]).map((stat) => (
                   <div key={stat.value} className="bg-white rounded-2xl p-4 sm:p-5 flex flex-col gap-2 border border-outline-variant/20 shadow-sm hover:shadow-md hover:border-primary/20 hover:-translate-y-1 transition-all duration-300 group">
                     <span className={`material-symbols-outlined text-xl ${stat.accent} opacity-70 group-hover:opacity-100 transition-opacity`}>{stat.icon}</span>
@@ -3606,6 +3606,11 @@ export default function Home() {
                   </div>
                 ))}
               </div>
+              <p className="text-[9px] text-on-surface-variant/40 text-center mb-4 -mt-10 px-4">
+                {selectedRegion === "india"
+                  ? "Sources: CAG Report Apr 2026 · MoA&FW PM-KISAN data · NHA Ayushman Bharat"
+                  : "Sources: White House OMB 2024 · USDA FNS 2023 · Kaiser Family Foundation 2022"}
+              </p>
 
               {/* Profile Bento Selector — region-aware header */}
               <div className="w-full max-w-full mb-24 flex flex-col items-center select-none overflow-hidden">
