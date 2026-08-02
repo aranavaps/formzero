@@ -3196,10 +3196,10 @@ export default function Home() {
             {/* Headline */}
             <div className="space-y-3">
               <h1 className="font-display-lg text-3xl sm:text-4xl text-primary font-bold leading-tight">
-                Where are you from?
+                {lang === "hi" ? "आप कहाँ से हैं?" : lang === "es" ? "¿De dónde eres?" : "Where are you from?"}
               </h1>
               <p className="text-sm text-on-surface-variant leading-relaxed max-w-sm mx-auto">
-                Select your country so we can show you the right government benefits, schemes, and currency for your region.
+                {lang === "hi" ? "अपना देश चुनें ताकि हम आपको सही सरकारी योजनाएं दिखा सकें।" : lang === "es" ? "Selecciona tu país para mostrarte los beneficios y esquemas correctos." : "Select your country so we can show you the right government benefits, schemes, and currency for your region."}
               </p>
             </div>
 
@@ -3469,35 +3469,69 @@ export default function Home() {
             </div>
 
             <div className="max-w-container-max mx-auto px-4 sm:px-margin-mobile md:px-margin-page py-10 sm:py-16 md:py-24 w-full flex-grow flex flex-col items-center justify-center relative">
-              {/* Floating Blueprint Cards */}
+              {/* Floating Blueprint Cards — region-aware */}
               <div className="hidden lg:block absolute inset-0 pointer-events-none">
-                <div className="floating-card top-[10%] left-[5%] -rotate-[3deg]">
-                  <span className="material-symbols-outlined text-primary text-2xl mb-1">local_dining</span>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">USDA SNAP</p>
-                </div>
-                <div className="floating-card top-[12%] right-[8%] rotate-[2deg]">
-                  <span className="material-symbols-outlined text-primary text-2xl mb-1">school</span>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">Pell Grant</p>
-                </div>
-                <div className="floating-card bottom-[10%] left-[3%] rotate-[1deg]">
-                  <span className="material-symbols-outlined text-primary text-2xl mb-1">medical_services</span>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">Medicaid</p>
-                </div>
-                <div className="floating-card bottom-[12%] right-[4%] -rotate-[2deg]">
-                  <span className="material-symbols-outlined text-primary text-2xl mb-1">thermostat</span>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">LIHEAP Bills</p>
-                </div>
+                {selectedRegion === "india" ? (
+                  <>
+                    <div className="floating-card top-[10%] left-[5%] -rotate-[3deg]">
+                      <span className="material-symbols-outlined text-primary text-2xl mb-1">agriculture</span>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">PM-KISAN</p>
+                    </div>
+                    <div className="floating-card top-[12%] right-[8%] rotate-[2deg]">
+                      <span className="material-symbols-outlined text-primary text-2xl mb-1">health_and_safety</span>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">Ayushman Bharat</p>
+                    </div>
+                    <div className="floating-card bottom-[10%] left-[3%] rotate-[1deg]">
+                      <span className="material-symbols-outlined text-primary text-2xl mb-1">home</span>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">PMAY Housing</p>
+                    </div>
+                    <div className="floating-card bottom-[12%] right-[4%] -rotate-[2deg]">
+                      <span className="material-symbols-outlined text-primary text-2xl mb-1">school</span>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">NSP Scholarship</p>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="floating-card top-[10%] left-[5%] -rotate-[3deg]">
+                      <span className="material-symbols-outlined text-primary text-2xl mb-1">local_dining</span>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">USDA SNAP</p>
+                    </div>
+                    <div className="floating-card top-[12%] right-[8%] rotate-[2deg]">
+                      <span className="material-symbols-outlined text-primary text-2xl mb-1">school</span>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">Pell Grant</p>
+                    </div>
+                    <div className="floating-card bottom-[10%] left-[3%] rotate-[1deg]">
+                      <span className="material-symbols-outlined text-primary text-2xl mb-1">medical_services</span>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">Medicaid</p>
+                    </div>
+                    <div className="floating-card bottom-[12%] right-[4%] -rotate-[2deg]">
+                      <span className="material-symbols-outlined text-primary text-2xl mb-1">thermostat</span>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">LIHEAP Bills</p>
+                    </div>
+                  </>
+                )}
               </div>
 
-              {/* Title & Headline */}
+              {/* Title & Headline — fully region-aware */}
+              {selectedRegion && (
+                <div className="flex items-center gap-2 mb-6 px-4 py-2 rounded-full border border-outline-variant/30 bg-surface-container/60 backdrop-blur-sm text-xs font-semibold text-on-surface-variant animate-fade-in">
+                  <span className="text-base">{selectedRegion === "india" ? "🇮🇳" : "🇺🇸"}</span>
+                  <span>{selectedRegion === "india" ? "Showing Indian Government Schemes" : "Showing US Federal Benefits"}</span>
+                  <button onClick={() => setSelectedRegion(null)} className="ml-1 text-primary hover:underline text-[10px] uppercase tracking-wider">Change</button>
+                </div>
+              )}
               <h1 
-                className="font-display-lg text-4xl md:text-5xl text-primary text-center max-w-4xl mb-6 tracking-tight leading-tight"
+                className="font-display-lg text-4xl sm:text-5xl md:text-6xl text-primary text-center max-w-4xl mb-6 tracking-tight leading-[1.05]"
                 style={{ fontWeight: 700 }}
               >
-                {activeTranslations.tagline}
+                {selectedRegion === "india"
+                  ? (lang === "hi" ? "₹2.4 लाख करोड़ सरकारी लाभ अनक्लेम्ड।" : "₹2.4L Cr in unclaimed government benefits.")
+                  : (lang === "es" ? "140 mil millones en beneficios sin reclamar." : "$140B in unclaimed benefits.")}
               </h1>
-              <p className="font-body-lg text-body-lg text-on-surface-variant text-center max-w-2xl mb-12">
-                {activeTranslations.subtagline}
+              <p className="font-body-lg text-base sm:text-lg text-on-surface-variant text-center max-w-2xl mb-10 leading-relaxed">
+                {selectedRegion === "india"
+                  ? (lang === "hi" ? "औसत भारतीय परिवार हर साल हजारों रुपये के सरकारी लाभ से चूक जाता है। हमारा AI ऑडिट 3 मिनट में आपकी पात्रता जांचता है।" : "The average Indian household misses thousands in government schemes each year. Our AI audit checks your eligibility in under 3 minutes.")
+                  : (lang === "es" ? "El hogar promedio pierde miles anualmente. Nuestra auditoría con IA encuentra lo que se le debe en menos de 3 minutos." : "The average household misses out on thousands annually. Our AI audit finds what you're owed in under 3 minutes.")}
               </p>
 
               {eligibilityResults.length > 0 ? (
@@ -3551,30 +3585,40 @@ export default function Home() {
               )}
 
 
-              {/* ── GLOBAL UNCLAIMED BENEFITS STATS BANNER ── */}
-              <div className="w-full max-w-4xl mx-auto mb-12 grid grid-cols-2 sm:grid-cols-4 gap-4">
-                {[
-                  { value: "$1.1T", label: "Unclaimed annually (US)", sublabel: "Source: Urban Institute 2024", icon: "attach_money" },
-                  { value: "₹2.4L Cr", label: "Unclaimed welfare (India)", sublabel: "Source: CAG Report 2023", icon: "currency_rupee" },
-                  { value: "40%", label: "Eligible families miss out", sublabel: "Globally across surveyed nations", icon: "group_off" },
-                  { value: "< 3 min", label: "FormZero audit time", sublabel: "vs. 6 hrs avg traditional process", icon: "bolt" },
-                ].map((stat) => (
-                  <div key={stat.value} className="glass-card rounded-2xl p-4 sm:p-5 flex flex-col gap-2 border border-outline-variant/20 hover:border-primary/30 hover:shadow-lg transition-all duration-300 group">
-                    <div className="flex items-center gap-1.5 text-primary/50 group-hover:text-primary transition-colors">
-                      <span className="material-symbols-outlined text-lg">{stat.icon}</span>
-                    </div>
+              {/* ── STATS BANNER — region-aware ── */}
+              <div className="w-full max-w-4xl mx-auto mb-14 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+                {(selectedRegion === "india" ? [
+                  { value: "₹2.4L Cr", label: "Unclaimed welfare (India)", sublabel: "Source: CAG Report 2023", icon: "currency_rupee", accent: "text-orange-500" },
+                  { value: "67%", label: "Schemes reach < 2 of 3 eligible", sublabel: "NITI Aayog Inclusion Report", icon: "group_off", accent: "text-red-500" },
+                  { value: "5+", label: "Central schemes per household", sublabel: "Average potential entitlements", icon: "policy", accent: "text-blue-500" },
+                  { value: "< 3 min", label: "FormZero audit time", sublabel: "vs. weeks at govt. offices", icon: "bolt", accent: "text-emerald-500" },
+                ] : [
+                  { value: "$1.1T", label: "Unclaimed benefits (US)", sublabel: "Source: Urban Institute 2024", icon: "attach_money", accent: "text-blue-500" },
+                  { value: "40%", label: "Eligible families miss out", sublabel: "Across US social programs", icon: "group_off", accent: "text-red-500" },
+                  { value: "$15K+", label: "Avg household annual value", sublabel: "Across matched programs", icon: "savings", accent: "text-emerald-500" },
+                  { value: "< 3 min", label: "FormZero audit time", sublabel: "vs. 6 hrs avg traditional", icon: "bolt", accent: "text-primary" },
+                ]).map((stat) => (
+                  <div key={stat.value} className="bg-white rounded-2xl p-4 sm:p-5 flex flex-col gap-2 border border-outline-variant/20 shadow-sm hover:shadow-md hover:border-primary/20 hover:-translate-y-1 transition-all duration-300 group">
+                    <span className={`material-symbols-outlined text-xl ${stat.accent} opacity-70 group-hover:opacity-100 transition-opacity`}>{stat.icon}</span>
                     <div className="font-display-lg text-2xl sm:text-3xl text-primary font-bold tracking-tight">{stat.value}</div>
                     <div className="text-[11px] font-bold text-on-surface leading-tight">{stat.label}</div>
-                    <div className="text-[9px] text-on-surface-variant/60 uppercase tracking-wide">{stat.sublabel}</div>
+                    <div className="text-[9px] text-on-surface-variant/50 uppercase tracking-wide">{stat.sublabel}</div>
                   </div>
                 ))}
               </div>
 
-              {/* Profile Bento Selector */}
+              {/* Profile Bento Selector — region-aware header */}
               <div className="w-full max-w-full mb-24 flex flex-col items-center select-none overflow-hidden">
-                <h2 className="font-headline-md text-headline-md text-primary text-center mb-8 px-4">
-                  {activeTranslations.profileHeader}
+                <h2 className="font-headline-md text-headline-md text-primary text-center mb-3 px-4">
+                  {selectedRegion === "india"
+                    ? (lang === "hi" ? "एक प्रोफ़ाइल चुनें" : "Select a profile similar to you")
+                    : activeTranslations.profileHeader}
                 </h2>
+                <p className="text-xs text-on-surface-variant/70 mb-8 text-center px-4">
+                  {selectedRegion === "india"
+                    ? "Tap a card to instantly see which Indian government schemes you may qualify for"
+                    : "Tap a card to instantly see which US federal benefits you may qualify for"}
+                </p>
                 
                 {/* Marquee container with fading mask */}
                 <div className="marquee-container w-full">
@@ -3676,15 +3720,28 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Marquee program ticker */}
-            <div className="py-8 bg-white border-y border-outline-variant/20 w-full overflow-hidden">
+            {/* Marquee program ticker — region-aware */}
+            <div className="py-6 bg-white border-y border-outline-variant/20 w-full overflow-hidden">
               <div className="flex whitespace-nowrap animate-marquee">
-                <div className="flex items-center gap-12 sm:gap-20 px-10 text-sm sm:text-body-lg font-bold uppercase tracking-widest text-primary/30">
-                  <span>SNAP</span><span className="italic">Medicaid</span><span>WIC</span><span>TANF</span><span className="underline">EITC</span><span>LIHEAP</span><span>Pell Grant</span><span>Lifeline</span><span>PM-KISAN</span><span className="italic">Ayushman Bharat</span><span>PM-JAY</span><span>PMAY</span><span>NSP</span>
-                </div>
-                <div className="flex items-center gap-12 sm:gap-20 px-10 text-sm sm:text-body-lg font-bold uppercase tracking-widest text-primary/30">
-                  <span>SNAP</span><span className="italic">Medicaid</span><span>WIC</span><span>TANF</span><span className="underline">EITC</span><span>LIHEAP</span><span>Pell Grant</span><span>Lifeline</span><span>PM-KISAN</span><span className="italic">Ayushman Bharat</span><span>PM-JAY</span><span>PMAY</span><span>NSP</span>
-                </div>
+                {selectedRegion === "india" ? (
+                  <>
+                    <div className="flex items-center gap-12 sm:gap-20 px-10 text-sm sm:text-body-lg font-bold uppercase tracking-widest text-primary/30">
+                      <span>PM-KISAN</span><span className="italic">Ayushman Bharat</span><span>PM-JAY</span><span>PMAY</span><span className="underline">NSP</span><span>IGNOAPS</span><span>PMFBY</span><span>MGNREGS</span><span>Antyodaya Anna</span><span>Jan Dhan</span>
+                    </div>
+                    <div className="flex items-center gap-12 sm:gap-20 px-10 text-sm sm:text-body-lg font-bold uppercase tracking-widest text-primary/30">
+                      <span>PM-KISAN</span><span className="italic">Ayushman Bharat</span><span>PM-JAY</span><span>PMAY</span><span className="underline">NSP</span><span>IGNOAPS</span><span>PMFBY</span><span>MGNREGS</span><span>Antyodaya Anna</span><span>Jan Dhan</span>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-12 sm:gap-20 px-10 text-sm sm:text-body-lg font-bold uppercase tracking-widest text-primary/30">
+                      <span>SNAP</span><span className="italic">Medicaid</span><span>WIC</span><span>TANF</span><span className="underline">EITC</span><span>LIHEAP</span><span>Pell Grant</span><span>Lifeline</span><span>SSI</span><span>CHIP</span>
+                    </div>
+                    <div className="flex items-center gap-12 sm:gap-20 px-10 text-sm sm:text-body-lg font-bold uppercase tracking-widest text-primary/30">
+                      <span>SNAP</span><span className="italic">Medicaid</span><span>WIC</span><span>TANF</span><span className="underline">EITC</span><span>LIHEAP</span><span>Pell Grant</span><span>Lifeline</span><span>SSI</span><span>CHIP</span>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 
