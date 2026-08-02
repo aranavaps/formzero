@@ -1324,11 +1324,22 @@ export default function Home() {
           else if (benefit.name.includes("EITC")) programId = "eitc";
           else if (benefit.name.includes("Lifeline")) programId = "lifeline";
           else if (benefit.name.includes("SSI")) programId = "ssi_ssdi";
-      else if (benefit.name.includes("PM-KISAN")) programId = "pm_kisan";
-      else if (benefit.name.includes("Ayushman")) programId = "ayushman_bharat";
-      else if (benefit.name.includes("Awas Yojana")) programId = "pmay";
-      else if (benefit.name.includes("Scholarship")) programId = "nsp";
-      else if (benefit.name.includes("Pension")) programId = "ignoaps";
+          else if (benefit.name.includes("Child Tax")) programId = "ctc";
+          else if (benefit.name.includes("Section 8")) programId = "section8";
+          else if (benefit.name.includes("Head Start")) programId = "head_start";
+          else if (benefit.name.includes("CCAP")) programId = "ccap";
+          else if (benefit.name.includes("PM-KISAN")) programId = "pm_kisan";
+          else if (benefit.name.includes("Ayushman")) programId = "ayushman_bharat";
+          else if (benefit.name.includes("Awas Yojana")) programId = "pmay";
+          else if (benefit.name.includes("Scholarship")) programId = "nsp";
+          else if (benefit.name.includes("Pension")) programId = "ignoaps";
+          else if (benefit.name.includes("MGNREGS")) programId = "mgnregs";
+          else if (benefit.name.includes("Ujjwala")) programId = "pmuy";
+          else if (benefit.name.includes("Jan Dhan")) programId = "jan_dhan";
+          else if (benefit.name.includes("Fasal")) programId = "pmfby";
+          else if (benefit.name.includes("Sukanya")) programId = "sukanya";
+          else if (benefit.name.includes("Food Security")) programId = "nfsa";
+          else if (benefit.name.includes("Kaushal")) programId = "pmkvy";
 
           const eligible = benefit.eligible === "yes" || benefit.eligible === "likely";
           const val = benefit.annual_value_number / 12;
@@ -2473,13 +2484,32 @@ export default function Home() {
     setProfileFacts({});
     
     let welcomeMsg =
-  lang === "en"
-    ? "Hi! I'm FormZero 👋 I help people find government benefits you may qualify for — completely free.\n\nWhich country do you live in?\n\nIndia\nUnited States"
-    : "¡Hola! Soy FormZero 👋 Ayudo a las personas a encontrar beneficios gubernamentales para los que califican, completamente gratis.\n\n¿En qué país vive?\n\nIndia\nEstados Unidos";
+    lang === "hi"
+      ? "नमस्ते! मैं FormZero हूँ 👋 मैं आपको सरकारी लाभ और योजनाएं खोजने में मदद करता हूँ — बिल्कुल मुफ्त।\n\nआप किस देश में रहते हैं?\n\nभारत\nसंयुक्त राज्य अमेरिका"
+      : lang === "es"
+      ? "¡Hola! Soy FormZero 👋 Ayudo a las personas a encontrar beneficios gubernamentales para los que califican, completamente gratis.\n\n¿En qué país vive?\n\nIndia\nEstados Unidos"
+      : "Hi! I'm FormZero 👋 I help people find government benefits you may qualify for — completely free.\n\nWhich country do you live in?\n\nIndia\nUnited States";
+
+    // If region already selected, skip straight to next question
+    if (selectedRegion) {
+      const countryName = selectedRegion === "india" ? "India" : "United States";
+      welcomeMsg = lang === "hi"
+        ? `नमस्ते! मैं FormZero हूँ 👋\n\nआपने ${selectedRegion === "india" ? "भारत" : "अमेरिका"} चुना है। आइए आपकी पात्रता जाँचते हैं। आपकी उम्र क्या है?`
+        : lang === "es"
+        ? `¡Hola! Soy FormZero 👋\n\nHa seleccionado ${countryName}. ¡Comencemos! ¿Cuál es su edad?`
+        : `Hi! I'm FormZero 👋\n\nYou've selected ${countryName}. Let's check your eligibility for government benefits. What is your age?`;
+    }
 
     const initialMessages: ChatMessage[] = [
       { role: "assistant", content: welcomeMsg, timestamp: new Date().toLocaleTimeString() },
     ];
+
+    // Pre-seed country fact so eligibility engine knows region immediately
+    if (selectedRegion) {
+      const preSeededFacts = { country: selectedRegion };
+      setProfileFacts(preSeededFacts);
+      setCurrentQuestionIndex(2); // Skip country question (Q1) since we already know
+    }
 
     if (initialQuery) {
       initialMessages.push({

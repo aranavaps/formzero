@@ -385,5 +385,111 @@ export function checkEligibility(profile: UserProfile): BenefitResult[] {
     },
   });
 
+
+  // 10. Child Tax Credit (CTC) ────────────────────────────────────────────────
+  // $2,000/child under 17 (partially refundable up to $1,700 for 2024)
+  // Phases out at $200K single / $400K married filing jointly
+  const ctcEligible = profile.has_children && profile.monthly_income > 0 && isEligibleImmigrant;
+  const ctcLikely = profile.has_children && profile.monthly_income > 0 && unknownImmigration;
+  results.push({
+    name: "Child Tax Credit (CTC)",
+    eligible: ctcEligible ? "yes" : ctcLikely ? "likely" : profile.has_children ? "unlikely" : "no",
+    confidence: ctcEligible ? 88 : ctcLikely ? 65 : profile.has_children ? 30 : 5,
+    reason: ctcEligible
+      ? `With children in your household, you may claim up to $2,000/child under 17 (up to $1,700 refundable even if you owe no tax). File taxes to claim.`
+      : ctcLikely
+      ? `With children in your household, CTC may be available. Children born in the US are US citizens and qualify regardless of parent's status.`
+      : profile.has_children
+      ? `CTC requires earned income or to have filed a tax return. Verify your immigration status for eligibility.`
+      : `Child Tax Credit requires at least one qualifying child under 17.`,
+    annual_value: "Up to $2,000/child per year",
+    annual_value_number: ctcEligible ? 2000 : 0,
+    apply_url: "https://www.irs.gov/credits-deductions/individuals/child-tax-credit",
+    deadline: "April 15 tax deadline (file Form 1040)",
+    source: {
+      document: "Child Tax Credit — Internal Revenue Service",
+      rule: "Up to $2,000 per qualifying child under 17. Partially refundable: up to $1,700 Additional Child Tax Credit (ACTC) for 2024. Phase-out begins at $200K AGI (single) / $400K (joint). 26 U.S.C. § 24.",
+      url: "https://www.irs.gov/credits-deductions/individuals/child-tax-credit",
+    },
+  });
+
+
+  // 11. Section 8 Housing Choice Voucher ──────────────────────────────────────
+  // Eligibility: Very Low Income (50% AMI) or Extremely Low Income (30% AMI)
+  // AMI varies by area — approximated using FPL as proxy
+  const section8Eligible = fpl <= 50 && isEligibleImmigrant;
+  const section8Likely = fpl <= 80 && isEligibleImmigrant;
+  results.push({
+    name: "Section 8 Housing Choice Voucher",
+    eligible: section8Eligible ? "yes" : section8Likely ? "likely" : "unlikely",
+    confidence: section8Eligible ? 70 : section8Likely ? 50 : 15,
+    reason: section8Eligible
+      ? `Your income is extremely low (${fpl}% FPL). You qualify for Section 8 — but most areas have long waitlists. Apply immediately at your local Public Housing Authority (PHA).`
+      : section8Likely
+      ? `You qualify for Section 8 at Very Low Income level (≤80% FPL), though waitlists can be 1–5 years. Apply now to get on the list.`
+      : `Section 8 requires Very Low Income (≤50% of Area Median Income). Income limits vary by city/county.`,
+    annual_value: "$4,800 – $15,000/year in rental subsidy",
+    annual_value_number: section8Eligible ? 9600 : section8Likely ? 6000 : 0,
+    apply_url: "https://www.hud.gov/topics/housing_choice_voucher_program_section_8",
+    deadline: "Apply immediately — most PHAs have long waitlists or closed waiting lists",
+    source: {
+      document: "Housing Choice Voucher Program — HUD (24 CFR § 982)",
+      rule: "Very Low Income (50% of Area Median Income) required. At least 75% of vouchers must go to Extremely Low Income (30% AMI) families. 42 U.S.C. § 1437f.",
+      url: "https://www.hud.gov/topics/housing_choice_voucher_program_section_8",
+    },
+  });
+
+
+  // 12. Head Start / Early Head Start ──────────────────────────────────────────
+  // Free early childhood education and child development for children 0-5
+  const headStartEligible = profile.has_children && fpl <= 100;
+  const headStartLikely = profile.has_children && fpl <= 130;
+  results.push({
+    name: "Head Start (Early Childhood Education)",
+    eligible: headStartEligible ? "yes" : headStartLikely ? "likely" : profile.has_children ? "unlikely" : "no",
+    confidence: headStartEligible ? 85 : headStartLikely ? 60 : 10,
+    reason: headStartEligible
+      ? `Families with children under 5 at or below 100% FPL qualify for free Head Start — comprehensive early education, health screenings, and family support.`
+      : headStartLikely
+      ? `Families at or below 130% FPL may qualify for Head Start depending on local program availability and slots.`
+      : profile.has_children
+      ? `Head Start primarily serves families at or below 100% FPL with children ages 0–5.`
+      : `Head Start is only for families with children under 5 years old.`,
+    annual_value: "$10,000 – $15,000/year equivalent",
+    annual_value_number: headStartEligible ? 12000 : 0,
+    apply_url: "https://www.acf.hhs.gov/ohs/about/head-start",
+    deadline: "Rolling — apply at local Head Start center",
+    source: {
+      document: "Head Start Program — ACF / HHS",
+      rule: "Serves children from birth to 5 from families at or below 100% FPL. Up to 10% of enrollment open to families above income limits. 42 U.S.C. § 9836a.",
+      url: "https://www.acf.hhs.gov/ohs/about/head-start",
+    },
+  });
+
+
+  // 13. CCAP — Child Care Assistance Program ───────────────────────────────────
+  // State-run, federally funded via CCDBG. Income limit varies: typically ≤85% state median income
+  const ccapEligible = profile.has_children && fpl <= 200 && isEligibleImmigrant;
+  results.push({
+    name: "CCAP (Child Care Assistance)",
+    eligible: ccapEligible ? "yes" : profile.has_children && fpl <= 250 ? "likely" : "no",
+    confidence: ccapEligible ? 75 : profile.has_children && fpl <= 250 ? 50 : 5,
+    reason: ccapEligible
+      ? `Working families with children under 13 at ≤200% FPL may qualify for subsidized child care. Contact your state child care agency.`
+      : profile.has_children
+      ? `Child care subsidies vary by state. Working families with children under 13 should contact their state agency.`
+      : `CCAP requires at least one child under 13 in the household.`,
+    annual_value: "$3,000 – $15,000/year in childcare subsidy",
+    annual_value_number: ccapEligible ? 6000 : 0,
+    apply_url: "https://www.childcare.gov/consumer-education/get-help-paying-for-child-care",
+    deadline: "Rolling — apply through your state child care agency",
+    source: {
+      document: "Child Care and Development Fund (CCDF) — HHS/ACF",
+      rule: "Subsidizes child care for low-income families with children under 13. States set income limits (typically 85% of State Median Income). 45 CFR § 98.",
+      url: "https://www.acf.hhs.gov/occ/ccdf-reauthorization",
+    },
+  });
+
+
   return results;
 }
