@@ -543,6 +543,9 @@ export default function Home() {
   const [activeView, setActiveView] = useState<ViewState>("landing");
   const [activeTab, setActiveTab] = useState<ResultTab>("matched");
   const [lang, setLang] = useState<"en" | "es" | "hi">("en");
+  // Tracks whether the user has explicitly chosen a language from the UI dropdown.
+  // When true, we never auto-override lang from saved profile_facts.language.
+  const langManuallySet = useRef(false);
   // Region selector: null means not yet chosen (shows the selector screen)
   const [selectedRegion, setSelectedRegion] = useState<"india" | "usa" | null>(null);
 
@@ -901,7 +904,7 @@ export default function Home() {
         if (savedFactsStr) {
           const facts = JSON.parse(savedFactsStr);
           setProfileFacts(facts);
-          if (facts.language === "spanish") setLang("es"); else if (facts.language === "hindi") setLang("hi"); else setLang("en");
+          if (!langManuallySet.current) { if (facts.language === "spanish") setLang("es"); else if (facts.language === "hindi") setLang("hi"); }
           // Auto-restore region from saved profile facts
           if (facts.country === "india") setSelectedRegion("india");
           else if (facts.country === "usa") setSelectedRegion("usa");
@@ -960,7 +963,7 @@ export default function Home() {
             if (!localHasData && backendHasData) {
               setProfileFacts(backendFacts);
               localStorage.setItem(`claimradar_profile_facts_${user.email}`, JSON.stringify(backendFacts));
-              if (backendFacts.language === "spanish") setLang("es"); else if (backendFacts.language === "hindi") setLang("hi"); else setLang("en");
+              if (!langManuallySet.current) { if (backendFacts.language === "spanish") setLang("es"); else if (backendFacts.language === "hindi") setLang("hi"); }
               recomputeEligibilityFromFacts(backendFacts);
             }
 
@@ -989,7 +992,7 @@ export default function Home() {
         if (savedFactsStr) {
           const facts = JSON.parse(savedFactsStr);
           setProfileFacts(facts);
-          if (facts.language === "spanish") setLang("es"); else if (facts.language === "hindi") setLang("hi"); else setLang("en");
+          if (!langManuallySet.current) { if (facts.language === "spanish") setLang("es"); else if (facts.language === "hindi") setLang("hi"); }
           // Auto-restore region for guest
           if (facts.country === "india") setSelectedRegion("india");
           else if (facts.country === "usa") setSelectedRegion("usa");
@@ -2586,7 +2589,7 @@ export default function Home() {
   // Handle preset profile selection
   function handleSelectPreset(preset: typeof presetProfiles[0]) {
     const profileData = preset.profile;
-    setLang(profileData.language === "spanish" ? "es" : profileData.language === "hindi" ? "hi" : "en");
+    // Do NOT override the user's chosen language when they click a preset card.
     setProfileFacts(profileData);
     
     // Construct search query string
@@ -3414,7 +3417,7 @@ export default function Home() {
               <span className="material-symbols-outlined text-sm absolute left-2.5 text-on-surface-variant pointer-events-none">language</span>
               <select
                 value={lang}
-                onChange={(e) => setLang(e.target.value as "en" | "es" | "hi")}
+                onChange={(e) => { langManuallySet.current = true; setLang(e.target.value as "en" | "es" | "hi"); }}
                 className="appearance-none pl-8 pr-7 py-1.5 border border-outline-variant/30 rounded-full text-on-surface-variant hover:border-primary bg-transparent text-xs font-semibold cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary/40 transition-all"
               >
                 <option value="en">English</option>
