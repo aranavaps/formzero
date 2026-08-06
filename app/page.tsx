@@ -1635,7 +1635,7 @@ export default function Home() {
     let currentStep = 1;
     const totalSteps = 8;
     const accumulatedFacts: Record<string, string> = {
-      language: lang === "es" ? "spanish" : lang === "hi" ? "english" : "english"
+      language: lang === "es" ? "spanish" : lang === "hi" ? "hindi" : "english"
     };
 
     const getFriendlyAnswer = (key: string, val: string) => {
@@ -1678,7 +1678,7 @@ export default function Home() {
         setTimeout(() => {
           if (currentStep < totalSteps) {
             const nextQ = questionsList[currentStep];
-            const text = lang === "es" ? nextQ.q_es : nextQ.q;
+            const text = lang === "hi" ? (nextQ.q_hi || nextQ.q) : lang === "es" ? nextQ.q_es : nextQ.q;
             setChatMessages((prev) => [
               ...prev,
               { role: "assistant", content: text, timestamp: new Date().toLocaleTimeString() }
@@ -2606,52 +2606,62 @@ export default function Home() {
         {
           key: "country",
           q: "Which country do you live in? (India or United States)",
-          q_es: "¿En qué país vive? (India o Estados Unidos)"
+          q_es: "¿En qué país vive? (India o Estados Unidos)",
+          q_hi: "आप किस देश में रहते हैं? (भारत या संयुक्त राज्य अमेरिका)"
         },
         {
           key: "state",
           q: "Which state/territory do you live in?",
-          q_es: "¿En qué estado/territorio vive?"
+          q_es: "¿En qué estado/territorio vive?",
+          q_hi: "आप किस राज्य/केंद्र शासित प्रदेश में रहते हैं?"
         },
         {
           key: "age",
           q: "What is your age?",
-          q_es: "¿Cuál es su edad?"
+          q_es: "¿Cuál es su edad?",
+          q_hi: "आपकी उम्र क्या है?"
         },
         {
           key: "gender",
           q: "What is your gender? (Male, Female, Other)",
-          q_es: "¿Cuál es su género? (Masculino, Femenino, Otro)"
+          q_es: "¿Cuál es su género? (Masculino, Femenino, Otro)",
+          q_hi: "आपका लिंग क्या है? (पुरुष, महिला, अन्य)"
         },
         {
           key: "household_size",
           q: "How many people are in your household?",
-          q_es: "¿Cuántas personas viven en su hogar?"
+          q_es: "¿Cuántas personas viven en su hogar?",
+          q_hi: "आपके परिवार में कितने लोग हैं?"
         },
         {
           key: "monthly_income",
           q: "What is your total monthly household income?",
-          q_es: "¿Cuál es el ingreso mensual total de su hogar?"
+          q_es: "¿Cuál es el ingreso mensual total de su hogar?",
+          q_hi: "आपके परिवार की कुल मासिक आय क्या है? (₹ में)"
         },
         {
           key: "category",
           q: "What is your category? (General, OBC, SC, ST)",
-          q_es: "¿Cuál es su categoría? (General, OBC, SC, ST)"
+          q_es: "¿Cuál es su categoría? (General, OBC, SC, ST)",
+          q_hi: "आपकी श्रेणी क्या है? (सामान्य, ओबीसी, एससी, एसटी)"
         },
         {
           key: "is_student",
           q: "Are you a student? (yes or no)",
-          q_es: "¿Es estudiante? (sí o no)"
+          q_es: "¿Es estudiante? (sí o no)",
+          q_hi: "क्या आप छात्र हैं? (हाँ या नहीं)"
         },
         {
           key: "is_farmer",
           q: "Are you a farmer? (yes or no)",
-          q_es: "¿Es usted agricultor? (sí o no)"
+          q_es: "¿Es usted agricultor? (sí o no)",
+          q_hi: "क्या आप किसान हैं? (हाँ या नहीं)"
         },
         {
           key: "has_elderly_or_disabled",
           q: "Is anyone elderly or disabled? (yes or no)",
-          q_es: "¿Hay alguien mayor o discapacitado? (sí o no)"
+          q_es: "¿Hay alguien mayor o discapacitado? (sí o no)",
+          q_hi: "क्या परिवार में कोई बुजुर्ग या विकलांग है? (हाँ या नहीं)"
         }
       ];
     }
@@ -2660,47 +2670,56 @@ export default function Home() {
       {
         key: "country",
         q: "Which country do you live in? (India or United States)",
-        q_es: "¿En qué país vive? (India o Estados Unidos)"
+        q_es: "¿En qué país vive? (India o Estados Unidos)",
+        q_hi: "आप किस देश में रहते हैं? (भारत या संयुक्त राज्य अमेरिका)"
       },
       {
         key: "state",
         q: "Which state do you live in?",
-        q_es: "¿En qué estado vive?"
+        q_es: "¿En qué estado vive?",
+        q_hi: "आप किस राज्य में रहते हैं?"
       },
       {
         key: "household_size",
         q: "How many people are in your household?",
-        q_es: "¿Cuántas personas viven en su hogar?"
+        q_es: "¿Cuántas personas viven en su hogar?",
+        q_hi: "आपके घर में कितने लोग हैं?"
       },
       {
         key: "monthly_income",
         q: "What is your total monthly household income?",
-        q_es: "¿Cuál es el ingreso mensual total de su hogar?"
+        q_es: "¿Cuál es el ingreso mensual total de su hogar?",
+        q_hi: "आपके परिवार की कुल मासिक आय क्या है? ($ में)"
       },
       {
         key: "has_children",
         q: "Do you have children under 18? (yes or no)",
-        q_es: "¿Tiene hijos menores de 18 años? (sí o no)"
+        q_es: "¿Tiene hijos menores de 18 años? (sí o no)",
+        q_hi: "क्या आपके 18 साल से कम उम्र के बच्चे हैं? (हाँ या नहीं)"
       },
       {
         key: "has_pregnant",
         q: "Is anyone in your household pregnant? (yes or no)",
-        q_es: "¿Hay alguien en su hogar embarazada? (sí o no)"
+        q_es: "¿Hay alguien en su hogar embarazada? (sí o no)",
+        q_hi: "क्या घर में कोई गर्भवती है? (हाँ या नहीं)"
       },
       {
         key: "has_elderly_or_disabled",
         q: "Is anyone elderly or disabled? (yes or no)",
-        q_es: "¿Hay alguien mayor o discapacitado? (sí o no)"
+        q_es: "¿Hay alguien mayor o discapacitado? (sí o no)",
+        q_hi: "क्या घर में कोई बुजुर्ग या विकलांग है? (हाँ या नहीं)"
       },
       {
         key: "is_student",
         q: "Are you a student? (yes or no)",
-        q_es: "¿Es estudiante? (sí o no)"
+        q_es: "¿Es estudiante? (sí o no)",
+        q_hi: "क्या आप छात्र हैं? (हाँ या नहीं)"
       },
       {
         key: "immigration_status",
         q: "What is your immigration status? (Citizen, Permanent Resident, Not Disclosed)",
-        q_es: "¿Cuál es su estado migratorio? (Ciudadano, Residente Permanente, No decir)"
+        q_es: "¿Cuál es su estado migratorio? (Ciudadano, Residente Permanente, No decir)",
+        q_hi: "आपकी नागरिकता स्थिति क्या है? (नागरिक, स्थायी निवासी, नहीं बताना चाहते)"
       }
     ];
   }, [profileFacts.country]);
@@ -2798,14 +2817,14 @@ export default function Home() {
       }
     }
 
-    const updatedFacts = { ...currentFacts, [key]: normalizedVal, language: lang === "es" ? "spanish" : lang === "hi" ? "english" : "english" };
+    const updatedFacts = { ...currentFacts, [key]: normalizedVal, language: lang === "es" ? "spanish" : lang === "hi" ? "hindi" : "english" };
     setProfileFacts(updatedFacts);
 
     if (index < 8) {
       setIsTyping(true);
       setTimeout(() => {
         const nextQ = questionsList[index];
-        const text = lang === "es" ? nextQ.q_es : nextQ.q;
+        const text = lang === "hi" ? (nextQ.q_hi || nextQ.q) : lang === "es" ? nextQ.q_es : nextQ.q;
         setChatMessages((prev) => [
           ...prev,
           { role: "assistant", content: text, timestamp: new Date().toLocaleTimeString() },
@@ -2827,7 +2846,20 @@ export default function Home() {
           extraInconsistencyText = "\n\n" + contradictions.join("\n\n") + "\n";
         }
 
-        const summaryText = lang === "es"
+        const summaryText = lang === "hi"
+          ? `मैंने आपकी जानकारी संकलित की है:\n\n` +
+            `• राज्य: ${updatedFacts.state || ""}\n` +
+            `• परिवार के सदस्य: ${updatedFacts.household_size || "1"}\n` +
+            `• मासिक आय: ${updatedFacts.country === 'india' ? '₹' : '$'}${updatedFacts.monthly_income || "0"}\n` +
+            `• 18 वर्ष से कम बच्चे: ${updatedFacts.has_children === "true" ? "हाँ" : "नहीं"}\n` +
+            `• घर में गर्भवती: ${updatedFacts.has_pregnant === "true" ? "हाँ" : "नहीं"}\n` +
+            `• बुजुर्ग / विकलांग: ${updatedFacts.has_elderly_or_disabled === "true" ? "हाँ" : "नहीं"}\n` +
+            `• छात्र: ${updatedFacts.is_student === "true" ? "हाँ" : "नहीं"}\n` +
+            (updatedFacts.is_farmer ? `• किसान: ${updatedFacts.is_farmer === "true" ? "हाँ" : "नहीं"}\n` : "") +
+            (updatedFacts.category ? `• श्रेणी: ${updatedFacts.category.toUpperCase()}\n` : "") +
+            `${extraInconsistencyText}\n\n` +
+            `क्या यह जानकारी सही है?`
+          : lang === "es"
           ? `He recopilado sus datos:\n\n` +
             `• Estado: ${updatedFacts.state || "CA"}\n` +
             `• Personas en el hogar: ${updatedFacts.household_size || "1"}\n` +
@@ -5519,51 +5551,92 @@ export default function Home() {
                       </div>
                     </div>
 
+                    {/* India chain */}
+                    {profileFacts.country === "india" ? (
+                      <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-2">
+                        <div className="flex-1 bg-white p-4 rounded-xl border border-outline-variant/35 shadow-sm text-center w-full relative group hover:border-primary/50 transition-colors">
+                          <span className="bg-primary/5 text-primary text-[9px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-widest block w-max mx-auto mb-2">चरण 1 / Stage 1</span>
+                          <h4 className="font-bold text-xs text-primary mb-1">{lang === "hi" ? "आयुष्मान भारत (PM-JAY)" : "Ayushman Bharat PM-JAY"}</h4>
+                          <p className="text-[10px] text-on-surface-variant leading-relaxed">
+                            {lang === "hi" ? "मूल स्वास्थ्य पात्रता स्वीकृत" : "Base Health Eligibility Approved"}
+                          </p>
+                        </div>
+                        <div className="flex items-center justify-center shrink-0 w-8 md:w-12 h-8 md:h-auto select-none pointer-events-none">
+                          <svg className="w-6 h-6 text-primary animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" className="hidden md:block" />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" className="block md:hidden" />
+                          </svg>
+                        </div>
+                        <div className="flex-1 bg-white p-4 rounded-xl border border-outline-variant/35 shadow-sm text-center w-full relative group hover:border-primary/50 transition-colors">
+                          <span className="bg-emerald-500/10 text-emerald-700 text-[9px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-widest block w-max mx-auto mb-2">{lang === "hi" ? "अनलॉक चरण 2" : "Unlocked Stage 2"}</span>
+                          <h4 className="font-bold text-xs text-emerald-950 mb-1">{lang === "hi" ? "पीएम-किसान" : "PM-KISAN"}</h4>
+                          <p className="text-[10px] text-emerald-900 leading-relaxed font-medium">
+                            {lang === "hi" ? "सीधी श्रेणी पात्रता" : "Direct Categorical Qualification"}
+                          </p>
+                          <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-emerald-500 text-white text-[8px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap shadow-sm">
+                            {lang === "hi" ? "तत्काल स्वीकृति" : "Instant Approval"}
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-center shrink-0 w-8 md:w-12 h-8 md:h-auto select-none pointer-events-none">
+                          <svg className="w-6 h-6 text-primary animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" className="hidden md:block" />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" className="block md:hidden" />
+                          </svg>
+                        </div>
+                        <div className="flex-grow flex-1 bg-white p-4 rounded-xl border border-outline-variant/35 shadow-sm text-center w-full relative group hover:border-primary/50 transition-colors animate-in zoom-in-95 duration-500">
+                          <span className="bg-emerald-500/10 text-emerald-700 text-[9px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-widest block w-max mx-auto mb-2">{lang === "hi" ? "अनलॉक चरण 3" : "Unlocked Stage 3"}</span>
+                          <h4 className="font-bold text-xs text-emerald-950 mb-1">{lang === "hi" ? "राशन कार्ड (NFSA)" : "Ration Card (NFSA)"}</h4>
+                          <p className="text-[10px] text-emerald-900 leading-relaxed font-medium">
+                            {lang === "hi" ? "त्वरित प्रसंस्करण" : "Expedited Processing"}
+                          </p>
+                          <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-emerald-500 text-white text-[8px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap shadow-sm animate-bounce">
+                            {lang === "hi" ? "3 सप्ताह बचाएं" : "Saves 3 Weeks"}
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
                     <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-2">
                       <div className="flex-1 bg-white p-4 rounded-xl border border-outline-variant/35 shadow-sm text-center w-full relative group hover:border-primary/50 transition-colors">
                         <span className="bg-primary/5 text-primary text-[9px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-widest block w-max mx-auto mb-2">Stage 1</span>
                         <h4 className="font-bold text-xs text-primary mb-1">SNAP / Medicaid</h4>
                         <p className="text-[10px] text-on-surface-variant leading-relaxed">
-                          {lang === "es" ? "Aprobación de Ingresos Básicos" : lang === "hi" ? "Base Gross Income Audit Approved" : "Base Gross Income Audit Approved"}
+                          {lang === "es" ? "Aprobación de Ingresos Básicos" : "Base Gross Income Audit Approved"}
                         </p>
                       </div>
-
                       <div className="flex items-center justify-center shrink-0 w-8 md:w-12 h-8 md:h-auto select-none pointer-events-none">
                         <svg className="w-6 h-6 text-primary animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" className="hidden md:block" />
                           <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" className="block md:hidden" />
                         </svg>
                       </div>
-
                       <div className="flex-1 bg-white p-4 rounded-xl border border-outline-variant/35 shadow-sm text-center w-full relative group hover:border-primary/50 transition-colors">
                         <span className="bg-emerald-500/10 text-emerald-700 text-[9px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-widest block w-max mx-auto mb-2">Unlocked Stage 2</span>
                         <h4 className="font-bold text-xs text-emerald-950 mb-1">Lifeline Broadband</h4>
                         <p className="text-[10px] text-emerald-900 leading-relaxed font-medium">
-                          {lang === "es" ? "Calificación Categórica Directa" : lang === "hi" ? "Direct Categorical Qualification" : "Direct Categorical Qualification"}
+                          {lang === "es" ? "Calificación Categórica Directa" : "Direct Categorical Qualification"}
                         </p>
                         <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-emerald-500 text-white text-[8px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap shadow-sm">
-                          {lang === "es" ? "Aprobación Instantánea" : lang === "hi" ? "Instant Approval" : "Instant Approval"}
+                          {lang === "es" ? "Aprobación Instantánea" : "Instant Approval"}
                         </div>
                       </div>
-
                       <div className="flex items-center justify-center shrink-0 w-8 md:w-12 h-8 md:h-auto select-none pointer-events-none">
                         <svg className="w-6 h-6 text-primary animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" className="hidden md:block" />
                           <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" className="block md:hidden" />
                         </svg>
                       </div>
-
                       <div className="flex-grow flex-1 bg-white p-4 rounded-xl border border-outline-variant/35 shadow-sm text-center w-full relative group hover:border-primary/50 transition-colors animate-in zoom-in-95 duration-500">
                         <span className="bg-emerald-500/10 text-emerald-700 text-[9px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-widest block w-max mx-auto mb-2">Unlocked Stage 3</span>
                         <h4 className="font-bold text-xs text-emerald-950 mb-1">WIC Support</h4>
                         <p className="text-[10px] text-emerald-900 leading-relaxed font-medium">
-                          {lang === "es" ? "Revisión Urgente sin Carga" : lang === "hi" ? "Expedited Backlog Bypass" : "Expedited Backlog Bypass"}
+                          {lang === "es" ? "Revisión Urgente sin Carga" : "Expedited Backlog Bypass"}
                         </p>
                         <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-emerald-500 text-white text-[8px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap shadow-sm animate-bounce">
-                          {lang === "es" ? "Ahorra 3 Semanas" : lang === "hi" ? "Saves 3 Weeks" : "Saves 3 Weeks"}
+                          {lang === "es" ? "Ahorra 3 Semanas" : "Saves 3 Weeks"}
                         </div>
                       </div>
                     </div>
+                    )}
                   </div>
 
                   {/* Optimal Application Order Engine */}
@@ -5582,6 +5655,50 @@ export default function Home() {
                       </div>
                     </div>
 
+                    {profileFacts.country === "india" ? (
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pt-2">
+                      <div className="bg-surface-container-low p-4 rounded-xl border border-outline-variant/20 space-y-2 relative">
+                        <div className="flex justify-between items-center">
+                          <span className="bg-primary text-on-primary text-[8px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">{lang === "hi" ? "प्राथमिकता 1" : "Priority 1"}</span>
+                          <span className="text-[10px] text-error font-bold">30d</span>
+                        </div>
+                        <h4 className="font-bold text-xs text-primary">{lang === "hi" ? "आयुष्मान भारत" : "Ayushman Bharat"}</h4>
+                        <p className="text-[10px] text-on-surface-variant leading-relaxed">
+                          {lang === "hi" ? "पहले आवेदन करें। PM-KISAN और मनरेगा की पात्रता खुलती है।" : "Apply first. Unlocks PM-KISAN and MGNREGS verification exemptions."}
+                        </p>
+                      </div>
+                      <div className="bg-surface-container-low p-4 rounded-xl border border-outline-variant/20 space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="bg-primary text-on-primary text-[8px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">{lang === "hi" ? "प्राथमिकता 2" : "Priority 2"}</span>
+                          <span className="text-[10px] text-on-surface-variant font-bold">21d</span>
+                        </div>
+                        <h4 className="font-bold text-xs text-primary">{lang === "hi" ? "राशन कार्ड (NFSA)" : "Ration Card (NFSA)"}</h4>
+                        <p className="text-[10px] text-on-surface-variant leading-relaxed">
+                          {lang === "hi" ? "दूसरे आवेदन करें। राशन मिलने से पीएम-उज्ज्वला की पात्रता बनती है।" : "Apply second. Ration card establishes PM-Ujjwala and Jan Dhan eligibility."}
+                        </p>
+                      </div>
+                      <div className="bg-surface-container-low p-4 rounded-xl border border-outline-variant/20 space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="bg-primary text-on-primary text-[8px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">{lang === "hi" ? "प्राथमिकता 3" : "Priority 3"}</span>
+                          <span className="text-[10px] text-on-surface-variant font-bold">14d</span>
+                        </div>
+                        <h4 className="font-bold text-xs text-primary">{lang === "hi" ? "पीएम-किसान" : "PM-KISAN"}</h4>
+                        <p className="text-[10px] text-on-surface-variant leading-relaxed">
+                          {lang === "hi" ? "तीसरे आवेदन करें। किसान पंजीकरण से फसल बीमा मिलता है।" : "Apply third. Farmer registration opens Fasal Bima Yojana eligibility."}
+                        </p>
+                      </div>
+                      <div className="bg-surface-container-low p-4 rounded-xl border border-outline-variant/20 space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="bg-emerald-500 text-white text-[8px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">{lang === "hi" ? "प्राथमिकता 4" : "Priority 4"}</span>
+                          <span className="text-[10px] text-emerald-600 font-bold">{lang === "hi" ? "तुरंत" : "Instant"}</span>
+                        </div>
+                        <h4 className="font-bold text-xs text-emerald-950">{lang === "hi" ? "जन धन / उज्ज्वला" : "Jan Dhan / Ujjwala"}</h4>
+                        <p className="text-[10px] text-on-surface-variant leading-relaxed">
+                          {lang === "hi" ? "अंत में आवेदन करें। राशन कार्ड से तत्काल स्वीकृति।" : "Apply last. Instant activation using Ration Card verification."}
+                        </p>
+                      </div>
+                    </div>
+                    ) : (
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pt-2">
                       <div className="bg-surface-container-low p-4 rounded-xl border border-outline-variant/20 space-y-2 relative">
                         <div className="flex justify-between items-center">
@@ -5590,10 +5707,9 @@ export default function Home() {
                         </div>
                         <h4 className="font-bold text-xs text-primary">Medicaid</h4>
                         <p className="text-[10px] text-on-surface-variant leading-relaxed">
-                          {lang === "es" ? "Aplique primero. Tarda 45 días pero desbloquea Lifeline y WIC." : lang === "hi" ? "Apply first. Longest backlog (45 days) but unlocks Lifeline and WIC verification exemptions." : "Apply first. Longest backlog (45 days) but unlocks Lifeline and WIC verification exemptions."}
+                          {lang === "es" ? "Aplique primero. Tarda 45 días pero desbloquea Lifeline y WIC." : "Apply first. Longest backlog (45 days) but unlocks Lifeline and WIC verification exemptions."}
                         </p>
                       </div>
-
                       <div className="bg-surface-container-low p-4 rounded-xl border border-outline-variant/20 space-y-2">
                         <div className="flex justify-between items-center">
                           <span className="bg-primary text-on-primary text-[8px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">Priority 2</span>
@@ -5601,10 +5717,9 @@ export default function Home() {
                         </div>
                         <h4 className="font-bold text-xs text-primary">SNAP</h4>
                         <p className="text-[10px] text-on-surface-variant leading-relaxed">
-                          {lang === "es" ? "Aplique segundo. Tarda 30 días. Su aprobación califica para Lifeline." : lang === "hi" ? "Apply second. Standard backlog (30 days). SNAP approval establishes instant Lifeline eligibility." : "Apply second. Standard backlog (30 days). SNAP approval establishes instant Lifeline eligibility."}
+                          {lang === "es" ? "Aplique segundo. Tarda 30 días. Su aprobación califica para Lifeline." : "Apply second. Standard backlog (30 days). SNAP approval establishes instant Lifeline eligibility."}
                         </p>
                       </div>
-
                       <div className="bg-surface-container-low p-4 rounded-xl border border-outline-variant/20 space-y-2">
                         <div className="flex justify-between items-center">
                           <span className="bg-primary text-on-primary text-[8px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">Priority 3</span>
@@ -5612,10 +5727,9 @@ export default function Home() {
                         </div>
                         <h4 className="font-bold text-xs text-primary">Pell Grant</h4>
                         <p className="text-[10px] text-on-surface-variant leading-relaxed">
-                          {lang === "es" ? "Aplique tercero. Tarda 7 días. Su estado de beca califica para SNAP de estudiante." : lang === "hi" ? "Apply third. Short backlog (7 days). Grant approval qualifies college student exception rules for SNAP." : "Apply third. Short backlog (7 days). Grant approval qualifies college student exception rules for SNAP."}
+                          {lang === "es" ? "Aplique tercero. Tarda 7 días. Su estado de beca califica para SNAP de estudiante." : "Apply third. Short backlog (7 days). Grant approval qualifies college student exception rules for SNAP."}
                         </p>
                       </div>
-
                       <div className="bg-surface-container-low p-4 rounded-xl border border-outline-variant/20 space-y-2">
                         <div className="flex justify-between items-center">
                           <span className="bg-emerald-500 text-white text-[8px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">Priority 4</span>
@@ -5623,10 +5737,11 @@ export default function Home() {
                         </div>
                         <h4 className="font-bold text-xs text-emerald-950 font-bold">Lifeline</h4>
                         <p className="text-[10px] text-on-surface-variant leading-relaxed">
-                          {lang === "es" ? "Aplique al final. Aprobación instantánea usando SNAP o Medicaid." : lang === "hi" ? "Apply last. Instant activation using verification hash from SNAP or Medicaid approval." : "Apply last. Instant activation using verification hash from SNAP or Medicaid approval."}
+                          {lang === "es" ? "Aplique al final. Aprobación instantánea usando SNAP o Medicaid." : "Apply last. Instant activation using verification hash from SNAP or Medicaid approval."}
                         </p>
                       </div>
                     </div>
+                    )}
                   </div>
 
                   {/* Steps timeline */}
