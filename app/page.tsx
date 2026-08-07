@@ -3436,7 +3436,7 @@ export default function Home() {
             </div>
           )}
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             {activeView === "results" && (
               <button
                 onClick={() => setShowUpdateProfileModal(true)}
@@ -3478,9 +3478,11 @@ export default function Home() {
                 </span>
                 <button
                   onClick={handleLogout}
-                  className="border border-outline-variant hover:border-primary text-on-surface-variant hover:text-primary px-4 py-2 rounded-full font-body-md text-xs transition-all cursor-pointer"
+                  className="border border-outline-variant hover:border-primary text-on-surface-variant hover:text-primary px-3 sm:px-4 py-2 rounded-full font-body-md text-xs transition-all cursor-pointer flex items-center justify-center"
+                  title="Logout"
                 >
-                  {lang === "es" ? "Salir" : lang === "hi" ? "लॉग आउट" : "Logout"}
+                  <span className="hidden sm:inline">{lang === "es" ? "Salir" : lang === "hi" ? "लॉग आउट" : "Logout"}</span>
+                  <span className="sm:hidden material-symbols-outlined text-[16px]">logout</span>
                 </button>
                 <button
                   onClick={() => {
@@ -3523,17 +3525,19 @@ export default function Home() {
                   <>
                     <button
                       onClick={() => setActiveView("results")}
-                      className="bg-primary text-on-primary px-4 py-2 rounded-full font-body-md text-xs hover:opacity-90 transition-all scale-100 hover:scale-[1.02] active:scale-95 cursor-pointer flex items-center gap-1"
+                      className="bg-primary text-on-primary px-3 sm:px-4 py-2 rounded-full font-body-md text-xs hover:opacity-90 transition-all scale-100 hover:scale-[1.02] active:scale-95 cursor-pointer flex items-center gap-1"
+                      title="View Results"
                     >
                       <span className="material-symbols-outlined text-[16px]">dashboard</span>
-                      {lang === "es" ? "Ver Resultados" : lang === "hi" ? "परिणाम देखें" : "View Results"}
+                      <span className="hidden sm:inline">{lang === "es" ? "Ver Resultados" : lang === "hi" ? "परिणाम देखें" : "View Results"}</span>
                     </button>
                     <button
                       onClick={handleReset}
-                      className="border border-outline-variant hover:border-primary text-on-surface-variant hover:text-primary px-4 py-2 rounded-full font-body-md text-xs transition-all cursor-pointer flex items-center gap-1"
+                      className="border border-outline-variant hover:border-primary text-on-surface-variant hover:text-primary px-3 sm:px-4 py-2 rounded-full font-body-md text-xs transition-all cursor-pointer flex items-center gap-1"
+                      title="Start Over"
                     >
                       <span className="material-symbols-outlined text-[16px]">refresh</span>
-                      {lang === "es" ? "Reiniciar" : lang === "hi" ? "फिर से शुरू करें" : "Start Over"}
+                      <span className="hidden sm:inline">{lang === "es" ? "Reiniciar" : lang === "hi" ? "फिर से शुरू करें" : "Start Over"}</span>
                     </button>
                   </>
                 ) : chatMessages.length > 0 ? (
@@ -3547,10 +3551,11 @@ export default function Home() {
                     </button>
                     <button
                       onClick={handleReset}
-                      className="border border-outline-variant hover:border-primary text-on-surface-variant hover:text-primary px-4 py-2 rounded-full font-body-md text-xs transition-all cursor-pointer flex items-center gap-1"
+                      className="border border-outline-variant hover:border-primary text-on-surface-variant hover:text-primary px-3 sm:px-4 py-2 rounded-full font-body-md text-xs transition-all cursor-pointer flex items-center gap-1"
+                      title="Start Over"
                     >
                       <span className="material-symbols-outlined text-[16px]">refresh</span>
-                      {lang === "es" ? "Reiniciar" : lang === "hi" ? "फिर से शुरू करें" : "Start Over"}
+                      <span className="hidden sm:inline">{lang === "es" ? "Reiniciar" : lang === "hi" ? "फिर से शुरू करें" : "Start Over"}</span>
                     </button>
                   </>
                 ) : (
@@ -4948,7 +4953,7 @@ export default function Home() {
                             {lang === "es" ? "Tasa de personas elegibles que no reclaman sus beneficios en su ubicación." : lang === "hi" ? "Tracking the rate of eligible residents who fail to claim their benefits locally." : "Tracking the rate of eligible residents who fail to claim their benefits locally."}
                           </p>
                         </div>
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2 sm:gap-3">
                           <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">
                             {lang === "es" ? "Condado:" : lang === "hi" ? (profileFacts?.country === "india" ? "Select State/Region:" : "Select County:") : (profileFacts?.country === "india" ? "Select State/Region:" : "Select County:")}
                           </label>
@@ -5373,7 +5378,7 @@ export default function Home() {
                                 </p>
                               </div>
                             </div>
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-2 sm:gap-3">
                               {b.eligible && (
                                 <button
                                   type="button"
@@ -5898,7 +5903,7 @@ export default function Home() {
                       className="glass-card rounded-xl p-8 flex flex-col gap-6 hover:border-primary/20 hover:shadow-xl transition-all w-full"
                     >
                       <div className="flex flex-wrap items-center justify-between gap-4">
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2 sm:gap-3">
                           <span className="bg-surface-container-highest px-3 py-1 rounded-full font-label-sm text-[10px] uppercase tracking-widest text-on-surface font-bold">
                             {item.category.replace("_", " ")}
                           </span>
@@ -6550,7 +6555,7 @@ export default function Home() {
             </button>
 
             <div className="space-y-2">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:gap-3">
                 <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center">
                   <span className="material-symbols-outlined text-red-500 text-2xl">warning</span>
                 </div>
