@@ -362,14 +362,14 @@ function checkForContradictions(facts: Record<string, string>, queryText: string
     const rentVal = parseFloat(rentMatch[1]);
     if (income > 0 && rentVal > income) {
       contradictions.push(
-        lang === "es" ? `⚠️ **Inconsistencia de Gastos**: Reportó ingresos de ${facts.country === "india" ? "₹" : "$"}${income}/mes, pero menciona un alquiler de ${facts.country === "india" ? "₹" : "$"}${rentVal}/mes. Hemos registrado este matiz.` : lang === "hi" ? `⚠️ **Expense Inconsistency**: You reported ${facts.country === "india" ? "₹" : "$"}${income}/mo income, but mentioned rent of ${facts.country === "india" ? "₹" : "$"}${rentVal}/mo. We have documented this mismatch to optimize your analysis.` : `⚠️ **Expense Inconsistency**: You reported ${facts.country === "india" ? "₹" : "$"}${income}/mo income, but mentioned rent of ${facts.country === "india" ? "₹" : "$"}${rentVal}/mo. We have documented this mismatch to optimize your analysis.`
+        lang === "es" ? `⚠️ **Inconsistencia de Gastos**: Reportó ingresos de ${facts.country === "india" ? "₹" : "$"}${income}/mes, pero menciona un alquiler de ${facts.country === "india" ? "₹" : "$"}${rentVal}/mes. Hemos registrado este matiz.` : lang === "hi" ? `⚠️ **व्यय असंगतता**: आपने ${facts.country === "india" ? "₹" : "$"}${income}/महीना आय दर्ज की, लेकिन किराए का उल्लेख ${facts.country === "india" ? "₹" : "$"}${rentVal}/महीना किया। हमने इसे नोट कर लिया है।` : `⚠️ **Expense Inconsistency**: You reported ${facts.country === "india" ? "₹" : "$"}${income}/mo income, but mentioned rent of ${facts.country === "india" ? "₹" : "$"}${rentVal}/mo. We have documented this mismatch to optimize your analysis.`
       );
     }
   }
 
   if (isStudent && income > 4500) {
     contradictions.push(
-      lang === "es" ? `⚠️ **Matiz de Estudiante**: Registró ingresos de ${facts.country === "india" ? "₹" : "$"}${income}/mes siendo estudiante.` : lang === "hi" ? `⚠️ **Student Income Nuance**: You reported student status with high income (${facts.country === "india" ? "₹" : "$"}${income}/mo).` : `⚠️ **Student Income Nuance**: You reported student status with high income (${facts.country === "india" ? "₹" : "$"}${income}/mo).`
+      lang === "es" ? `⚠️ **Matiz de Estudiante**: Registró ingresos de ${facts.country === "india" ? "₹" : "$"}${income}/mes siendo estudiante.` : lang === "hi" ? `⚠️ **छात्र आय विसंगति**: आपने छात्र होने के बावजूद उच्च आय (${facts.country === "india" ? "₹" : "$"}${income}/महीना) दर्ज की है।` : `⚠️ **Student Income Nuance**: You reported student status with high income (${facts.country === "india" ? "₹" : "$"}${income}/mo).`
     );
   }
 
@@ -378,7 +378,7 @@ function checkForContradictions(facts: Record<string, string>, queryText: string
                            lowerQuery.includes("niño") || lowerQuery.includes("niña") || lowerQuery.includes("bebe");
   if (!hasChildren && !hasPregnant && mentionsChildren) {
     contradictions.push(
-      lang === "es" ? `⚠️ **Discrepancia de Dependientes**: Mencionó niños en su relato, pero su perfil marca 'No' para hijos. Esto reduce la probabilidad de calificar para WIC y créditos fiscales. Hemos guardado esta alerta.` : lang === "hi" ? "⚠️ **Dependent Child Discrepancy**: You mentioned children in your story, but the profile lists 'No' for children. WIC and tax credits require dependents. We flagged this for further casework audit." : `⚠️ **Dependent Child Discrepancy**: You mentioned children in your story, but the profile lists 'No' for children. WIC and tax credits require dependents. We flagged this for further casework audit.`
+      lang === "es" ? `⚠️ **Discrepancia de Dependientes**: Mencionó niños en su relato, pero su perfil marca 'No' para hijos. Esto reduce la probabilidad de calificar para WIC y créditos fiscales. Hemos guardado esta alerta.` : lang === "hi" ? "⚠️ **निर्भर बच्चा विसंगति**: आपने अपनी कहानी में बच्चों का उल्लेख किया है, लेकिन प्रोफ़ाइल में बच्चों के लिए 'नहीं' दर्ज है। WIC और कर क्रेडिट के लिए आश्रितों की आवश्यकता होती है। हमने इसकी जाँच के लिए फ्लैग किया है।" : `⚠️ **Dependent Child Discrepancy**: You mentioned children in your story, but the profile lists 'No' for children. WIC and tax credits require dependents. We flagged this for further casework audit.`
     );
   }
 
@@ -3474,7 +3474,7 @@ export default function Home() {
             {currentUser ? (
               <div className="flex items-center gap-2">
                 <span className="hidden md:inline text-xs font-semibold text-on-surface-variant/80 bg-surface-container px-3 py-1.5 rounded-full border border-outline-variant/20 font-body-md">
-                  Hi, {userGreetingName}
+                  {lang === "hi" ? "नमस्ते, " : lang === "es" ? "Hola, " : "Hi, "}{userGreetingName}
                 </span>
                 <button
                   onClick={handleLogout}
@@ -4154,7 +4154,7 @@ export default function Home() {
 
         {/* ── INTAKE CHAT VIEW ── */}
         {activeView === "intake" && (
-          <div className="max-w-2xl mx-auto px-margin-mobile py-10 w-full flex-grow flex flex-col justify-between">
+          <div className="max-w-2xl mx-auto px-4 sm:px-margin-mobile py-6 sm:py-10 w-full flex-grow flex flex-col justify-between min-h-0">
             {/* Top Progress bar */}
             <div className="w-full mb-10 flex flex-col gap-2 shrink-0">
               <div className="flex justify-between items-end">
@@ -4180,21 +4180,21 @@ export default function Home() {
                   {profileFacts.state && (
                     <div className="flex items-center gap-1">
                       <span className="material-symbols-outlined text-[13px] text-primary">location_on</span>
-                      <span>State: {profileFacts.state}</span>
+                      <span>{lang === "hi" ? "राज्य" : lang === "es" ? "Estado" : "State"}: {profileFacts.state}</span>
                     </div>
                   )}
                   {profileFacts.household_size && (
                     <div className="flex items-center gap-1">
                       {profileFacts.state && <div className="w-px h-2.5 bg-outline-variant/30 mr-2"></div>}
                       <span className="material-symbols-outlined text-[13px] text-primary">group</span>
-                      <span>Household: {profileFacts.household_size}</span>
+                      <span>{lang === "hi" ? "परिवार" : lang === "es" ? "Hogar" : "Household"}: {profileFacts.household_size}</span>
                     </div>
                   )}
                   {profileFacts.monthly_income && (
                     <div className="flex items-center gap-1">
                       {(profileFacts.state || profileFacts.household_size) && <div className="w-px h-2.5 bg-outline-variant/30 mr-2"></div>}
                       <span className="material-symbols-outlined text-[13px] text-primary">account_balance_wallet</span>
-                      <span>Income: ${profileFacts.monthly_income}</span>
+                      <span>{lang === "hi" ? "आय" : lang === "es" ? "Ingreso" : "Income"}: {profileFacts.country === "india" ? "₹" : "$"}{profileFacts.monthly_income}</span>
                     </div>
                   )}
                 </div>
@@ -4202,11 +4202,11 @@ export default function Home() {
             )}
 
             {/* Chat wrapper scrollbox */}
-            <div className="flex-grow overflow-y-auto space-y-6 max-h-[50vh] pr-2 custom-scrollbar mb-8">
+            <div className="flex-grow overflow-y-auto space-y-6 pr-2 custom-scrollbar mb-8">
               {chatMessages.map((msg, idx) => (
                 <div
                   key={idx}
-                  className={`flex flex-col gap-1.5 max-w-[85%] ${msg.role === "user" ? "self-end items-end ml-auto" : "self-start items-start"}`}
+                  className={`flex flex-col gap-1.5 max-w-[95%] sm:max-w-[85%] ${msg.role === "user" ? "self-end items-end ml-auto" : "self-start items-start"}`}
                 >
                   <div
                     className={`p-5 rounded-2xl shadow-sm ${msg.role === "user" ? "bg-primary text-on-primary rounded-tr-none" : "glass-panel text-on-surface rounded-tl-none border-l-4 border-l-primary"}`}
@@ -4239,7 +4239,7 @@ export default function Home() {
                     className="bg-primary text-on-primary px-6 py-2.5 rounded-full text-xs font-bold shadow-md hover:scale-[1.02] active:scale-95 duration-200 cursor-pointer flex items-center gap-1"
                   >
                     <span className="material-symbols-outlined text-[16px]">check</span>
-                    {lang === "es" ? "Sí, es correcto" : lang === "hi" ? "Yes, correct" : "Yes, correct"}
+                    {lang === "es" ? "Sí, es correcto" : lang === "hi" ? "हाँ, सही है" : "Yes, correct"}
                   </button>
                   <button
                     onClick={() => handleConfirmAutoFill(false)}
@@ -4256,7 +4256,7 @@ export default function Home() {
                     className="bg-primary text-on-primary px-6 py-2.5 rounded-full text-xs font-bold shadow-md hover:scale-[1.02] active:scale-95 duration-200 cursor-pointer flex items-center gap-1"
                   >
                     <span className="material-symbols-outlined text-[16px]">check</span>
-                    {lang === "es" ? "Sí, es correcto" : lang === "hi" ? "Yes, correct" : "Yes, correct"}
+                    {lang === "es" ? "Sí, es correcto" : lang === "hi" ? "हाँ, सही है" : "Yes, correct"}
                   </button>
                   <button
                     onClick={() => handleConfirmChatIntake(false)}
@@ -4277,9 +4277,9 @@ export default function Home() {
                     )}
                     {questionsList[currentQuestionIndex - 1].key === "gender" && (
                       <>
-                        <button onClick={() => handleIncomingUserMessage("Male", currentQuestionIndex, profileFacts)} className="px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container transition-colors text-xs font-semibold">Male</button>
-                        <button onClick={() => handleIncomingUserMessage("Female", currentQuestionIndex, profileFacts)} className="px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container transition-colors text-xs font-semibold">Female</button>
-                        <button onClick={() => handleIncomingUserMessage("Other", currentQuestionIndex, profileFacts)} className="px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container transition-colors text-xs font-semibold">Other</button>
+                        <button onClick={() => handleIncomingUserMessage("Male", currentQuestionIndex, profileFacts)} className="px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container transition-colors text-xs font-semibold">{lang === "hi" ? "पुरुष" : lang === "es" ? "Hombre" : "Male"}</button>
+                        <button onClick={() => handleIncomingUserMessage("Female", currentQuestionIndex, profileFacts)} className="px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container transition-colors text-xs font-semibold">{lang === "hi" ? "महिला" : lang === "es" ? "Mujer" : "Female"}</button>
+                        <button onClick={() => handleIncomingUserMessage("Other", currentQuestionIndex, profileFacts)} className="px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container transition-colors text-xs font-semibold">{lang === "hi" ? "अन्य" : lang === "es" ? "Otro" : "Other"}</button>
                       </>
                     )}
                     {questionsList[currentQuestionIndex - 1].key === "category" && (
@@ -4341,7 +4341,7 @@ export default function Home() {
                   {activeTranslations.startOver}
                 </button>
                 <span className="px-3 py-1 rounded-full bg-surface-container-highest text-on-surface-variant text-[9px] font-bold uppercase tracking-wider">
-                  Secure AES-256
+                  {lang === "hi" ? "सुरक्षित AES-256" : lang === "es" ? "Seguro AES-256" : "Secure AES-256"}
                 </span>
               </div>
 
@@ -4367,10 +4367,10 @@ export default function Home() {
                   className="flex-grow bg-transparent border-none focus:ring-0 px-4 font-body-lg text-body-md text-on-background placeholder:text-outline/40 focus:outline-none disabled:opacity-50"
                   placeholder={
                     isConfirmingChatIntake || isConfirmingAutoFill
-                      ? (lang === "es" ? "Por favor confirme arriba..." : lang === "hi" ? "Please confirm above..." : "Please confirm above...")
+                      ? (lang === "es" ? "Por favor confirme arriba..." : lang === "hi" ? "कृपया ऊपर पुष्टि करें..." : "Please confirm above...")
                       : questionsList[currentQuestionIndex - 1].key === "monthly_income"
                         ? "e.g. 2500"
-                        : "Type your answer here..."
+                        : (lang === "es" ? "Escribe tu respuesta aquí..." : lang === "hi" ? "अपना उत्तर यहाँ टाइप करें..." : "Type your answer here...")
                   }
                   type="text"
                 />
