@@ -4501,7 +4501,11 @@ export default function Home() {
                 </div>
 
                 <div className="space-y-4">
-                  {Object.entries(programIdMapping).map(([pid, name]) => {
+                  {Object.entries(programIdMapping).filter(([pid]) => {
+                    if (selectedRegion === "india") return ["pm_kisan", "ayushman_bharat", "pmay", "nsp", "ignoaps"].includes(pid);
+                    if (selectedRegion === "usa") return ["snap", "medicaid", "liheap", "wic", "pell_grant", "tanf", "eitc", "lifeline", "ssi_ssdi"].includes(pid);
+                    return true;
+                  }).map(([pid, name]) => {
                     const status = scanStatuses[pid] || "scanning";
                     return (
                       <div
@@ -4520,18 +4524,35 @@ export default function Home() {
                             </span>
                           </div>
                           <div>
-                            <h4 className="font-bold text-xs text-primary leading-tight">{name}</h4>
+                            <h4 className="font-bold text-xs text-primary leading-tight">
+                              {lang === "hi" ? (
+                                pid === "pm_kisan" ? "पीएम-किसान (किसान आय सहायता)" :
+                                pid === "ayushman_bharat" ? "आयुष्मान भारत पीएम-जय (स्वास्थ्य बीमा)" :
+                                pid === "pmay" ? "पीएम आवास योजना (आवास सब्सिडी)" :
+                                pid === "nsp" ? "राष्ट्रीय छात्रवृत्ति पोर्टल" :
+                                pid === "ignoaps" ? "IGNOAPS (वृद्धावस्था पेंशन)" :
+                                pid === "snap" ? "स्नैप (भोजन सहायता)" :
+                                pid === "medicaid" ? "मेडिकेड / चिप (स्वास्थ्य देखभाल)" :
+                                pid === "liheap" ? "लाइहीप (उपयोगिता बिल सहायता)" :
+                                pid === "wic" ? "WIC (पोषण सहायता)" :
+                                pid === "pell_grant" ? "पेल ग्रांट (शिक्षा सहायता)" :
+                                pid === "tanf" ? "TANF (नकद सहायता)" :
+                                pid === "eitc" ? "EITC (आयकर क्रेडिट)" :
+                                pid === "lifeline" ? "लाइफलाइन (फोन और इंटरनेट)" :
+                                pid === "ssi_ssdi" ? "SSI/SSDI (विकलांगता सहायता)" : name
+                              ) : name}
+                            </h4>
                             <p className="text-[10px] text-on-surface-variant font-semibold">
                               {status === "scanning"
-                                ? "Analyzing rules..."
+                                ? (lang === "hi" ? "नियमों का विश्लेषण..." : "Analyzing rules...")
                                 : status === "matched"
-                                ? "Eligible"
-                                : "Unlikely"}
+                                ? (lang === "hi" ? "योग्य" : "Eligible")
+                                : (lang === "hi" ? "असंभावित" : "Unlikely")}
                             </p>
                           </div>
                         </div>
                         <span className="text-[10px] font-bold tracking-widest uppercase text-on-surface-variant/50">
-                          {status === "scanning" ? "SCANNING" : status === "matched" ? "MATCH" : "SKIP"}
+                          {status === "scanning" ? (lang === "hi" ? "स्कैनिंग" : "SCANNING") : status === "matched" ? (lang === "hi" ? "मैच" : "MATCH") : (lang === "hi" ? "छोड़ें" : "SKIP")}
                         </span>
                       </div>
                     );
@@ -4632,7 +4653,7 @@ export default function Home() {
                       {activeTranslations.optimizedResults}
                     </h2>
                     <p className="text-sm text-on-surface-variant">
-                      {lang === "es" ? `Hemos identificado ${matchedProgramsCount} programas coincidentes de un total de ${eligibilityResults.length}.` : lang === "hi" ? "We've identified ${matchedProgramsCount} matching programs out of ${eligibilityResults.length} total." : `We've identified ${matchedProgramsCount} matching programs out of ${eligibilityResults.length} total.`}
+                      {lang === "es" ? `Hemos identificado ${matchedProgramsCount} programas coincidentes de un total de ${eligibilityResults.length}.` : lang === "hi" ? `हमने कुल ${eligibilityResults.length} में से ${matchedProgramsCount} योग्य कार्यक्रम पहचाने हैं।` : `We've identified ${matchedProgramsCount} matching programs out of ${eligibilityResults.length} total.`}
                     </p>
                   </div>
                 </div>
@@ -4665,7 +4686,7 @@ export default function Home() {
                                       : "bg-rose-50 text-rose-700 border border-rose-200/50";
                                   return (
                                     <span className={`text-[9px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider border ${confClass}`}>
-                                      {lang === "es" ? `${confPercent}% de Confianza` : lang === "hi" ? "${confPercent}% Confidence" : `${confPercent}% Confidence`}
+                                      {lang === "es" ? `${confPercent}% de Confianza` : lang === "hi" ? `${confPercent}% आत्मविश्वास` : `${confPercent}% Confidence`}
                                     </span>
                                   );
                                 })()}
@@ -4677,14 +4698,14 @@ export default function Home() {
                                   const docCheck = lang === "es"
                                     ? (b.program_id === "medicaid" ? "Se Requiere Revisión" : b.program_id === "ssi_ssdi" ? "Se Requiere Revisión" : "Documentos Listos")
                                     : (b.program_id === "medicaid" ? "Docs Check Needed" : b.program_id === "ssi_ssdi" ? "Docs Check Needed" : "Docs Ready");
-                                  const tooltip = lang === "es" ? `Probabilidad de Éxito: ${successProb}% (Retraso: ${backlog} | ${docCheck})` : lang === "hi" ? "Success Probability: ${successProb}% (Backlog: ${backlog} | ${docCheck})" : `Success Probability: ${successProb}% (Backlog: ${backlog} | ${docCheck})`;
+                                  const tooltip = lang === "es" ? `Probabilidad de Éxito: ${successProb}% (Retraso: ${backlog} | ${docCheck})` : lang === "hi" ? `सफलता की संभावना: ${successProb}% (बैकलॉग: ${backlog} | ${docCheck})` : `Success Probability: ${successProb}% (Backlog: ${backlog} | ${docCheck})`;
                                   return (
                                     <span 
                                       className="text-[9px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-200/50 cursor-help flex items-center gap-0.5 select-none"
                                       title={tooltip}
                                     >
                                       <span className="material-symbols-outlined text-[10px] font-bold">query_stats</span>
-                                      {lang === "es" ? `Éxito: ${successProb}%` : lang === "hi" ? "Success: ${successProb}%" : `Success: ${successProb}%`}
+                                      {lang === "es" ? `Éxito: ${successProb}%` : lang === "hi" ? `सफलता: ${successProb}%` : `Success: ${successProb}%`}
                                     </span>
                                   );
                                 })()}
@@ -4698,10 +4719,34 @@ export default function Home() {
                             </div>
 
                             <h3 className={`font-headline-md font-bold ${styles.text} ${isFirstFeatured ? "text-3xl" : "text-xl"}`}>
-                              {b.program_name}
+                              {lang === "hi" ? (
+                                b.program_id === "pm_kisan" ? "पीएम-किसान (किसान आय सहायता)" :
+                                b.program_id === "ayushman_bharat" ? "आयुष्मान भारत पीएम-जय (स्वास्थ्य बीमा)" :
+                                b.program_id === "pmay" ? "पीएम आवास योजना (आवास सब्सिडी)" :
+                                b.program_id === "nsp" ? "राष्ट्रीय छात्रवृत्ति पोर्टल" :
+                                b.program_id === "ignoaps" ? "IGNOAPS (वृद्धावस्था पेंशन)" :
+                                b.program_id === "snap" ? "स्नैप (भोजन सहायता)" :
+                                b.program_id === "medicaid" ? "मेडिकेड / चिप (स्वास्थ्य देखभाल)" :
+                                b.program_id === "liheap" ? "लाइहीप (उपयोगिता बिल सहायता)" :
+                                b.program_id === "wic" ? "WIC (पोषण सहायता)" :
+                                b.program_id === "pell_grant" ? "पेल ग्रांट (शिक्षा सहायता)" :
+                                b.program_id === "tanf" ? "TANF (नकद सहायता)" :
+                                b.program_id === "eitc" ? "EITC (आयकर क्रेडिट)" :
+                                b.program_id === "lifeline" ? "लाइफलाइन (फोन और इंटरनेट)" :
+                                b.program_id === "ssi_ssdi" ? "SSI/SSDI (विकलांगता सहायता)" : b.program_name
+                              ) : b.program_name}
                             </h3>
                             <p className={`text-xs leading-relaxed mb-6 ${styles.textMuted}`}>
-                              {b.reasoning_summary}
+                              {lang === "hi" && b.program_id === "pm_kisan" && b.reasoning_summary.includes("only for landholding") ? "पीएम-किसान केवल भूमिधारी किसान परिवारों के लिए है।" :
+                               lang === "hi" && b.program_id === "pm_kisan" && b.reasoning_summary.includes("eligible for") ? "एक भूमिधारी किसान परिवार के रूप में, आप सीधे अपने बैंक खाते में प्रति वर्ष ₹6,000 प्राप्त करने के पात्र हैं।" :
+                               lang === "hi" && b.program_id === "ayushman_bharat" && b.reasoning_summary.includes("qualify for") ? "आय और/या श्रेणी के आधार पर, आप सूचीबद्ध अस्पतालों में ₹5 लाख/वर्ष कैशलेस स्वास्थ्य कवरेज के लिए पात्र हैं।" :
+                               lang === "hi" && b.program_id === "ayushman_bharat" && b.reasoning_summary.includes("SECC-2011") ? "पीएम-जय SECC-2011 अभाव और व्यावसायिक मानदंडों पर आधारित है। पीएमजेएवाई पोर्टल पर अपनी पात्रता जांचें।" :
+                               lang === "hi" && b.program_id === "pmay" && b.reasoning_summary.includes("qualify for home loan") ? "आप सीएलएसएस के तहत ₹2.67 लाख तक की होम लोन ब्याज सब्सिडी के लिए पात्र हैं।" :
+                               lang === "hi" && b.program_id === "pmay" && b.reasoning_summary.includes("exceeds PMAY limits") ? "आपकी आय PMAY सीमा से अधिक है (EWS: ≤₹3L/वर्ष, LIG: ≤₹6L/वर्ष)।" :
+                               lang === "hi" && b.program_id === "nsp" && b.reasoning_summary.includes("Not a student") ? "एनएसपी योजनाएं विशेष रूप से छात्रों के लिए हैं।" :
+                               lang === "hi" && b.program_id === "ignoaps" && b.reasoning_summary.includes("Below BPL threshold") ? "बीपीएल सीमा से नीचे, आपको 60-79 आयु वर्ग के लिए ₹200/माह पेंशन मिलती है।" :
+                               lang === "hi" && b.program_id === "ignoaps" && b.reasoning_summary.includes("Age 60+ requirement") ? "आयु 60+ की आवश्यकता पूरी नहीं हुई।" :
+                               lang === "hi" ? b.reasoning_summary + " (हिंदी में अनुवाद उपलब्ध नहीं है)" : b.reasoning_summary}
                             </p>
                           </div>
 
