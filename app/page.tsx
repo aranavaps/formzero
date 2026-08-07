@@ -3666,7 +3666,7 @@ export default function Home() {
                 style={{ fontWeight: 700 }}
               >
                 {selectedRegion === "india"
-                  ? (lang === "hi" ? "₹54,282 करोड़ सरकारी योजना खर्च अज्ञात।" : "₹54,282 Cr in unaccounted government scheme spending.")
+                  ? (lang === "hi" ? "₹54,282 करोड़ की सरकारी योजना राशि जिसका दावा नहीं किया गया।" : "₹54,282 Cr in unaccounted government scheme spending.")
                   : (lang === "es" ? "140 mil millones en beneficios sin reclamar." : "$140B in unclaimed benefits.")}
               </h1>
               <p className="font-body-lg text-base sm:text-lg text-on-surface-variant text-center max-w-2xl mb-10 leading-relaxed">
@@ -4826,24 +4826,24 @@ export default function Home() {
                   <div className="glass-card p-8 rounded-xl flex flex-col justify-between border-primary/5">
                     <div>
                       <span className="font-label-sm text-[10px] text-on-surface-variant uppercase tracking-widest block font-bold">
-                        Total Annual Value
+                        {lang === "hi" ? "कुल वार्षिक मूल्य" : lang === "es" ? "Valor Anual Total" : "Total Annual Value"}
                       </span>
-                      <div className="font-display-lg text-3xl text-primary mt-2 font-bold">${totalAnnualValue.toLocaleString()}</div>
+                      <div className="font-display-lg text-3xl text-primary mt-2 font-bold">{profileFacts?.country === 'india' ? '₹' : '$'}{totalAnnualValue.toLocaleString()}</div>
                     </div>
                     <div className="mt-4 flex items-center text-primary text-xs font-semibold">
                       <span className="material-symbols-outlined mr-1">trending_up</span>
-                      <span>Est. Net Benefit</span>
+                      <span>{lang === "hi" ? "अनुमानित शुद्ध लाभ" : lang === "es" ? "Beneficio Neto Est." : "Est. Net Benefit"}</span>
                     </div>
                   </div>
                   <div className="glass-card p-8 rounded-xl flex flex-col justify-between">
                     <div>
                       <span className="font-label-sm text-[10px] text-on-surface-variant uppercase tracking-widest block font-bold">
-                        Programs Matched
+                        {lang === "hi" ? "मिलान किए गए कार्यक्रम" : lang === "es" ? "Programas Coincidentes" : "Programs Matched"}
                       </span>
                       <div className="font-display-lg text-3xl text-primary mt-2 font-bold">{matchedProgramsCount}</div>
                     </div>
                     <div className="mt-4 flex items-center text-on-surface-variant text-xs font-semibold">
-                      <span>Across 3 agencies</span>
+                      <span>{lang === "hi" ? "3 एजेंसियों के पार" : lang === "es" ? "A través de 3 agencias" : "Across 3 agencies"}</span>
                     </div>
                   </div>
                   <div className="glass-card p-8 rounded-xl flex flex-col justify-between border-primary/10">
@@ -4851,9 +4851,9 @@ export default function Home() {
                       <span className="font-label-sm text-[10px] text-on-surface-variant uppercase tracking-widest block font-bold">
                         {lang === "es" ? "Valor de Vida del Hogar" : lang === "hi" ? "Household Lifetime Value" : "Household Lifetime Value"}
                       </span>
-                      <div className="font-display-lg text-3xl text-primary mt-2 font-bold">${(totalAnnualValue * 3).toLocaleString()}</div>
+                      <div className="font-display-lg text-3xl text-primary mt-2 font-bold">{profileFacts?.country === 'india' ? '₹' : '$'}{(totalAnnualValue * 3).toLocaleString()}</div>
                       <span className="text-[10px] text-on-surface-variant/75 font-bold block mt-1">
-                        ${(totalAnnualValue * 5).toLocaleString()} {lang === "es" ? "proyectado a 5 años" : lang === "hi" ? "projected over 5 years" : "projected over 5 years"}
+                        {profileFacts?.country === 'india' ? '₹' : '$'}{(totalAnnualValue * 5).toLocaleString()} {lang === "es" ? "proyectado a 5 años" : lang === "hi" ? "5 वर्षों में अनुमानित" : "projected over 5 years"}
                       </span>
                     </div>
                     <div className="mt-4 flex items-center text-primary text-xs font-semibold">
@@ -4864,13 +4864,13 @@ export default function Home() {
                   <div className="glass-card p-8 rounded-xl flex flex-col justify-between border-error/10">
                     <div>
                       <span className="font-label-sm text-[10px] text-on-surface-variant uppercase tracking-widest block font-bold">
-                        Soonest Deadline
+                        {lang === "hi" ? "सबसे नज़दीकी अंतिम तिथि" : lang === "es" ? "Fecha Límite Más Cercana" : "Soonest Deadline"}
                       </span>
-                      <div className="font-display-lg text-3xl text-error mt-2 font-bold">4 days</div>
+                      <div className="font-display-lg text-3xl text-error mt-2 font-bold">{lang === "hi" ? "4 दिन" : lang === "es" ? "4 días" : "4 days"}</div>
                     </div>
                     <div className="mt-4 flex items-center text-error text-xs font-bold">
                       <span className="material-symbols-outlined mr-1">priority_high</span>
-                      <span>Window Closes Soon</span>
+                      <span>{lang === "hi" ? "विंडो जल्द ही बंद हो जाएगी" : lang === "es" ? "La ventana se cierra pronto" : "Window Closes Soon"}</span>
                     </div>
                   </div>
                 </div>
@@ -5833,16 +5833,31 @@ export default function Home() {
                                 <div className="flex-grow">
                                   <div className="flex justify-between items-start mb-2">
                                     <span className="bg-surface-container-highest px-3 py-1 rounded-full text-[9px] font-bold text-primary uppercase tracking-widest">
-                                      Step {idx + 1}
+                                      {lang === "hi" ? "चरण " + (idx + 1) : "Step " + (idx + 1)}
                                     </span>
                                     <span
                                       className={`font-bold text-[10px] tracking-wider uppercase flex items-center gap-1 ${isCompleted ? "text-emerald-600" : isUnlocked ? "text-emerald-700" : "text-on-surface-variant/40"}`}
                                     >
-                                      {isCompleted ? (lang === "es" ? "Completado" : lang === "hi" ? "Completed" : "Completed") : isUnlocked ? activeTranslations.unlocked : activeTranslations.locked}
+                                      {isCompleted ? (lang === "es" ? "Completado" : lang === "hi" ? "पूरा हुआ" : "Completed") : isUnlocked ? activeTranslations.unlocked : activeTranslations.locked}
                                     </span>
                                   </div>
                                   <h3 className={`font-headline-md text-2xl font-bold mb-2 ${isCompleted ? "text-emerald-950" : isUnlocked ? "text-primary" : "text-on-surface-variant/60"}`}>
-                                    {item.name}
+                                    {lang === "hi" ? (
+                                      matchedResult?.program_id === "pm_kisan" ? "पीएम-किसान (किसान आय सहायता)" :
+                                      matchedResult?.program_id === "ayushman_bharat" ? "आयुष्मान भारत पीएम-जय (स्वास्थ्य बीमा)" :
+                                      matchedResult?.program_id === "pmay" ? "पीएम आवास योजना (आवास सब्सिडी)" :
+                                      matchedResult?.program_id === "nsp" ? "राष्ट्रीय छात्रवृत्ति पोर्टल" :
+                                      matchedResult?.program_id === "ignoaps" ? "IGNOAPS (वृद्धावस्था पेंशन)" :
+                                      matchedResult?.program_id === "snap" ? "स्नैप (भोजन सहायता)" :
+                                      matchedResult?.program_id === "medicaid" ? "मेडिकेड / चिप (स्वास्थ्य देखभाल)" :
+                                      matchedResult?.program_id === "liheap" ? "लाइहीप (उपयोगिता बिल सहायता)" :
+                                      matchedResult?.program_id === "wic" ? "WIC (पोषण सहायता)" :
+                                      matchedResult?.program_id === "pell_grant" ? "पेल ग्रांट (शिक्षा सहायता)" :
+                                      matchedResult?.program_id === "tanf" ? "TANF (नकद सहायता)" :
+                                      matchedResult?.program_id === "eitc" ? "EITC (आयकर क्रेडिट)" :
+                                      matchedResult?.program_id === "lifeline" ? "लाइफलाइन (फोन और इंटरनेट)" :
+                                      matchedResult?.program_id === "ssi_ssdi" ? "SSI/SSDI (विकलांगता सहायता)" : item.name
+                                    ) : item.name}
                                   </h3>
                                   <p className={`text-xs leading-relaxed mb-6 ${isCompleted ? "text-emerald-900/80" : isUnlocked ? "text-on-surface-variant" : "text-on-surface-variant/60"}`}>
                                     {matchedResult?.reasoning_summary || "Program rules and dependency checklist."}
@@ -5862,7 +5877,7 @@ export default function Home() {
                                           {isCompleted && (
                                             <span className="material-symbols-outlined text-xs">check</span>
                                           )}
-                                          {isCompleted ? (lang === "es" ? "Completado" : lang === "hi" ? "Completed" : "Completed") : activeTranslations.markDone}
+                                          {isCompleted ? (lang === "es" ? "Completado" : lang === "hi" ? "पूरा हुआ" : "Completed") : activeTranslations.markDone}
                                         </button>
                                         <button
                                           onClick={() => {
@@ -5892,7 +5907,7 @@ export default function Home() {
                             <div className={`w-0.5 h-16 relative pointer-events-none ${isCompleted ? "bg-emerald-500" : isUnlocked ? "bg-primary" : "bg-outline-variant/35"}`}>
                               <div className="absolute top-1/2 left-4 whitespace-nowrap text-on-surface-variant/30 font-bold text-[10px] flex items-center gap-1 select-none">
                                 <span className="material-symbols-outlined text-sm">arrow_downward</span>
-                                <span>unlocks next step</span>
+                                <span>{lang === "hi" ? "अगला चरण अनलॉक करता है" : lang === "es" ? "desbloquea el siguiente paso" : "unlocks next step"}</span>
                               </div>
                             </div>
                           )}
