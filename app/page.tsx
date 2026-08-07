@@ -3869,26 +3869,30 @@ export default function Home() {
             {/* Marquee program ticker — region-aware */}
             <div className="py-6 bg-white border-y border-outline-variant/20 w-full overflow-hidden">
               <div className="flex whitespace-nowrap animate-marquee">
-                {(!selectedRegion || selectedRegion === "india") && (
-                  <>
-                    <div className="flex items-center gap-12 sm:gap-20 px-10 text-sm sm:text-body-lg font-bold uppercase tracking-widest text-primary/30">
+                <div className="flex items-center gap-12 sm:gap-20 px-10 text-sm sm:text-body-lg font-bold uppercase tracking-widest text-primary/30">
+                  {(!selectedRegion || selectedRegion === "india") && (
+                    <>
                       <span>PM-KISAN</span><span className="italic">Ayushman Bharat</span><span>PM-JAY</span><span>PMAY</span><span className="underline">NSP</span><span>IGNOAPS</span><span>PMFBY</span><span>MGNREGS</span><span>Antyodaya Anna</span><span>Jan Dhan</span>
-                    </div>
-                    <div className="flex items-center gap-12 sm:gap-20 px-10 text-sm sm:text-body-lg font-bold uppercase tracking-widest text-primary/30">
+                    </>
+                  )}
+                  {(!selectedRegion || selectedRegion === "usa") && (
+                    <>
+                      <span>SNAP</span><span className="italic">Medicaid</span><span>WIC</span><span>TANF</span><span className="underline">EITC</span><span>LIHEAP</span><span>Pell Grant</span><span>Lifeline</span><span>SSI</span><span>CHIP</span>
+                    </>
+                  )}
+                </div>
+                <div className="flex items-center gap-12 sm:gap-20 px-10 text-sm sm:text-body-lg font-bold uppercase tracking-widest text-primary/30">
+                  {(!selectedRegion || selectedRegion === "india") && (
+                    <>
                       <span>PM-KISAN</span><span className="italic">Ayushman Bharat</span><span>PM-JAY</span><span>PMAY</span><span className="underline">NSP</span><span>IGNOAPS</span><span>PMFBY</span><span>MGNREGS</span><span>Antyodaya Anna</span><span>Jan Dhan</span>
-                    </div>
-                  </>
-                )}
-                {(!selectedRegion || selectedRegion === "usa") && (
-                  <>
-                    <div className="flex items-center gap-12 sm:gap-20 px-10 text-sm sm:text-body-lg font-bold uppercase tracking-widest text-primary/30">
+                    </>
+                  )}
+                  {(!selectedRegion || selectedRegion === "usa") && (
+                    <>
                       <span>SNAP</span><span className="italic">Medicaid</span><span>WIC</span><span>TANF</span><span className="underline">EITC</span><span>LIHEAP</span><span>Pell Grant</span><span>Lifeline</span><span>SSI</span><span>CHIP</span>
-                    </div>
-                    <div className="flex items-center gap-12 sm:gap-20 px-10 text-sm sm:text-body-lg font-bold uppercase tracking-widest text-primary/30">
-                      <span>SNAP</span><span className="italic">Medicaid</span><span>WIC</span><span>TANF</span><span className="underline">EITC</span><span>LIHEAP</span><span>Pell Grant</span><span>Lifeline</span><span>SSI</span><span>CHIP</span>
-                    </div>
-                  </>
-                )}
+                    </>
+                  )}
+                </div>
               </div>
             </div>
 
