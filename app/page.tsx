@@ -548,6 +548,85 @@ interface PolicyUpdate {
 }
 
 export default function Home() {
+  const translateProgramName = (id: string, name: string, lang: string) => {
+    if (lang === "hi") {
+      const hiMap: Record<string, string> = {
+        "pm_kisan": "पीएम-किसान (किसान आय सहायता)",
+        "ayushman_bharat": "आयुष्मान भारत पीएम-जय (स्वास्थ्य बीमा)",
+        "pmay": "पीएम आवास योजना (आवास सब्सिडी)",
+        "nsp": "राष्ट्रीय छात्रवृत्ति पोर्टल",
+        "ignoaps": "IGNOAPS (वृद्धावस्था पेंशन)",
+        "snap": "स्नैप (भोजन सहायता)",
+        "medicaid": "मेडिकेड / चिप (स्वास्थ्य देखभाल)",
+        "liheap": "लाइहीप (उपयोगिता बिल सहायता)",
+        "wic": "WIC (पोषण सहायता)",
+        "pell_grant": "पेल ग्रांट (शिक्षा सहायता)",
+        "tanf": "TANF (नकद सहायता)",
+        "eitc": "EITC (आयकर क्रेडिट)",
+        "lifeline": "लाइफलाइन (फोन और इंटरनेट)",
+        "ssi_ssdi": "SSI/SSDI (विकलांगता सहायता)"
+      };
+      return hiMap[id] || name;
+    }
+    if (lang === "es") {
+      const esMap: Record<string, string> = {
+        "pm_kisan": "PM-KISAN (Apoyo a Ingresos Agrícolas)",
+        "ayushman_bharat": "Ayushman Bharat PM-JAY (Seguro de Salud)",
+        "pmay": "PM Awas Yojana (Subsidio de Vivienda)",
+        "nsp": "Portal Nacional de Becas",
+        "ignoaps": "IGNOAPS (Pensión de Vejez)",
+        "snap": "SNAP (Asistencia Alimentaria)",
+        "medicaid": "Medicaid / CHIP (Atención Médica)",
+        "liheap": "LIHEAP (Ayuda de Facturas)",
+        "wic": "WIC (Nutrición Mujeres y Niños)",
+        "pell_grant": "Beca Pell (Ayuda Educativa)",
+        "tanf": "TANF (Asistencia en Efectivo)",
+        "eitc": "EITC (Crédito Fiscal por Ingreso)",
+        "lifeline": "Lifeline (Teléfono e Internet)",
+        "ssi_ssdi": "SSI / SSDI (Seguridad y Discapacidad)"
+      };
+      return esMap[id] || name;
+    }
+    return name;
+  };
+
+  const translateReasoning = (id: string, reasoning: string, lang: string) => {
+    if (lang === "hi") {
+        if (reasoning.includes("only for landholding")) return "पीएम-किसान केवल भूमिधारी किसान परिवारों के लिए है।";
+        if (reasoning.includes("eligible for ₹6,000")) return "एक भूमिधारी किसान परिवार के रूप में, आप सीधे अपने बैंक खाते में प्रति वर्ष ₹6,000 प्राप्त करने के पात्र हैं।";
+        if (reasoning.includes("qualify for ₹5 Lakh/year")) return "आय और/या श्रेणी के आधार पर, आप सूचीबद्ध अस्पतालों में ₹5 लाख/वर्ष कैशलेस स्वास्थ्य कवरेज के लिए पात्र हैं।";
+        if (reasoning.includes("SECC-2011")) return "पीएम-जय SECC-2011 अभाव और व्यावसायिक मानदंडों पर आधारित है। पीएमजेएवाई पोर्टल पर अपनी पात्रता जांचें।";
+        if (reasoning.includes("subsidy of up to ₹2.67 Lakh")) return "आप सीएलएसएस के तहत ₹2.67 लाख तक की होम लोन ब्याज सब्सिडी के लिए पात्र हैं।";
+        if (reasoning.includes("exceeds PMAY limits")) return "आपकी आय PMAY सीमा से अधिक है।";
+        if (reasoning.includes("Not a student")) return "एनएसपी योजनाएं विशेष रूप से छात्रों के लिए हैं।";
+        if (reasoning.includes("Below BPL threshold")) return "बीपीएल सीमा से नीचे, आपको 60-79 आयु वर्ग के लिए ₹200/माह पेंशन मिलती है।";
+        if (reasoning.includes("Age 60+ requirement")) return "आयु 60+ की आवश्यकता पूरी नहीं हुई।";
+        if (reasoning.includes("130% of Federal Poverty Line")) return "आपकी आय संघीय गरीबी रेखा के 130% से कम है, आप ईबीटी लाभों के लिए पात्र हैं।";
+        if (reasoning.includes("Income exceeds")) return "आय सीमा से अधिक है।";
+        if (reasoning.includes("pregnant women")) return "चूंकि आप गर्भवती हैं या आपके छोटे बच्चे हैं, आप पात्र हो सकती हैं।";
+        if (reasoning.includes("college student")) return "कॉलेज के छात्र के रूप में, आप पेल ग्रांट के लिए पात्र हो सकते हैं।";
+        if (reasoning.includes("Earned Income Tax Credit")) return "आप ईआईटीसी के लिए योग्य हो सकते हैं।";
+        return reasoning;
+    }
+    if (lang === "es") {
+        if (reasoning.includes("only for landholding")) return "PM-KISAN es solo para familias de agricultores con tierras.";
+        if (reasoning.includes("eligible for ₹6,000")) return "Como familia agrícola, es elegible para ₹6,000 por año directamente en su cuenta bancaria.";
+        if (reasoning.includes("qualify for ₹5 Lakh/year")) return "Según sus ingresos y/o categoría, califica para una cobertura de salud sin efectivo de ₹5 Lakh/año en hospitales autorizados.";
+        if (reasoning.includes("SECC-2011")) return "PM-JAY se basa en criterios de privación de SECC-2011. Verifique su elegibilidad en el portal.";
+        if (reasoning.includes("subsidy of up to ₹2.67 Lakh")) return "Califica para un subsidio de interés de préstamo hipotecario de hasta ₹2.67 Lakh bajo CLSS.";
+        if (reasoning.includes("exceeds PMAY limits")) return "Sus ingresos exceden los límites de PMAY.";
+        if (reasoning.includes("Not a student")) return "Los esquemas NSP son exclusivamente para estudiantes.";
+        if (reasoning.includes("Below BPL threshold")) return "Por debajo del umbral BPL, recibe una pensión de ₹200/mes para el grupo de edad 60-79.";
+        if (reasoning.includes("Age 60+ requirement")) return "No se cumple el requisito de edad 60+.";
+        if (reasoning.includes("130% of Federal Poverty Line")) return "Sus ingresos son inferiores al 130% de la línea de pobreza, es elegible para beneficios EBT.";
+        if (reasoning.includes("Income exceeds")) return "Los ingresos exceden el límite.";
+        if (reasoning.includes("pregnant women")) return "Dado que está embarazada o tiene niños pequeños, puede ser elegible.";
+        if (reasoning.includes("college student")) return "Como estudiante universitario, puede ser elegible para la Beca Pell.";
+        if (reasoning.includes("Earned Income Tax Credit")) return "Puede calificar para EITC.";
+        return reasoning;
+    }
+    return reasoning;
+  };
   // Navigation & Views
   const [activeView, setActiveView] = useState<ViewState>("landing");
   const [activeTab, setActiveTab] = useState<ResultTab>("matched");
