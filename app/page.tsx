@@ -85,39 +85,48 @@ const US_STATES = [
 const programSimpleExplanations: Record<string, { en: string; es: string; hi?: string }> = {
   "snap": {
     en: "You qualify for SNAP because your household size and income are below your state's threshold, giving you monthly funds loaded onto an EBT card for groceries.",
-    es: "Califica para SNAP porque el tamaño y los ingresos de su hogar están por debajo del límite estatal, otorgándole fondos mensuales en una tarjeta EBT para alimentos."
+    es: "Califica para SNAP porque el tamaño y los ingresos de su hogar están por debajo del límite estatal, otorgándole fondos mensuales en una tarjeta EBT para alimentos.",
+    hi: "आप SNAP के लिए योग्य हैं क्योंकि आपके परिवार का आकार और आय सीमा से कम है, जिससे आपको किराने के सामान के लिए EBT कार्ड पर मासिक धन मिलता है।"
   },
   "medicaid": {
     en: "You are eligible for Medicaid healthcare coverage, which pays for doctor visits, hospital stays, and prescriptions with low or zero out-of-pocket costs.",
-    es: "Es elegible para la cobertura de salud de Medicaid, que cubre visitas al médico, estadías en el hospital y recetas médicas a bajo costo o sin costo."
+    es: "Es elegible para la cobertura de salud de Medicaid, que cubre visitas al médico, estadías en el hospital y recetas médicas a bajo costo o sin costo.",
+    hi: "आप मेडिकेड स्वास्थ्य देखभाल कवरेज के लिए पात्र हैं, जो डॉक्टर के दौरे, अस्पताल में रहने और नुस्खे के लिए कम या शून्य लागत पर भुगतान करता है।"
   },
   "liheap": {
     en: "This utility assistance program pays a portion of your heating or electric bills directly to your energy provider to prevent shutoffs.",
-    es: "Este programa de asistencia para servicios públicos paga parte de sus facturas de calefacción o electricidad directamente a su proveedor."
+    es: "Este programa de asistencia para servicios públicos paga parte de sus facturas de calefacción o electricidad directamente a su proveedor.",
+    hi: "यह उपयोगिता सहायता कार्यक्रम कटौती को रोकने के लिए आपके हीटिंग या बिजली के बिलों का एक हिस्सा सीधे आपके ऊर्जा प्रदाता को भुगतान करता है।"
   },
   "wic": {
     en: "WIC qualifies you for free healthy food, infant formula, and nutritional counseling because you have young children or are pregnant/expecting.",
-    es: "WIC le otorga alimentos saludables gratuitos, fórmula para bebés y asesoramiento nutricional porque tiene niños pequeños o está embarazada."
+    es: "WIC le otorga alimentos saludables gratuitos, fórmula para bebés y asesoramiento nutricional porque tiene niños pequeños o está embarazada.",
+    hi: "WIC आपको मुफ्त स्वस्थ भोजन, शिशु फार्मूला और पोषण संबंधी परामर्श के लिए योग्य बनाता है क्योंकि आपके छोटे बच्चे हैं या आप गर्भवती हैं।"
   },
   "pell_grant": {
     en: "This Pell Grant assistance pays up to $7,395 directly to your college tuition for the academic year, which you never have to pay back.",
-    es: "Esta ayuda de la Beca Pell paga hasta $7,395 directamente para su matrícula universitaria, dinero que nunca tendrá que devolver."
+    es: "Esta ayuda de la Beca Pell paga hasta $7,395 directamente para su matrícula universitaria, dinero que nunca tendrá que devolver.",
+    hi: "यह पेल अनुदान सहायता शैक्षणिक वर्ष के लिए सीधे आपके कॉलेज ट्यूशन के लिए $7,395 तक का भुगतान करती है, जिसे आपको कभी वापस नहीं करना पड़ता है।"
   },
   "tanf": {
     en: "TANF provides direct temporary cash payments to your household every month to help pay for basic necessities like rent, clothing, and utilities.",
-    es: "TANF proporciona pagos temporales directos en efectivo a su hogar cada mes para ayudar a pagar necesidades básicas como alquiler y ropa."
+    es: "TANF proporciona pagos temporales directos en efectivo a su hogar cada mes para ayudar a pagar necesidades básicas como alquiler y ropa.",
+    hi: "TANF आपके परिवार को हर महीने किराए, कपड़े और उपयोगिताओं जैसी बुनियादी जरूरतों का भुगतान करने में मदद करने के लिए प्रत्यक्ष अस्थायी नकद भुगतान प्रदान करता है।"
   },
   "eitc": {
     en: "The Earned Income Tax Credit gives you a substantial refund check on your annual tax return based on your earnings and family size.",
-    es: "El Crédito por Ingreso del Trabajo le otorga un cheque de reembolso sustancial en su declaración de impuestos anual según sus ingresos."
+    es: "El Crédito por Ingreso del Trabajo le otorga un cheque de reembolso sustancial en su declaración de impuestos anual según sus ingresos.",
+    hi: "अर्जित आयकर क्रेडिट आपको आपकी कमाई और परिवार के आकार के आधार पर आपके वार्षिक कर रिटर्न पर एक बड़ा रिफंड चेक देता है।"
   },
   "lifeline": {
     en: "Lifeline gives you a monthly discount of $9.25 (or more) on your phone or home internet service bills, keeping you connected for free.",
-    es: "Lifeline le ofrece un descuento mensual de $9.25 (o más) en sus facturas de servicio de teléfono o internet doméstico para mantenerlo conectado."
+    es: "Lifeline le ofrece un descuento mensual de $9.25 (o más) en sus facturas de servicio de teléfono o internet doméstico para mantenerlo conectado.",
+    hi: "Lifeline आपको आपके फोन या होम इंटरनेट सेवा बिलों पर $9.25 (या अधिक) की मासिक छूट देता है, जिससे आप मुफ्त में जुड़े रहते हैं।"
   },
   "ssi_ssdi": {
     en: "SSI provides cash assistance to elderly or disabled individuals with limited income. SSDI provides cash assistance to disabled individuals with work credits.",
-    es: "SSI proporciona asistencia en efectivo a personas mayores o discapacitadas con ingresos limitados. SSDI proporciona asistencia en efectivo a personas discapacitadas con créditos laborales."
+    es: "SSI proporciona asistencia en efectivo a personas mayores o discapacitadas con ingresos limitados. SSDI proporciona asistencia en efectivo a personas discapacitadas con créditos laborales.",
+    hi: "SSI सीमित आय वाले बुजुर्ग या विकलांग व्यक्तियों को नकद सहायता प्रदान करता है। SSDI कार्य क्रेडिट वाले विकलांग व्यक्तियों को नकद सहायता प्रदान करता है।"
   },
   "pm_kisan": {
     en: "You qualify for PM-KISAN as a farmer, giving you ₹6,000 per year for income support.",
@@ -1201,7 +1210,7 @@ export default function Home() {
 
       // Add timeout so login doesn't hang indefinitely
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 8000);
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
       let response: Response | undefined;
       try {
         response = await fetch(endpoint, {
@@ -1274,7 +1283,7 @@ export default function Home() {
       localStorage.setItem(`claimradar_profile_facts_${data.user.email}`, JSON.stringify(finalFacts));
       localStorage.setItem(`claimradar_chat_${data.user.email}`, JSON.stringify(finalChat));
       
-      let finalView: ViewState = (guestActiveView === "intake") ? "intake" : "landing";
+      let finalView: ViewState = guestActiveView || "landing";
       localStorage.setItem(`claimradar_active_view_${data.user.email}`, finalView);
       
       let finalQuestionIdx = guestQuestionIdx || "1";
@@ -2248,19 +2257,20 @@ export default function Home() {
         is_student: "false",
         immigration_status: "citizen",
         language: "english",
+        country: "usa"
       },
     },
     {
       id: "student",
       name: "College student in CA",
       nameEs: "Estudiante universitario en CA",
-      nameHi: "Estudiante universitario en CA",
+      nameHi: "सीए में कॉलेज छात्र",
       desc: "Focusing on Pell Grants, EBT, and state grants",
       descEs: "Enfoque en Becas Pell, EBT y becas estatales",
-      descHi: "Enfoque en Becas Pell, EBT y becas estatales",
+      descHi: "पेल अनुदान, ईबीटी और राज्य अनुदान पर ध्यान",
       val: "$20,100/year",
       valEs: "$20,100/año",
-      valHi: "$20,100/año",
+      valHi: "$20,100/वर्ष",
       icon: "school",
       profile: {
         state: "California",
@@ -2272,19 +2282,20 @@ export default function Home() {
         is_student: "true",
         immigration_status: "citizen",
         language: "english",
+        country: "usa"
       },
     },
     {
       id: "immigrant",
       name: "Immigrant family in FL",
       nameEs: "Familia inmigrante en FL",
-      nameHi: "Familia inmigrante en FL",
+      nameHi: "एफएल में आप्रवासी परिवार",
       desc: "Focusing on healthcare, EITC, and local support",
       descEs: "Enfoque en atención médica, EITC y apoyo local",
-      descHi: "Enfoque en atención médica, EITC y apoyo local",
+      descHi: "स्वास्थ्य सेवा, ईआईटीसी और स्थानीय सहायता पर ध्यान",
       val: "$23,500/year",
       valEs: "$23,500/año",
-      valHi: "$23,500/año",
+      valHi: "$23,500/वर्ष",
       icon: "diversity_3",
       profile: {
         state: "Florida",
@@ -2296,6 +2307,7 @@ export default function Home() {
         is_student: "false",
         immigration_status: "permanent_resident",
         language: "spanish",
+        country: "usa"
       },
     },
     {
@@ -3599,19 +3611,19 @@ export default function Home() {
                   <>
                     <div className="floating-card top-[10%] left-[5%] -rotate-[3deg]">
                       <span className="material-symbols-outlined text-primary text-2xl mb-1">agriculture</span>
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">PM-KISAN</p>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{lang === "hi" ? "पीएम-किसान" : "PM-KISAN"}</p>
                     </div>
                     <div className="floating-card top-[12%] right-[8%] rotate-[2deg]">
                       <span className="material-symbols-outlined text-primary text-2xl mb-1">health_and_safety</span>
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">Ayushman Bharat</p>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{lang === "hi" ? "आयुष्मान भारत" : "Ayushman Bharat"}</p>
                     </div>
                     <div className="floating-card bottom-[10%] left-[3%] rotate-[1deg]">
                       <span className="material-symbols-outlined text-primary text-2xl mb-1">home</span>
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">PMAY Housing</p>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{lang === "hi" ? "पीएम आवास" : "PMAY Housing"}</p>
                     </div>
                     <div className="floating-card bottom-[12%] right-[4%] -rotate-[2deg]">
                       <span className="material-symbols-outlined text-primary text-2xl mb-1">school</span>
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">NSP Scholarship</p>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{lang === "hi" ? "NSP छात्रवृत्ति" : "NSP Scholarship"}</p>
                     </div>
                   </>
                 ) : (
@@ -3712,15 +3724,15 @@ export default function Home() {
               {/* ── STATS BANNER — region-aware ── */}
               <div className="w-full max-w-4xl mx-auto mb-14 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
                 {(selectedRegion === "india" ? [
-                  { value: "₹54,282 Cr", label: "Unaccounted scheme expenditure", sublabel: "CAG Report tabled in Parliament, Apr 2026", icon: "currency_rupee", accent: "text-orange-500" },
-                  { value: "9.44 Cr", label: "PM-KISAN verified beneficiaries", sublabel: "MoA&FW, 23rd Installment, June 2026", icon: "agriculture", accent: "text-green-600" },
-                  { value: "5+ Cr", label: "Ayushman Bharat coverage gap est.", sublabel: "Implementation tracking, 2023–24", icon: "health_and_safety", accent: "text-blue-500" },
-                  { value: "< 3 min", label: "FormZero audit time", sublabel: "vs. weeks at govt. offices", icon: "bolt", accent: "text-emerald-500" },
+                  { value: "₹54,282 Cr", label: lang === "hi" ? "अघोषित योजना व्यय" : "Unaccounted scheme expenditure", sublabel: lang === "hi" ? "कैग रिपोर्ट अप्रैल 2026" : "CAG Report tabled in Parliament, Apr 2026", icon: "currency_rupee", accent: "text-orange-500" },
+                  { value: "9.44 Cr", label: lang === "hi" ? "पीएम-किसान सत्यापित लाभार्थी" : "PM-KISAN verified beneficiaries", sublabel: lang === "hi" ? "कृषि मंत्रालय, जून 2026" : "MoA&FW, 23rd Installment, June 2026", icon: "agriculture", accent: "text-green-600" },
+                  { value: "5+ Cr", label: lang === "hi" ? "आयुष्मान भारत कवरेज गैप अनुमान" : "Ayushman Bharat coverage gap est.", sublabel: lang === "hi" ? "कार्यान्वयन ट्रैकिंग, 2023-24" : "Implementation tracking, 2023–24", icon: "health_and_safety", accent: "text-blue-500" },
+                  { value: "< 3 min", label: lang === "hi" ? "FormZero ऑडिट समय" : "FormZero audit time", sublabel: lang === "hi" ? "बनाम सरकारी कार्यालयों में सप्ताह" : "vs. weeks at govt. offices", icon: "bolt", accent: "text-emerald-500" },
                 ] : [
-                  { value: "$140B", label: "Federal benefits unclaimed / yr", sublabel: "White House OMB & GSA, 2024", icon: "attach_money", accent: "text-blue-500" },
-                  { value: "1 in 5", label: "SNAP-eligible people don't enroll", sublabel: "USDA FNS Participation Study, 2023", icon: "group_off", accent: "text-red-500" },
-                  { value: "6.4M", label: "Medicaid-eligible but uninsured", sublabel: "Kaiser Family Foundation, 2022", icon: "health_and_safety", accent: "text-emerald-500" },
-                  { value: "< 3 min", label: "FormZero audit time", sublabel: "vs. avg 6+ hrs traditional process", icon: "bolt", accent: "text-primary" },
+                  { value: "$140B", label: lang === "hi" ? "अदावाकृत संघीय लाभ / वर्ष" : lang === "es" ? "Beneficios federales no reclamados / año" : "Federal benefits unclaimed / yr", sublabel: "White House OMB & GSA, 2024", icon: "attach_money", accent: "text-blue-500" },
+                  { value: "1 in 5", label: lang === "hi" ? "SNAP-पात्र लोग नामांकन नहीं करते हैं" : lang === "es" ? "Personas elegibles para SNAP no se inscriben" : "SNAP-eligible people don't enroll", sublabel: "USDA FNS Participation Study, 2023", icon: "group_off", accent: "text-red-500" },
+                  { value: "6.4M", label: lang === "hi" ? "मेडिकेड-पात्र लेकिन बीमित नहीं" : lang === "es" ? "Elegible para Medicaid pero sin seguro" : "Medicaid-eligible but uninsured", sublabel: "Kaiser Family Foundation, 2022", icon: "health_and_safety", accent: "text-emerald-500" },
+                  { value: "< 3 min", label: lang === "hi" ? "FormZero ऑडिट समय" : lang === "es" ? "Tiempo de auditoría de FormZero" : "FormZero audit time", sublabel: lang === "hi" ? "बनाम पारंपरिक प्रक्रिया में 6+ घंटे" : lang === "es" ? "vs. promedio de 6+ horas de proceso tradicional" : "vs. avg 6+ hrs traditional process", icon: "bolt", accent: "text-primary" },
                 ]).map((stat) => (
                   <div key={stat.value} className="bg-white rounded-2xl p-4 sm:p-5 flex flex-col gap-2 border border-outline-variant/20 shadow-sm hover:shadow-md hover:border-primary/20 hover:-translate-y-1 transition-all duration-300 group">
                     <span className={`material-symbols-outlined text-xl ${stat.accent} opacity-70 group-hover:opacity-100 transition-opacity`}>{stat.icon}</span>
@@ -3732,8 +3744,8 @@ export default function Home() {
               </div>
               <p className="text-[9px] text-on-surface-variant/40 text-center mb-4 -mt-10 px-4">
                 {selectedRegion === "india"
-                  ? "Sources: CAG Report Apr 2026 · MoA&FW PM-KISAN data · NHA Ayushman Bharat"
-                  : "Sources: White House OMB 2024 · USDA FNS 2023 · Kaiser Family Foundation 2022"}
+                  ? (lang === "hi" ? "स्रोत: कैग रिपोर्ट 2026 · कृषि मंत्रालय पीएम-किसान डेटा · एनएचए आयुष्मान भारत" : "Sources: CAG Report Apr 2026 · MoA&FW PM-KISAN data · NHA Ayushman Bharat")
+                  : (lang === "hi" ? "स्रोत: व्हाइट हाउस ओएमबी 2024 · यूएसडीए एफएनएस 2023 · कैसर फैमिली फाउंडेशन 2022" : "Sources: White House OMB 2024 · USDA FNS 2023 · Kaiser Family Foundation 2022")}
               </p>
 
               {/* Profile Bento Selector — region-aware header */}
@@ -3754,7 +3766,7 @@ export default function Home() {
                   <div className="marquee-track">
                     {/* Render first group of presets */}
                     <div className="flex gap-6 pr-6">
-                      {presetProfiles.filter((p) => !selectedRegion || (selectedRegion === "india" ? (p.id.includes("india") || p.id.includes("kisan") || p.id.includes("anganwadi") || p.id.includes("farmer") || p.id.includes("bengal") || p.id.includes("punjab")) : !p.id.includes("india") && !p.id.includes("kisan") && !p.id.includes("anganwadi") && !p.id.includes("farmer") && !p.id.includes("bengal") && !p.id.includes("punjab"))).map((p) => (
+                      {presetProfiles.filter((p) => !selectedRegion ? true : (selectedRegion === "india" ? p.profile.country === "india" : p.profile.country === "usa")).map((p) => (
                         <button
                           key={`group1-${p.id}`}
                           onClick={() => handleSelectPreset(p)}
@@ -3785,7 +3797,7 @@ export default function Home() {
 
                     {/* Render identical second group of presets to create seamless loop */}
                     <div className="flex gap-6 pr-6">
-                      {presetProfiles.filter((p) => !selectedRegion || (selectedRegion === "india" ? (p.id.includes("india") || p.id.includes("kisan") || p.id.includes("anganwadi") || p.id.includes("farmer") || p.id.includes("bengal") || p.id.includes("punjab")) : !p.id.includes("india") && !p.id.includes("kisan") && !p.id.includes("anganwadi") && !p.id.includes("farmer") && !p.id.includes("bengal") && !p.id.includes("punjab"))).map((p) => (
+                      {presetProfiles.filter((p) => !selectedRegion ? true : (selectedRegion === "india" ? p.profile.country === "india" : p.profile.country === "usa")).map((p) => (
                         <button
                           key={`group2-${p.id}`}
                           onClick={() => handleSelectPreset(p)}
@@ -3852,7 +3864,7 @@ export default function Home() {
             {/* Marquee program ticker — region-aware */}
             <div className="py-6 bg-white border-y border-outline-variant/20 w-full overflow-hidden">
               <div className="flex whitespace-nowrap animate-marquee">
-                {selectedRegion === "india" ? (
+                {(!selectedRegion || selectedRegion === "india") && (
                   <>
                     <div className="flex items-center gap-12 sm:gap-20 px-10 text-sm sm:text-body-lg font-bold uppercase tracking-widest text-primary/30">
                       <span>PM-KISAN</span><span className="italic">Ayushman Bharat</span><span>PM-JAY</span><span>PMAY</span><span className="underline">NSP</span><span>IGNOAPS</span><span>PMFBY</span><span>MGNREGS</span><span>Antyodaya Anna</span><span>Jan Dhan</span>
@@ -3861,7 +3873,8 @@ export default function Home() {
                       <span>PM-KISAN</span><span className="italic">Ayushman Bharat</span><span>PM-JAY</span><span>PMAY</span><span className="underline">NSP</span><span>IGNOAPS</span><span>PMFBY</span><span>MGNREGS</span><span>Antyodaya Anna</span><span>Jan Dhan</span>
                     </div>
                   </>
-                ) : (
+                )}
+                {(!selectedRegion || selectedRegion === "usa") && (
                   <>
                     <div className="flex items-center gap-12 sm:gap-20 px-10 text-sm sm:text-body-lg font-bold uppercase tracking-widest text-primary/30">
                       <span>SNAP</span><span className="italic">Medicaid</span><span>WIC</span><span>TANF</span><span className="underline">EITC</span><span>LIHEAP</span><span>Pell Grant</span><span>Lifeline</span><span>SSI</span><span>CHIP</span>
@@ -3884,14 +3897,14 @@ export default function Home() {
                   <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 px-4 py-1.5 rounded-full">
                     <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse"></span>
                     <span className="font-label-sm text-[10px] text-primary tracking-widest uppercase font-bold">
-                      {lang === "es" ? "Por qué FormZero es diferente" : lang === "hi" ? "Why FormZero is Different" : "Why FormZero is Different"}
+                      {lang === "es" ? "Por qué FormZero es diferente" : lang === "hi" ? "FormZero अलग क्यों है" : "Why FormZero is Different"}
                     </span>
                   </div>
                   <h2 className="font-display-lg text-4xl md:text-5xl font-bold tracking-tight text-primary">
-                    {lang === "es" ? "Cómo FormZero le ayuda a reclamar su dinero" : lang === "hi" ? "How FormZero Helps You Claim Your Money" : "How FormZero Helps You Claim Your Money"}
+                    {lang === "es" ? "Cómo FormZero le ayuda a reclamar su dinero" : lang === "hi" ? "FormZero आपका पैसा क्लेम करने में कैसे मदद करता है" : "How FormZero Helps You Claim Your Money"}
                   </h2>
                   <p className="font-body-lg text-body-md text-secondary leading-relaxed max-w-2xl mx-auto">
-                    {lang === "es" ? "Obtener ayuda del gobierno suele ser confuso y lento. Así es como hacemos el proceso simple, gratuito y confiable para usted." : lang === "hi" ? "Getting government aid is usually confusing and slow. Here is how we make the process simple, free, and reliable for you." : "Getting government aid is usually confusing and slow. Here is how we make the process simple, free, and reliable for you."}
+                    {lang === "es" ? "Obtener ayuda del gobierno suele ser confuso y lento. Así es como hacemos el proceso simple, gratuito y confiable para usted." : lang === "hi" ? "सरकारी सहायता प्राप्त करना आमतौर पर भ्रमित करने वाला और धीमा होता है। यहाँ बताया गया है कि हम आपके लिए प्रक्रिया को कैसे सरल, मुफ़्त और विश्वसनीय बनाते हैं।" : "Getting government aid is usually confusing and slow. Here is how we make the process simple, free, and reliable for you."}
                   </p>
                 </header>
 
@@ -3907,7 +3920,7 @@ export default function Home() {
                     }`}
                   >
                     <span className="material-symbols-outlined text-[24px]">cancel</span>
-                    <span className="font-bold text-xs sm:text-sm">{lang === "es" ? "Formularios confusos" : lang === "hi" ? "Confusing Forms" : "Confusing Forms"}</span>
+                    <span className="font-bold text-xs sm:text-sm">{lang === "es" ? "Formularios confusos" : lang === "hi" ? "भ्रमित करने वाले फॉर्म" : "Confusing Forms"}</span>
                   </button>
 
                   {/* Tab 2: Private Experts */}
@@ -3920,7 +3933,7 @@ export default function Home() {
                     }`}
                   >
                     <span className="material-symbols-outlined text-[24px]">payments</span>
-                    <span className="font-bold text-xs sm:text-sm">{lang === "es" ? "Expertos privados" : lang === "hi" ? "Private Experts" : "Private Experts"}</span>
+                    <span className="font-bold text-xs sm:text-sm">{lang === "es" ? "Expertos privados" : lang === "hi" ? "निजी विशेषज्ञ" : "Private Experts"}</span>
                   </button>
 
                   {/* Tab 3: FormZero AI */}
@@ -3933,7 +3946,7 @@ export default function Home() {
                     }`}
                   >
                     <span className="material-symbols-outlined text-[24px]">check_circle</span>
-                    <span className="font-bold text-xs sm:text-sm">{lang === "es" ? "IA inteligente FormZero" : lang === "hi" ? "FormZero Smart AI" : "FormZero Smart AI"}</span>
+                    <span className="font-bold text-xs sm:text-sm">{lang === "es" ? "IA inteligente FormZero" : lang === "hi" ? "FormZero स्मार्ट AI" : "FormZero Smart AI"}</span>
                   </button>
                 </div>
 
@@ -3945,29 +3958,29 @@ export default function Home() {
                       <div className="space-y-4 animate-fade-in">
                         <h3 className="text-xl font-bold text-red-600 flex items-center gap-2">
                           <span className="material-symbols-outlined">cancel</span>
-                          {lang === "es" ? "Formularios Oficiales Confusos" : lang === "hi" ? "Confusing Official Forms" : "Confusing Official Forms"}
+                          {lang === "es" ? "Formularios Oficiales Confusos" : lang === "hi" ? "भ्रमित करने वाले आधिकारिक फॉर्म" : "Confusing Official Forms"}
                         </h3>
                         <p className="text-sm text-on-surface-variant leading-relaxed">
-                          {lang === "es" ? "Intentar usar los portales web oficiales del gobierno o solicitudes en papel es estresante y difícil. Un simple error puede causar meses de retraso o el rechazo inmediato." : lang === "hi" ? "Trying to use standard government web portals or paper applications is stressful and difficult. One simple mistake can cause months of delay or immediate rejection." : "Trying to use standard government web portals or paper applications is stressful and difficult. One simple mistake can cause months of delay or immediate rejection."}
+                          {lang === "es" ? "Intentar usar los portales web oficiales del gobierno o solicitudes en papel es estresante y difícil. Un simple error puede causar meses de retraso o el rechazo inmediato." : lang === "hi" ? "मानक सरकारी वेब पोर्टल या कागजी आवेदनों का उपयोग करने की कोशिश करना तनावपूर्ण और कठिन है। एक छोटी सी गलती महीनों की देरी या तत्काल अस्वीकृति का कारण बन सकती है।" : "Trying to use standard government web portals or paper applications is stressful and difficult. One simple mistake can cause months of delay or immediate rejection."}
                         </p>
                         <div className="grid grid-cols-3 gap-2 sm:gap-4 pt-2">
                           <div className="bg-red-500/5 p-2 sm:p-3 rounded-xl border border-red-500/10 text-center">
-                            <div className="text-[8px] sm:text-[10px] text-red-600 uppercase font-bold tracking-wider">{lang === "es" ? "Costo" : lang === "hi" ? "Cost" : "Cost"}</div>
-                            <div className="font-bold text-xs sm:text-base text-primary">{lang === "es" ? "Gratis" : lang === "hi" ? "Free" : "Free"}</div>
+                            <div className="text-[8px] sm:text-[10px] text-red-600 uppercase font-bold tracking-wider">{lang === "es" ? "Costo" : lang === "hi" ? "लागत" : "Cost"}</div>
+                            <div className="font-bold text-xs sm:text-base text-primary">{lang === "es" ? "Gratis" : lang === "hi" ? "मुफ़्त" : "Free"}</div>
                           </div>
                           <div className="bg-red-500/5 p-2 sm:p-3 rounded-xl border border-red-500/10 text-center">
-                            <div className="text-[8px] sm:text-[10px] text-red-600 uppercase font-bold tracking-wider">{lang === "es" ? "Tiempo" : lang === "hi" ? "Time" : "Time"}</div>
-                            <div className="font-bold text-xs sm:text-base text-primary">{lang === "es" ? "3-5 Horas" : lang === "hi" ? "3-5 Hours" : "3-5 Hours"}</div>
+                            <div className="text-[8px] sm:text-[10px] text-red-600 uppercase font-bold tracking-wider">{lang === "es" ? "Tiempo" : lang === "hi" ? "समय" : "Time"}</div>
+                            <div className="font-bold text-xs sm:text-base text-primary">{lang === "es" ? "3-5 Horas" : lang === "hi" ? "3-5 घंटे" : "3-5 Hours"}</div>
                           </div>
                           <div className="bg-red-500/5 p-2 sm:p-3 rounded-xl border border-red-500/10 text-center">
-                            <div className="text-[8px] sm:text-[10px] text-red-600 uppercase font-bold tracking-wider">{lang === "es" ? "Riesgo" : lang === "hi" ? "Chance of Error" : "Chance of Error"}</div>
-                            <div className="font-bold text-xs sm:text-base text-red-600">{lang === "es" ? "Muy Alto" : lang === "hi" ? "Very High" : "Very High"}</div>
+                            <div className="text-[8px] sm:text-[10px] text-red-600 uppercase font-bold tracking-wider">{lang === "es" ? "Riesgo" : lang === "hi" ? "गलती की संभावना" : "Chance of Error"}</div>
+                            <div className="font-bold text-xs sm:text-base text-red-600">{lang === "es" ? "Muy Alto" : lang === "hi" ? "बहुत अधिक" : "Very High"}</div>
                           </div>
                         </div>
                         <ul className="space-y-2.5 text-xs text-on-surface-variant list-disc pl-4 pt-2">
-                          <li>{lang === "es" ? "Debe conocer reglas y términos legales complicados." : lang === "hi" ? "Must know complicated legal words and rules." : "Must know complicated legal words and rules."}</li>
-                          <li>{lang === "es" ? "Debe calcular los números de su hogar exactamente." : lang === "hi" ? "Must calculate your own household math exactly." : "Must calculate your own household math exactly."}</li>
-                          <li>{lang === "es" ? "Si es rechazado, no se le explica el motivo." : lang === "hi" ? "If you are rejected, you are not told why." : "If you are rejected, you are not told why."}</li>
+                          <li>{lang === "es" ? "Debe conocer reglas y términos legales complicados." : lang === "hi" ? "जटिल कानूनी शब्दों और नियमों को जानना आवश्यक है।" : "Must know complicated legal words and rules."}</li>
+                          <li>{lang === "es" ? "Debe calcular los números de su hogar exactamente." : lang === "hi" ? "अपने परिवार की गणना स्वयं सटीक रूप से करनी चाहिए।" : "Must calculate your own household math exactly."}</li>
+                          <li>{lang === "es" ? "Si es rechazado, no se le explica el motivo." : lang === "hi" ? "यदि आपको अस्वीकार कर दिया जाता है, तो आपको कारण नहीं बताया जाता है।" : "If you are rejected, you are not told why."}</li>
                         </ul>
                       </div>
                     )}
@@ -3976,29 +3989,29 @@ export default function Home() {
                       <div className="space-y-4 animate-fade-in">
                         <h3 className="text-xl font-bold text-amber-600 flex items-center gap-2">
                           <span className="material-symbols-outlined">payments</span>
-                          {lang === "es" ? "Contratar Expertos Privados" : lang === "hi" ? "Hiring Private Experts" : "Hiring Private Experts"}
+                          {lang === "es" ? "Contratar Expertos Privados" : lang === "hi" ? "निजी विशेषज्ञों को काम पर रखना" : "Hiring Private Experts"}
                         </h3>
                         <p className="text-sm text-on-surface-variant leading-relaxed">
-                          {lang === "es" ? "Contratar a un abogado o asistente de solicitudes para que haga el trabajo por usted es costoso. Las familias de bajos ingresos que más necesitan ayuda quedan excluidas." : lang === "hi" ? "Hiring a lawyer or application assistant to do the work for you is expensive. Low-income families who need help the most are priced out." : "Hiring a lawyer or application assistant to do the work for you is expensive. Low-income families who need help the most are priced out."}
+                          {lang === "es" ? "Contratar a un abogado o asistente de solicitudes para que haga el trabajo por usted es costoso. Las familias de bajos ingresos que más necesitan ayuda quedan excluidas." : lang === "hi" ? "आपके लिए काम करने के लिए किसी वकील या आवेदन सहायक को नियुक्त करना महंगा है। जिन निम्न-आय वाले परिवारों को सबसे अधिक मदद की आवश्यकता होती है, वे बाहर हो जाते हैं।" : "Hiring a lawyer or application assistant to do the work for you is expensive. Low-income families who need help the most are priced out."}
                         </p>
                         <div className="grid grid-cols-3 gap-2 sm:gap-4 pt-2">
                           <div className="bg-amber-500/5 p-2 sm:p-3 rounded-xl border border-amber-500/10 text-center">
-                            <div className="text-[8px] sm:text-[10px] text-amber-600 uppercase font-bold tracking-wider">{lang === "es" ? "Costo" : lang === "hi" ? "Cost" : "Cost"}</div>
+                            <div className="text-[8px] sm:text-[10px] text-amber-600 uppercase font-bold tracking-wider">{lang === "es" ? "Costo" : lang === "hi" ? "लागत" : "Cost"}</div>
                             <div className="font-bold text-xs sm:text-base text-amber-600">$150 - $400</div>
                           </div>
                           <div className="bg-amber-500/5 p-2 sm:p-3 rounded-xl border border-amber-500/10 text-center">
-                            <div className="text-[8px] sm:text-[10px] text-amber-600 uppercase font-bold tracking-wider">{lang === "es" ? "Tiempo" : lang === "hi" ? "Time" : "Time"}</div>
-                            <div className="font-bold text-xs sm:text-base text-primary">{lang === "es" ? "2-3 Semanas" : lang === "hi" ? "2-3 Weeks" : "2-3 Weeks"}</div>
+                            <div className="text-[8px] sm:text-[10px] text-amber-600 uppercase font-bold tracking-wider">{lang === "es" ? "Tiempo" : lang === "hi" ? "समय" : "Time"}</div>
+                            <div className="font-bold text-xs sm:text-base text-primary">{lang === "es" ? "2-3 Semanas" : lang === "hi" ? "2-3 सप्ताह" : "2-3 Weeks"}</div>
                           </div>
                           <div className="bg-amber-500/5 p-2 sm:p-3 rounded-xl border border-amber-500/10 text-center">
-                            <div className="text-[8px] sm:text-[10px] text-amber-600 uppercase font-bold tracking-wider">{lang === "es" ? "Riesgo" : lang === "hi" ? "Chance of Error" : "Chance of Error"}</div>
-                            <div className="font-bold text-xs sm:text-base text-primary">{lang === "es" ? "Bajo" : lang === "hi" ? "Low" : "Low"}</div>
+                            <div className="text-[8px] sm:text-[10px] text-amber-600 uppercase font-bold tracking-wider">{lang === "es" ? "Riesgo" : lang === "hi" ? "गलती की संभावना" : "Chance of Error"}</div>
+                            <div className="font-bold text-xs sm:text-base text-primary">{lang === "es" ? "Bajo" : lang === "hi" ? "कम" : "Low"}</div>
                           </div>
                         </div>
                         <ul className="space-y-2.5 text-xs text-on-surface-variant list-disc pl-4 pt-2">
-                          <li>{lang === "es" ? "Cuesta cientos de dólares antes de recibir dinero." : lang === "hi" ? "Costs hundreds of dollars before you get any cash." : "Costs hundreds of dollars before you get any cash."}</li>
-                          <li>{lang === "es" ? "Requiere esperar citas y llamadas de seguimiento." : lang === "hi" ? "Requires waiting for appointments and call-backs." : "Requires waiting for appointments and call-backs."}</li>
-                          <li>{lang === "es" ? "Es difícil de pagar para la gente común." : lang === "hi" ? "Hard for ordinary people to afford." : "Hard for ordinary people to afford."}</li>
+                          <li>{lang === "es" ? "Cuesta cientos de dólares antes de recibir dinero." : lang === "hi" ? "कोई भी नकद प्राप्त करने से पहले सैकड़ों डॉलर खर्च होते हैं।" : "Costs hundreds of dollars before you get any cash."}</li>
+                          <li>{lang === "es" ? "Requiere esperar citas y llamadas de seguimiento." : lang === "hi" ? "नियुक्तियों और कॉल-बैक की प्रतीक्षा करने की आवश्यकता होती है।" : "Requires waiting for appointments and call-backs."}</li>
+                          <li>{lang === "es" ? "Es difícil de pagar para la gente común." : lang === "hi" ? "आम लोगों के लिए वहन करना कठिन है।" : "Hard for ordinary people to afford."}</li>
                         </ul>
                       </div>
                     )}
@@ -4007,29 +4020,29 @@ export default function Home() {
                       <div className="space-y-4 animate-fade-in">
                         <h3 className="text-xl font-bold text-emerald-600 flex items-center gap-2">
                           <span className="material-symbols-outlined">check_circle</span>
-                          {lang === "es" ? "IA Inteligente FormZero" : lang === "hi" ? "FormZero Smart AI" : "FormZero Smart AI"}
+                          {lang === "es" ? "IA Inteligente FormZero" : lang === "hi" ? "FormZero स्मार्ट AI" : "FormZero Smart AI"}
                         </h3>
                         <p className="text-sm text-on-surface-variant leading-relaxed">
-                          {lang === "es" ? "Nuestro sistema automatizado hace la lectura compleja y las matemáticas por usted al instante. Solo hable o escriba con palabras normales, y encontraremos sus beneficios." : lang === "hi" ? "Our automated system does the complex reading and math for you instantly. Just talk or type in normal words, and we find your matching benefits." : "Our automated system does the complex reading and math for you instantly. Just talk or type in normal words, and we find your matching benefits."}
+                          {lang === "es" ? "Nuestro sistema automatizado hace la lectura compleja y las matemáticas por usted al instante. Solo hable o escriba con palabras normales, y encontraremos sus beneficios." : lang === "hi" ? "हमारी स्वचालित प्रणाली आपके लिए जटिल पठन और गणित तुरंत करती है। बस सामान्य शब्दों में बात करें या टाइप करें, और हम आपके मेल खाने वाले लाभों को ढूंढते हैं।" : "Our automated system does the complex reading and math for you instantly. Just talk or type in normal words, and we find your matching benefits."}
                         </p>
                         <div className="grid grid-cols-3 gap-2 sm:gap-4 pt-2">
                           <div className="bg-emerald-500/5 p-2 sm:p-3 rounded-xl border border-emerald-500/10 text-center">
-                            <div className="text-[8px] sm:text-[10px] text-emerald-600 uppercase font-bold tracking-wider">{lang === "es" ? "Costo" : lang === "hi" ? "Cost" : "Cost"}</div>
-                            <div className="font-bold text-xs sm:text-base text-emerald-600">{lang === "es" ? "100% Gratis" : lang === "hi" ? "100% Free" : "100% Free"}</div>
+                            <div className="text-[8px] sm:text-[10px] text-emerald-600 uppercase font-bold tracking-wider">{lang === "es" ? "Costo" : lang === "hi" ? "लागत" : "Cost"}</div>
+                            <div className="font-bold text-xs sm:text-base text-emerald-600">{lang === "es" ? "100% Gratis" : lang === "hi" ? "100% मुफ़्त" : "100% Free"}</div>
                           </div>
                           <div className="bg-emerald-500/5 p-2 sm:p-3 rounded-xl border border-emerald-500/10 text-center">
-                            <div className="text-[8px] sm:text-[10px] text-emerald-600 uppercase font-bold tracking-wider">{lang === "es" ? "Tiempo" : lang === "hi" ? "Time" : "Time"}</div>
-                            <div className="font-bold text-xs sm:text-base text-emerald-600">{lang === "es" ? "2 Segundos" : lang === "hi" ? "2 Seconds" : "2 Seconds"}</div>
+                            <div className="text-[8px] sm:text-[10px] text-emerald-600 uppercase font-bold tracking-wider">{lang === "es" ? "Tiempo" : lang === "hi" ? "समय" : "Time"}</div>
+                            <div className="font-bold text-xs sm:text-base text-emerald-600">{lang === "es" ? "2 Segundos" : lang === "hi" ? "2 सेकंड" : "2 Seconds"}</div>
                           </div>
                           <div className="bg-emerald-500/5 p-2 sm:p-3 rounded-xl border border-emerald-500/10 text-center">
-                            <div className="text-[8px] sm:text-[10px] text-emerald-600 uppercase font-bold tracking-wider">{lang === "es" ? "Riesgo" : lang === "hi" ? "Chance of Error" : "Chance of Error"}</div>
-                            <div className="font-bold text-xs sm:text-base text-emerald-600">{lang === "es" ? "Ninguno" : lang === "hi" ? "None" : "None"}</div>
+                            <div className="text-[8px] sm:text-[10px] text-emerald-600 uppercase font-bold tracking-wider">{lang === "es" ? "Riesgo" : lang === "hi" ? "गलती की संभावना" : "Chance of Error"}</div>
+                            <div className="font-bold text-xs sm:text-base text-emerald-600">{lang === "es" ? "Ninguno" : lang === "hi" ? "कोई नहीं" : "None"}</div>
                           </div>
                         </div>
                         <ul className="space-y-2.5 text-xs text-on-surface-variant list-disc pl-4 pt-2">
-                          <li>{lang === "es" ? "Hable con naturalidad, como si hablara con un amigo." : lang === "hi" ? "Speak naturally like talking to a friend." : "Speak naturally like talking to a friend."}</li>
-                          <li>{lang === "es" ? "Verifica miles de reglas oficiales al instante." : lang === "hi" ? "Checks thousands of official rules instantly." : "Checks thousands of official rules instantly."}</li>
-                          <li>{lang === "es" ? "Muestra pruebas exactas de documentos oficiales." : lang === "hi" ? "Shows exact proof from official documents." : "Shows exact proof from official documents."}</li>
+                          <li>{lang === "es" ? "Hable con naturalidad, como si hablara con un amigo." : lang === "hi" ? "स्वाभाविक रूप से बोलें जैसे किसी मित्र से बात कर रहे हों।" : "Speak naturally like talking to a friend."}</li>
+                          <li>{lang === "es" ? "Verifica miles de reglas oficiales al instante." : lang === "hi" ? "हज़ारों आधिकारिक नियमों की तुरंत जाँच करता है।" : "Checks thousands of official rules instantly."}</li>
+                          <li>{lang === "es" ? "Muestra pruebas exactas de documentos oficiales." : lang === "hi" ? "आधिकारिक दस्तावेजों से सटीक प्रमाण दिखाता है।" : "Shows exact proof from official documents."}</li>
                         </ul>
                       </div>
                     )}
@@ -4074,7 +4087,7 @@ export default function Home() {
                         <div className="bg-white p-4 rounded-xl border border-outline-variant/30 shadow-sm space-y-2 text-xs">
                           <div className="flex justify-between border-b pb-2 text-[10px]">
                             <span className="font-semibold text-primary">{lang === "es" ? "Concepto" : lang === "hi" ? "Item" : "Item"}</span>
-                            <span className="font-semibold text-primary">{lang === "es" ? "Costo" : lang === "hi" ? "Cost" : "Cost"}</span>
+                            <span className="font-semibold text-primary">{lang === "es" ? "Costo" : lang === "hi" ? "लागत" : "Cost"}</span>
                           </div>
                           <div className="flex justify-between text-[9px]">
                             <span>{lang === "es" ? "Cuota de Consulta" : lang === "hi" ? "Consultation Fee" : "Consultation Fee"}</span>
