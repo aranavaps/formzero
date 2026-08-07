@@ -3762,8 +3762,8 @@ export default function Home() {
                 </h2>
                 <p className="text-xs text-on-surface-variant/70 mb-8 text-center px-4">
                   {selectedRegion === "india"
-                    ? "Tap a card to instantly see which Indian government schemes you may qualify for"
-                    : "Tap a card to instantly see which US federal benefits you may qualify for"}
+                    ? (lang === "hi" ? "यह जानने के लिए कि आप किन भारतीय सरकारी योजनाओं के लिए पात्र हो सकते हैं, एक कार्ड पर टैप करें" : lang === "es" ? "Toque una tarjeta para ver al instante para qué esquemas del gobierno indio puede calificar" : "Tap a card to instantly see which Indian government schemes you may qualify for")
+                    : (lang === "hi" ? "यह जानने के लिए कि आप किन अमेरिकी संघीय लाभों के लिए पात्र हो सकते हैं, एक कार्ड पर टैप करें" : lang === "es" ? "Toque una tarjeta para ver al instante para qué beneficios federales de EE. UU. puede calificar" : "Tap a card to instantly see which US federal benefits you may qualify for")}
                 </p>
                 
                 {/* Marquee container with fading mask */}

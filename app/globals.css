@@ -146,7 +146,7 @@ body {
 }
 
 .animate-marquee {
-  animation: marquee 30s linear infinite;
+  animation: marquee 15s linear infinite;
 }
 
 /* Social proof logos grayscale */
@@ -283,7 +283,7 @@ details > summary::-webkit-details-marker { display: none; }
 .marquee-track {
   display: flex;
   width: max-content;
-  animation: marquee-scroll 45s linear infinite;
+  animation: marquee-scroll 20s linear infinite;
 }
 
 .marquee-track:hover {
